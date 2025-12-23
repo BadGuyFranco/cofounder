@@ -1,6 +1,9 @@
-# Shared Tools
+# Pro Accelerator
 
-A collection of AI-powered tools for content creation, image/video generation, and productivity.
+AI workflows for professionals. The fast track to get there.
+
+> **License:** This repository is proprietary. See [LICENSE](LICENSE) for terms.  
+> Access requires completing a [Pro Accelerator course](https://firststrategy.ai).
 
 ## Getting Started
 
