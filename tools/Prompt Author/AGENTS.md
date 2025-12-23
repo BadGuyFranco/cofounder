@@ -106,7 +106,9 @@ Include in prompts: "If the request is ambiguous, ask for clarification before p
 
 ### Tool Documentation
 
-Use `/pro accelerator/system/zShared Management/Template for Tool Documentation/`
+**Pattern reference:** `/pro accelerator/system/templates/Behavior Tool Template/`
+
+**Where to create:** User tools go in `/memory/my tools/[Tool Name]/`, not in `/pro accelerator/`. The `/pro accelerator/` directory is read-only and receives updates.
 
 ## Writing Process
 

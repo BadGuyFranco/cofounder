@@ -2,7 +2,7 @@
 
 Welcome! This guide sets up your AI content creation workspace. By the end, you'll have:
 
-- A `/memory/` folder with your personal voice definition
+- A `/memory/` folder with your personal configuration (voice, API keys, custom tools)
 - A `/[your name]/` folder for your content projects
 
 ## Instructions
@@ -18,13 +18,17 @@ I just downloaded this starter kit. Help me complete my first run setup.
 
 1. **Read the voice setup process** - Load /pro accelerator/tools/Content Author/VoiceSetup.md and follow its instructions to create my voice.md file.
 
-2. **Create my /memory/ folder** - At /pro accelerator/, create:
-   - /pro accelerator/memory/Content Author/voice.md (from the voice discovery process)
+2. **Create my /memory/ folder** - As a SIBLING to /pro accelerator/ (not inside it), create:
+   - /memory/Content Author/voice.md (from the voice discovery process)
+   - /memory/my tools/AGENTS.md (for routing to any custom tools I create later)
+   - /memory/README.md (copy from /pro accelerator/ tools documentation)
 
-3. **Create my content workspace** - Ask me what I'd like to name my personal folder (usually my name or brand), then create:
-   - /pro accelerator/[my name]/ directory
-   - /pro accelerator/[my name]/content/ for my generated content
-   - /pro accelerator/[my name]/AGENTS.md with instructions for working on my content
+3. **Create my content workspace** - Ask me what I'd like to name my personal folder (usually my name or brand), then create it as a SIBLING to /pro accelerator/:
+   - /[my name]/ directory
+   - /[my name]/content/ for my generated content
+   - /[my name]/AGENTS.md with instructions for working on my content
+
+IMPORTANT: /pro accelerator/ is read-only. All new directories (/memory/ and /[my name]/) must be created as siblings, not inside /pro accelerator/.
 
 Start with step 1.
 ```
@@ -48,12 +52,17 @@ Take your time with the discovery questions. Your answers become your "voice def
 Once complete, your workspace will look like:
 
 ```
-/pro accelerator/
-├── tools/             # The AI tools
-├── system/            # Setup and maintenance (you are here)
-├── memory/            # Your personal settings (just created)
-└── [your name]/       # Your content workspace (just created)
+[Your Workspace Root]/
+├── pro accelerator/   # Shared tools (read-only, receives updates)
+├── memory/            # Your personal settings (persists across updates)
+│   ├── Content Author/
+│   │   └── voice.md
+│   └── my tools/
+│       └── AGENTS.md  # Routing for your custom tools
+└── [your name]/       # Your content workspace
 ```
+
+**Important:** `/pro accelerator/` is read-only. Do not modify files inside it. Your changes would be lost when you pull updates. All your custom content goes in `/memory/` or your personal workspace.
 
 You're ready to start creating content! See `/pro accelerator/tools/Content Author/AGENTS.md` for how to use the content creation tools.
 

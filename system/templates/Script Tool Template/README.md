@@ -1,7 +1,6 @@
-# [Your Library Name]
+# [Tool Name]
 
 [One-sentence description of what this tool does]
-
 
 ## Documentation
 
@@ -15,9 +14,10 @@
 
 ## Common Use Cases
 
-[2-3 sentence description of when someone would use this tool]
+[2-3 sentences describing when someone would use this tool]
 
 
 **Remember:**
 - **README.md** = Brief human overview (assumes already installed)
 - **AGENTS.md** = Complete AI instructions (includes dependency verification, installation, usage, troubleshooting)
+
