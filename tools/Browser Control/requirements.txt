@@ -1,0 +1,7 @@
+# Browser Control Dependencies
+# Note: This is a Node.js project. Dependencies are managed via npm.
+# See AGENTS.md for full installation instructions.
+
+node>=20.10.0
+playwright>=1.40.0
+

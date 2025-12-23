@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishbone Diagram - D3.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --category-1: #10b981;
+            --category-2: #8b5cf6;
+            --category-3: #f59e0b;
+            --category-4: #ef4444;
+            --category-5: #ec4899;
+            --category-6: #06b6d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            color: var(--text);
+            background: var(--surface);
+            padding: 20px;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .controls {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+        }
+
+        .visualization-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            padding: 40px;
+        }
+
+        #fishbone {
+            width: 100%;
+            height: calc(100vh - 260px);
+            min-height: 600px;
+        }
+
+        .spine {
+            stroke: var(--text);
+            stroke-width: 3px;
+            fill: none;
+        }
+
+        .major-bone {
+            stroke-width: 2px;
+            fill: none;
+        }
+
+        .minor-bone {
+            stroke-width: 1.5px;
+            fill: none;
+        }
+
+        .category-label {
+            font-size: 16px;
+            font-weight: 600;
+            fill: var(--text);
+        }
+
+        .cause-label {
+            font-size: 13px;
+            fill: var(--text-muted);
+        }
+
+        .effect-box {
+            fill: var(--primary);
+            stroke: var(--primary-light);
+            stroke-width: 3px;
+        }
+
+        .effect-text {
+            fill: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+
+        .instructions {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .instructions h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Fishbone Diagram Template</h1>
+        <p class="subtitle">Interactive root cause analysis visualization</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetView()">Reset View</button>
+    </div>
+
+    <div class="visualization-container">
+        <svg id="fishbone"></svg>
+    </div>
+
+    <div class="instructions">
+        <h3>How to Use This Template:</h3>
+        <ul>
+            <li>Modify the <code>effect</code> (problem) and <code>categories</code> (cause groups) below</li>
+            <li>Common categories: People, Process, Technology, Environment, Materials, Methods</li>
+            <li>Each category can have multiple specific causes</li>
+            <li>Categories alternate top/bottom for visual balance</li>
+            <li>Use for root cause analysis in quality improvement</li>
+        </ul>
+    </div>
+
+    <script>
+        // =================================================================
+        // DATA STRUCTURE - MODIFY THIS SECTION
+        // =================================================================
+
+        const effect = "AI System Fails in Production";
+
+        const categories = [
+            {
+                name: "People",
+                causes: [
+                    "Insufficient training",
+                    "Lack of AI expertise",
+                    "Poor communication"
+                ]
+            },
+            {
+                name: "Process",
+                causes: [
+                    "Skipped testing phases",
+                    "No validation criteria",
+                    "Inadequate review"
+                ]
+            },
+            {
+                name: "Technology",
+                causes: [
+                    "Unstable infrastructure",
+                    "Poor model architecture",
+                    "Integration issues"
+                ]
+            },
+            {
+                name: "Data",
+                causes: [
+                    "Insufficient training data",
+                    "Biased datasets",
+                    "Poor data quality"
+                ]
+            },
+            {
+                name: "Environment",
+                causes: [
+                    "Production != dev",
+                    "Load not anticipated",
+                    "Edge cases missed"
+                ]
+            },
+            {
+                name: "Methods",
+                causes: [
+                    "No systematic approach",
+                    "Waterfall mindset",
+                    "Insufficient iteration"
+                ]
+            }
+        ];
+
+        // =================================================================
+        // VISUALIZATION CODE - NO NEED TO MODIFY
+        // =================================================================
+
+        const width = 1300;
+        const height = 700;
+        const margin = { top: 40, right: 200, bottom: 40, left: 100 };
+
+        const svg = d3.select('#fishbone')
+            .attr('width', width)
+            .attr('height', height);
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const colors = [
+            'var(--category-1)', 'var(--category-2)', 'var(--category-3)',
+            'var(--category-4)', 'var(--category-5)', 'var(--category-6)'
+        ];
+
+        // Draw spine
+        const spineY = innerHeight / 2;
+        const spineStartX = 0;
+        const spineEndX = innerWidth - 100;
+
+        g.append('line')
+            .attr('class', 'spine')
+            .attr('x1', spineStartX)
+            .attr('y1', spineY)
+            .attr('x2', spineEndX)
+            .attr('y2', spineY);
+
+        // Draw arrowhead
+        g.append('polygon')
+            .attr('points', `${spineEndX},${spineY} ${spineEndX-15},${spineY-8} ${spineEndX-15},${spineY+8}`)
+            .attr('fill', getComputedStyle(document.documentElement).getPropertyValue('--text'));
+
+        // Draw effect box
+        const effectBoxWidth = 180;
+        const effectBoxHeight = 80;
+        const effectBoxX = spineEndX + 20;
+        const effectBoxY = spineY - effectBoxHeight / 2;
+
+        g.append('rect')
+            .attr('class', 'effect-box')
+            .attr('x', effectBoxX)
+            .attr('y', effectBoxY)
+            .attr('width', effectBoxWidth)
+            .attr('height', effectBoxHeight)
+            .attr('rx', 5);
+
+        const effectLines = effect.match(/.{1,20}(\s|$)/g) || [effect];
+        effectLines.forEach((line, i) => {
+            g.append('text')
+                .attr('class', 'effect-text')
+                .attr('x', effectBoxX + effectBoxWidth / 2)
+                .attr('y', effectBoxY + effectBoxHeight / 2 + (i - (effectLines.length - 1) / 2) * 18)
+                .text(line.trim());
+        });
+
+        // Draw categories and causes
+        const categorySpacing = spineEndX / (categories.length + 1);
+
+        categories.forEach((category, i) => {
+            const isTop = i % 2 === 0;
+            const x = categorySpacing * (i + 1);
+            const angle = isTop ? -45 : 45;
+            const boneLength = 120;
+            const color = colors[i % colors.length];
+
+            // Major bone (category bone)
+            const endX = x + boneLength * Math.cos(angle * Math.PI / 180);
+            const endY = spineY + boneLength * Math.sin(angle * Math.PI / 180);
+
+            g.append('line')
+                .attr('class', 'major-bone')
+                .attr('x1', x)
+                .attr('y1', spineY)
+                .attr('x2', endX)
+                .attr('y2', endY)
+                .attr('stroke', color);
+
+            // Category label
+            const labelOffset = 25;
+            g.append('text')
+                .attr('class', 'category-label')
+                .attr('x', endX + (isTop ? -10 : 10))
+                .attr('y', endY + (isTop ? -10 : 20))
+                .attr('text-anchor', isTop ? 'end' : 'start')
+                .attr('fill', color)
+                .text(category.name);
+
+            // Minor bones (causes)
+            const causeSpacing = boneLength / (category.causes.length + 1);
+            category.causes.forEach((cause, j) => {
+                const causeX = x + causeSpacing * (j + 1) * Math.cos(angle * Math.PI / 180);
+                const causeY = spineY + causeSpacing * (j + 1) * Math.sin(angle * Math.PI / 180);
+                const causeAngle = isTop ? angle + 45 : angle - 45;
+                const causeLength = 60;
+                const causeEndX = causeX + causeLength * Math.cos(causeAngle * Math.PI / 180);
+                const causeEndY = causeY + causeLength * Math.sin(causeAngle * Math.PI / 180);
+
+                // Minor bone
+                g.append('line')
+                    .attr('class', 'minor-bone')
+                    .attr('x1', causeX)
+                    .attr('y1', causeY)
+                    .attr('x2', causeEndX)
+                    .attr('y2', causeEndY)
+                    .attr('stroke', color);
+
+                // Cause label
+                const lines = cause.match(/.{1,15}(\s|$)/g) || [cause];
+                lines.forEach((line, k) => {
+                    g.append('text')
+                        .attr('class', 'cause-label')
+                        .attr('x', causeEndX + (isTop ? -5 : 5))
+                        .attr('y', causeEndY + (isTop ? -5 : 15) + k * 14)
+                        .attr('text-anchor', isTop ? 'end' : 'start')
+                        .text(line.trim());
+                });
+            });
+        });
+
+        function resetView() {
+            // Already at default view, but could implement zoom if needed
+        }
+    </script>
+</body>
+</html>

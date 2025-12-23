@@ -1,0 +1,56 @@
+# User configuration - NEVER commit
+/memory/
+
+# Catch sensitive files anywhere (belt and suspenders)
+**/.env
+**/*.env
+**/secrets.*
+**/*secret*
+**/*_secret*
+**/api_key*
+**/*api_key*
+**/.secrets/
+**/credentials.*
+
+# User content workspaces (created during setup)
+# Add your workspace name here after setup, e.g.:
+# /anthony/
+# /[your-name]/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.eggs/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+
+# Generated content (students generate their own)
+tools/Image Generator/generated_images/*
+tools/Video Generator/generated_videos/*
+
+# Keep the directories but not contents
+!tools/Image Generator/generated_images/.gitkeep
+!tools/Video Generator/generated_videos/.gitkeep
+
+# Archive directories (optional - remove these lines to include archives)
+**/zArchive/
+

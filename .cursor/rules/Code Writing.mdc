@@ -1,0 +1,21 @@
+---
+description: Code writing principles and standards
+globs:
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.py"
+  - "**/*.java"
+  - "**/*.go"
+  - "**/*.rs"
+  - "**/*.cpp"
+  - "**/*.c"
+alwaysApply: false
+---
+
+# Code Writing Principles
+- Prioritize clarity and maintainability
+- Follow established patterns in the codebase
+- Comment for "why" not "what"
+- If there's a trade-off between elegance and clarity, choose clarity

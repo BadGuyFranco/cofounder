@@ -1,0 +1,13 @@
+# Core Dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+
+# Replicate Dependencies
+replicate>=0.25.0
+
+# Google Gemini Dependencies (Nano Banana)
+google-genai>=1.0.0
+
+# X.ai Dependencies
+# (uses requests from Core Dependencies - no additional packages needed)

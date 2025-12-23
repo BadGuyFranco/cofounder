@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Diagram - Dagre.js + D3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --node-bg: #3b82f6;
+            --decision-bg: #f59e0b;
+            --end-bg: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            color: var(--text);
+            background: var(--surface);
+            padding: 20px;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .controls {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+        }
+
+        .visualization-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            padding: 40px;
+        }
+
+        #flowchart {
+            width: 100%;
+            height: calc(100vh - 260px);
+            min-height: 600px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node rect, .node circle, .node polygon {
+            stroke: #fff;
+            stroke-width: 2px;
+            transition: all 0.2s;
+        }
+
+        .node:hover rect, .node:hover circle, .node:hover polygon {
+            stroke-width: 3px;
+            filter: brightness(1.1);
+        }
+
+        .node text {
+            fill: white;
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .edge path {
+            stroke: var(--text-muted);
+            stroke-width: 2px;
+            fill: none;
+        }
+
+        .edge polygon {
+            fill: var(--text-muted);
+            stroke: var(--text-muted);
+        }
+
+        .edge text {
+            fill: var(--text);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .instructions {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .instructions h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Flow Diagram Template</h1>
+        <p class="subtitle">Interactive sequential process visualization</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetZoom()">Reset Zoom</button>
+        <button onclick="fitToView()">Fit to View</button>
+    </div>
+
+    <div class="visualization-container">
+        <svg id="flowchart"></svg>
+    </div>
+
+    <div class="instructions">
+        <h3>How to Use This Template:</h3>
+        <ul>
+            <li>Modify the <code>nodes</code> and <code>edges</code> arrays below</li>
+            <li>Node types: 'start', 'process', 'decision', 'end'</li>
+            <li>Decision nodes can have multiple outgoing edges with labels</li>
+            <li>Scroll to zoom, drag to pan</li>
+        </ul>
+    </div>
+
+    <script>
+        // =================================================================
+        // DATA STRUCTURE - MODIFY THIS SECTION
+        // =================================================================
+
+        const nodes = [
+            { id: 'start', label: 'Start', type: 'start' },
+            { id: 'step1', label: 'Witness\nObserve Reality', type: 'process' },
+            { id: 'decision1', label: 'Valid?', type: 'decision' },
+            { id: 'step2', label: 'Interrogate\nTest Hypothesis', type: 'process' },
+            { id: 'step3', label: 'Solve\nBuild Solution', type: 'process' },
+            { id: 'decision2', label: 'Works?', type: 'decision' },
+            { id: 'step4', label: 'Expand\nScale Up', type: 'process' },
+            { id: 'end', label: 'Success', type: 'end' },
+        ];
+
+        const edges = [
+            { from: 'start', to: 'step1' },
+            { from: 'step1', to: 'decision1' },
+            { from: 'decision1', to: 'step2', label: 'Yes' },
+            { from: 'decision1', to: 'step1', label: 'No' },
+            { from: 'step2', to: 'step3' },
+            { from: 'step3', to: 'decision2' },
+            { from: 'decision2', to: 'step4', label: 'Yes' },
+            { from: 'decision2', to: 'step2', label: 'No' },
+            { from: 'step4', to: 'end' },
+        ];
+
+        // =================================================================
+        // VISUALIZATION CODE - NO NEED TO MODIFY
+        // =================================================================
+
+        const g = new dagre.graphlib.Graph();
+        g.setGraph({
+            rankdir: 'TB',
+            nodesep: 80,
+            ranksep: 100,
+            marginx: 40,
+            marginy: 40
+        });
+        g.setDefaultEdgeLabel(() => ({}));
+
+        // Node dimensions by type
+        const nodeDimensions = {
+            start: { width: 120, height: 50 },
+            process: { width: 160, height: 80 },
+            decision: { width: 140, height: 140 },
+            end: { width: 120, height: 50 }
+        };
+
+        // Add nodes
+        nodes.forEach(node => {
+            const dims = nodeDimensions[node.type] || { width: 140, height: 60 };
+            g.setNode(node.id, {
+                label: node.label,
+                width: dims.width,
+                height: dims.height,
+                type: node.type
+            });
+        });
+
+        // Add edges
+        edges.forEach(edge => {
+            g.setEdge(edge.from, edge.to, {
+                label: edge.label || ''
+            });
+        });
+
+        // Calculate layout
+        dagre.layout(g);
+
+        // Create SVG
+        const svg = d3.select('#flowchart');
+        const g_svg = svg.append('g');
+
+        // Add zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.3, 3])
+            .on('zoom', (event) => {
+                g_svg.attr('transform', event.transform);
+            });
+        svg.call(zoom);
+
+        // Draw edges
+        g.edges().forEach(e => {
+            const edge = g.edge(e);
+            const points = edge.points;
+            
+            const line = d3.line()
+                .x(d => d.x)
+                .y(d => d.y)
+                .curve(d3.curveBasis);
+
+            const edgeGroup = g_svg.append('g')
+                .attr('class', 'edge');
+
+            // Draw path
+            edgeGroup.append('path')
+                .attr('d', line(points))
+                .attr('marker-end', 'url(#arrowhead)');
+
+            // Draw label
+            if (edge.label) {
+                const midPoint = points[Math.floor(points.length / 2)];
+                edgeGroup.append('text')
+                    .attr('x', midPoint.x)
+                    .attr('y', midPoint.y - 5)
+                    .attr('text-anchor', 'middle')
+                    .text(edge.label);
+            }
+        });
+
+        // Define arrowhead marker
+        svg.append('defs').append('marker')
+            .attr('id', 'arrowhead')
+            .attr('viewBox', '0 0 10 10')
+            .attr('refX', 9)
+            .attr('refY', 5)
+            .attr('markerWidth', 6)
+            .attr('markerHeight', 6)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M 0 0 L 10 5 L 0 10 z')
+            .attr('fill', getComputedStyle(document.documentElement).getPropertyValue('--text-muted'));
+
+        // Draw nodes
+        g.nodes().forEach(id => {
+            const node = g.node(id);
+            const nodeGroup = g_svg.append('g')
+                .attr('class', 'node')
+                .attr('transform', `translate(${node.x - node.width/2}, ${node.y - node.height/2})`);
+
+            // Draw shape based on type
+            if (node.type === 'start' || node.type === 'end') {
+                // Rounded rectangle (pill shape)
+                const color = node.type === 'start' ? 'var(--primary)' : 'var(--end-bg)';
+                nodeGroup.append('rect')
+                    .attr('width', node.width)
+                    .attr('height', node.height)
+                    .attr('rx', node.height / 2)
+                    .attr('ry', node.height / 2)
+                    .attr('fill', color);
+            } else if (node.type === 'decision') {
+                // Diamond
+                const cx = node.width / 2;
+                const cy = node.height / 2;
+                const points = [
+                    [cx, 0],
+                    [node.width, cy],
+                    [cx, node.height],
+                    [0, cy]
+                ];
+                nodeGroup.append('polygon')
+                    .attr('points', points.map(p => p.join(',')).join(' '))
+                    .attr('fill', 'var(--decision-bg)');
+            } else {
+                // Regular rectangle
+                nodeGroup.append('rect')
+                    .attr('width', node.width)
+                    .attr('height', node.height)
+                    .attr('rx', 5)
+                    .attr('ry', 5)
+                    .attr('fill', 'var(--node-bg)');
+            }
+
+            // Add text
+            const lines = node.label.split('\n');
+            const textGroup = nodeGroup.append('text')
+                .attr('x', node.width / 2)
+                .attr('y', node.height / 2)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central');
+
+            if (lines.length === 1) {
+                textGroup.text(lines[0]);
+            } else {
+                lines.forEach((line, i) => {
+                    textGroup.append('tspan')
+                        .attr('x', node.width / 2)
+                        .attr('dy', i === 0 ? -(lines.length - 1) * 7 : 14)
+                        .text(line);
+                });
+            }
+        });
+
+        // Fit to view on load
+        function fitToView() {
+            const bounds = g_svg.node().getBBox();
+            const svgElem = svg.node();
+            const width = svgElem.clientWidth;
+            const height = svgElem.clientHeight;
+            
+            const scale = 0.9 / Math.max(bounds.width / width, bounds.height / height);
+            const translateX = (width - bounds.width * scale) / 2 - bounds.x * scale;
+            const translateY = (height - bounds.height * scale) / 2 - bounds.y * scale;
+            
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
+        }
+
+        function resetZoom() {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+        }
+
+        // Initial fit
+        setTimeout(fitToView, 100);
+    </script>
+</body>
+</html>

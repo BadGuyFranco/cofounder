@@ -1,0 +1,10 @@
+# Shared Library Dependencies
+#
+# If this library uses Python:
+# List pip dependencies here (e.g., requests>=2.31.0)
+#
+# If this library uses Node.js:
+# List npm packages here or use package.json
+#
+# If this library uses another language:
+# List required packages and versions

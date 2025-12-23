@@ -1,0 +1,23 @@
+# [Your Library Name]
+
+[One-sentence description of what this tool does]
+
+
+## Documentation
+
+- **AGENTS.md** - Complete instructions for AI agents (includes installation and usage)
+
+## Key Features
+
+- [Feature 1] - [Brief description]
+- [Feature 2] - [Brief description]
+- [Feature 3] - [Brief description]
+
+## Common Use Cases
+
+[2-3 sentence description of when someone would use this tool]
+
+
+**Remember:**
+- **README.md** = Brief human overview (assumes already installed)
+- **AGENTS.md** = Complete AI instructions (includes dependency verification, installation, usage, troubleshooting)

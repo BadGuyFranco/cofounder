@@ -1,0 +1,37 @@
+---
+description: Code writing principles and TypeScript standards
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# Code Quality
+
+**Source of truth:** `AGENTS.md` → TypeScript Standards section
+
+## Principles
+
+- Prioritize clarity and maintainability
+- Follow established patterns in the codebase
+- Comment for "why" not "what"
+- If there's a trade-off between elegance and clarity, choose clarity
+
+## TypeScript Constraints
+
+- No `any` types, ever
+- Explicit return types on functions
+- Null/undefined handled explicitly
+- JSDoc on public functions
+
+## Red Flags
+
+```typescript
+// any type
+function process(data: any) { }
+
+// Implicit return
+async function create(input: Input) { }
+
+// Swallowed error
+catch (e) { console.log(e); }
+```
+
+See `AGENTS.md` for correct patterns.

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline - vis.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.3/vis-timeline-graph2d.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.3/vis-timeline-graph2d.min.css" />
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            color: var(--text);
+            background: var(--surface);
+            padding: 20px;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .controls {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+        }
+
+        .visualization-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #timeline {
+            height: calc(100vh - 320px);
+            min-height: 500px;
+        }
+
+        .vis-item {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .vis-item.vis-selected {
+            border-color: var(--primary);
+            background-color: var(--primary);
+        }
+
+        .vis-item.milestone {
+            background-color: #10b981;
+            border-color: #059669;
+        }
+
+        .vis-item.phase {
+            background-color: #8b5cf6;
+            border-color: #7c3aed;
+        }
+
+        .instructions {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .instructions h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .legend {
+            max-width: 1400px;
+            margin: 20px auto;
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Timeline Template</h1>
+        <p class="subtitle">Interactive chronological visualization</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="fitTimeline()">Fit to View</button>
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+        <button onclick="moveToToday()">Move to Today</button>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: var(--primary-light);"></div>
+            <span>Events</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: #10b981;"></div>
+            <span>Milestones</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: #8b5cf6;"></div>
+            <span>Phases</span>
+        </div>
+    </div>
+
+    <div class="visualization-container">
+        <div id="timeline"></div>
+    </div>
+
+    <div class="instructions">
+        <h3>How to Use This Template:</h3>
+        <ul>
+            <li>Modify the <code>items</code> and <code>groups</code> arrays below</li>
+            <li>Item types: 'point' (single event), 'range' (duration), 'box' (milestone)</li>
+            <li>Set start and end dates for ranges</li>
+            <li>Group items by category or workstream</li>
+            <li>Drag items to adjust timing (if editable)</li>
+            <li>Scroll to zoom, drag to pan</li>
+        </ul>
+    </div>
+
+    <script>
+        // =================================================================
+        // DATA STRUCTURE - MODIFY THIS SECTION
+        // =================================================================
+
+        // Groups (optional - for organizing items into rows)
+        const groups = [
+            { id: 1, content: 'Planning' },
+            { id: 2, content: 'Development' },
+            { id: 3, content: 'Testing' },
+            { id: 4, content: 'Deployment' }
+        ];
+
+        // Items (events, ranges, milestones)
+        const items = [
+            // Planning phase
+            { id: 1, group: 1, content: 'Project Kickoff', start: '2024-01-01', type: 'box', className: 'milestone' },
+            { id: 2, group: 1, content: 'Requirements Gathering', start: '2024-01-05', end: '2024-01-20', type: 'range', className: 'phase' },
+            { id: 3, group: 1, content: 'Design Phase', start: '2024-01-22', end: '2024-02-10', type: 'range', className: 'phase' },
+            
+            // Development
+            { id: 4, group: 2, content: 'Sprint 1', start: '2024-02-12', end: '2024-02-25', type: 'range' },
+            { id: 5, group: 2, content: 'Sprint 2', start: '2024-02-26', end: '2024-03-10', type: 'range' },
+            { id: 6, group: 2, content: 'Sprint 3', start: '2024-03-11', end: '2024-03-24', type: 'range' },
+            { id: 7, group: 2, content: 'Code Complete', start: '2024-03-24', type: 'box', className: 'milestone' },
+            
+            // Testing
+            { id: 8, group: 3, content: 'QA Testing', start: '2024-03-25', end: '2024-04-07', type: 'range', className: 'phase' },
+            { id: 9, group: 3, content: 'User Acceptance', start: '2024-04-08', end: '2024-04-20', type: 'range', className: 'phase' },
+            { id: 10, group: 3, content: 'Security Audit', start: '2024-04-15', end: '2024-04-22', type: 'range' },
+            
+            // Deployment
+            { id: 11, group: 4, content: 'Pre-production', start: '2024-04-23', type: 'point' },
+            { id: 12, group: 4, content: 'Production Release', start: '2024-05-01', type: 'box', className: 'milestone' },
+            { id: 13, group: 4, content: 'Post-launch Monitoring', start: '2024-05-01', end: '2024-05-15', type: 'range', className: 'phase' }
+        ];
+
+        // =================================================================
+        // VISUALIZATION CODE - NO NEED TO MODIFY
+        // =================================================================
+
+        const container = document.getElementById('timeline');
+
+        const options = {
+            editable: false,
+            margin: {
+                item: 20,
+                axis: 40
+            },
+            orientation: 'top',
+            zoomMin: 1000 * 60 * 60 * 24 * 7,  // 1 week
+            zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,  // 2 years
+            verticalScroll: true,
+            zoomKey: 'ctrlKey',
+            stack: true,
+            showMajorLabels: true,
+            showMinorLabels: true,
+            format: {
+                minorLabels: {
+                    day: 'D',
+                    week: 'w',
+                    month: 'MMM'
+                },
+                majorLabels: {
+                    day: 'MMMM YYYY',
+                    week: 'MMMM YYYY',
+                    month: 'YYYY'
+                }
+            }
+        };
+
+        const timeline = new vis.Timeline(container, items, groups, options);
+
+        // Control functions
+        function fitTimeline() {
+            timeline.fit();
+        }
+
+        function zoomIn() {
+            timeline.zoomIn(0.5);
+        }
+
+        function zoomOut() {
+            timeline.zoomOut(0.5);
+        }
+
+        function moveToToday() {
+            timeline.moveTo(new Date());
+        }
+
+        // Optional: Listen to events
+        timeline.on('select', function (properties) {
+            if (properties.items.length > 0) {
+                const item = items.find(i => i.id === properties.items[0]);
+                console.log('Selected item:', item);
+            }
+        });
+
+        // Initial fit
+        setTimeout(() => {
+            timeline.fit();
+        }, 100);
+    </script>
+</body>
+</html>

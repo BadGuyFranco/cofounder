@@ -1,0 +1,27 @@
+---
+description: Module structure enforcement
+globs: ["apps/api/src/modules/**/*"]
+---
+
+# Module Structure
+
+**Source of truth:** `AGENTS.md` → Module Creation Pattern
+
+## Required Files
+
+Every module needs: `index.ts`, `README.md`, `types.ts`, `[name].service.ts`
+
+## Constraints
+
+- `index.ts` exports public API only
+- No cross-module internal imports
+- Types use Zod schemas
+
+## Red Flag
+
+```typescript
+// Reaching into another module's internals
+import { ContactsRepository } from '../contacts/contacts.repository';
+```
+
+Before creating a module, check if similar exists. See `AGENTS.md` for structure.

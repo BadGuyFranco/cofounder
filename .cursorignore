@@ -1,0 +1,64 @@
+# Shared Libraries Directory - Context Optimization
+# This file reduces context loading by excluding archives, generated files, and templates
+# while preserving ALL essential writing standards and tool instructions.
+
+# =============================================================================
+# ARCHIVES (ALWAYS IGNORE)
+# =============================================================================
+**/zArchive/
+**/zArchive/**
+
+# =============================================================================
+# GENERATED AND TEMPORARY FILES
+# =============================================================================
+# Generated image files (keep scripts, exclude outputs)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.tiff
+*.tif
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
+# =============================================================================
+# DEPENDENCY FILES
+# =============================================================================
+# Keep requirements.txt files (needed for dependency info)
+# setup/ directories are NOT ignored - they contain important installation guidance
+
+# =============================================================================
+# TEMPLATE DIRECTORIES (Not needed in active context)
+# =============================================================================
+zShared Management/Template for New Shared Library/
+zShared Management/Template for New Shared Library/**
+zShared Management/Template for New Workspace Root/
+zShared Management/Template for New Workspace Root/**
+
+# =============================================================================
+# SPECIFIC EXCLUSIONS
+# =============================================================================
+# Image Generator test outputs
+Image Generator/test_*.png
+Image Generator/*_featured.png
+
+# Workspace Tools unit tests (keep structure, exclude detailed tests)
+Workspace Tools/Unit Tests/
+Workspace Tools/Unit Tests/**
+
+# =============================================================================
+# KEEP THESE (CRITICAL for content writing)
+# =============================================================================
+# Content Author/ - COMPLETE writing system - MUST PRESERVE ALL
+# All AGENTS.md files - AI tool instructions - MUST PRESERVE
+# All README.md files - Documentation - MUST PRESERVE  
+# Active Python scripts - Current tool versions - MUST PRESERVE
+# requirements.txt - Dependency specifications - MUST PRESERVE
+# voice.md - Writing voice standards - MUST PRESERVE
+# content types/ - Content structure templates - MUST PRESERVE
+# utilities/ - Content creation utilities - MUST PRESERVE

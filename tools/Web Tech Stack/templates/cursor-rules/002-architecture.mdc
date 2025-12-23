@@ -1,0 +1,29 @@
+---
+description: Core architectural constraints
+alwaysApply: true
+---
+
+# Architecture Constraints
+
+**Source of truth:** `docs/PRINCIPLES.md`, `AGENTS.md`
+
+## Three Non-Negotiables
+
+1. **Tenant Isolation** - Every DB query MUST filter by `tenantId` (if multi-tenant)
+2. **Cost Tracking** - Every external service call MUST track costs (if billable)
+3. **Provider Abstraction** - External services wrapped in interfaces, no direct SDK imports in services
+
+## Red Flags
+
+```typescript
+// Missing tenantId (if multi-tenant project)
+await prisma.contact.findMany();
+
+// Untracked external call  
+await sesClient.sendEmail(params);
+
+// Direct vendor import in service
+import { SESClient } from '@aws-sdk/client-ses';
+```
+
+Challenge any of these immediately. See `AGENTS.md` for correct patterns.

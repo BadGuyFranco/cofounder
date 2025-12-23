@@ -1,0 +1,42 @@
+---
+description: Documentation hierarchy and anti-duplication principle
+alwaysApply: true
+---
+
+# Single Source of Truth
+
+## The Rule
+
+**Never duplicate instructions. Always reference the authoritative source.**
+
+## Documentation Hierarchy
+
+| Question | Source of Truth |
+|----------|-----------------|
+| **Quick project orientation** | `CONTEXT.md` (workspace root) |
+| Core philosophy, principles | `docs/PRINCIPLES.md` |
+| Code patterns, module structure | `AGENTS.md` |
+| Why a decision was made | `docs/architecture/decisions/` |
+| What's implemented, what's next | `docs/PROGRESS.md` |
+| How to contribute | `CONTRIBUTING.md` |
+| UI styling, visual patterns | `docs/patterns/ui-patterns.md` |
+
+## When Writing Code or Docs
+
+- Before explaining a pattern: "Is this documented elsewhere?"
+- If yes → reference it, don't repeat it
+- If no → add it to the appropriate source, then reference
+
+## When You See Duplication
+
+Challenge it:
+> "This duplicates what's in [source]. Should we reference instead of repeat?"
+
+## Cursor Rules Purpose
+
+Rules are **guardrails**, not textbooks. They should:
+- State the constraint (1-2 lines)
+- Point to the source of truth
+- Give one red-flag example
+
+Rules should NOT contain detailed tutorials—that's what docs are for.
