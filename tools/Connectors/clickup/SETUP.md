@@ -7,30 +7,48 @@ Step-by-step guide. The AI will walk you through each step one at a time.
 - ClickUp account (free tier works)
 - At least one workspace with spaces and lists
 
-## Step 1: Access Settings
+## Step 1: Open ClickUp Settings
 
 1. Log in to ClickUp at https://app.clickup.com
-2. Click your avatar (bottom-left corner)
-3. Select "Settings"
+2. Click your avatar in the bottom-left corner
 
 **Tell the AI when done.**
 
-## Step 2: Navigate to Apps
+## Step 2: Navigate to Settings
 
-1. In the left sidebar, click "Apps"
-2. You should see an "Apps" or "API" section
+In the menu that appeared, click **Settings**.
+
+**Tell the AI when done.**
+
+## Step 3: Open Apps Section
+
+In the left sidebar, click **Apps**.
 
 Or go directly to: https://app.clickup.com/settings/apps
 
 **Tell the AI when done.**
 
-## Step 3: Generate API Token
+## Step 4: Generate API Token
 
-1. Click "Generate" or "Create an App" to create a personal API token
-2. If prompted, give it a name (e.g., "Cofounder Connector")
-3. **Copy the token immediately** (starts with `pk_`)
+Click the **Generate** button (or **Create an App** if you see that instead).
 
-**Provide the API token to the AI.** The AI will create your configuration file.
+**Tell the AI when done.**
+
+## Step 5: Name Your Token
+
+If prompted for a name, enter:
+
+```
+Cofounder Connector
+```
+
+**Tell the AI when done.**
+
+## Step 6: Copy Your API Token
+
+You should now see your API token displayed. It starts with `pk_`.
+
+**Copy the entire token and provide it to the AI.** The AI will create your configuration file.
 
 ## Verify Setup
 
@@ -41,12 +59,6 @@ node scripts/workspaces.js list
 ```
 
 Expected output: A list of workspaces you have access to with their IDs and names.
-
-## Token Scopes
-
-Personal API tokens have full access to everything in your ClickUp account. There are no scope limitations.
-
-**Security note:** Keep this token private. Anyone with this token can access all your ClickUp data.
 
 ## Finding IDs
 
@@ -79,7 +91,7 @@ If your token is compromised:
 1. Go to Settings > Apps
 2. Delete the old token
 3. Generate a new one
-4. Update `/memory/Connectors/clickup/.env`
+4. Provide the new token to the AI
 
 ## Troubleshooting
 

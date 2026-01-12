@@ -7,6 +7,7 @@ Connect to external platforms via their APIs.
 | Platform | Status | Location |
 |----------|--------|----------|
 | Airtable | Active | `airtable/` |
+| ClickUp | Active | `clickup/` |
 | Go High Level | Active | `gohighlevel/` |
 | Google | Active | `google/` |
 | HeyGen | Active | `heygen/` |
@@ -16,6 +17,7 @@ Connect to external platforms via their APIs.
 | Meetup | Active | `meetup/` |
 | Monday.com | Active | `monday/` |
 | Notion | Active | `notion/` |
+| Publer | Active | `publer/` |
 | Replicate | Active | `replicate/` |
 | Supabase | Active | `supabase/` |
 | X.com | Active | `xcom/` |
@@ -98,7 +100,7 @@ See `DEVELOPMENT.md` for:
 - Testing checklist
 
 Reference connectors by pattern:
-- **API Key:** `airtable/`, `heygen/`
+- **API Key:** `airtable/`, `heygen/`, `publer/`
 - **OAuth 2.0:** `linkedin/`, `google/`, `meetup/`
 - **OAuth 2.0 + API Key:** `google/` (OAuth for user services, API key for AI)
 - **OAuth 1.0a:** `xcom/`

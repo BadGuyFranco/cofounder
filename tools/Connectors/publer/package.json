@@ -1,0 +1,13 @@
+{
+  "name": "publer-connector",
+  "version": "1.0.0",
+  "description": "Publer API connector for social media scheduling and publishing",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/workspaces.js list"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "form-data": "^4.0.0"
+  }
+}
