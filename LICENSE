@@ -25,10 +25,57 @@ TERMINATION
 
 This license terminates automatically if you violate any of these terms.
 
-DISCLAIMER
+DISCLAIMER OF WARRANTIES
 
-CoFounder is provided "as is" without warranty of any kind. First Strategy
-LLC is not liable for any damages arising from its use.
+CoFounder is provided "AS IS" and "AS AVAILABLE" without warranty of any
+kind, either express or implied, including but not limited to the implied
+warranties of merchantability, fitness for a particular purpose, and
+non-infringement.
+
+First Strategy LLC does not warrant that:
+- The software will meet your requirements
+- The software will be uninterrupted, timely, secure, or error-free
+- The results obtained from the software will be accurate or reliable
+- Any errors in the software will be corrected
+
+LIMITATION OF LIABILITY
+
+In no event shall First Strategy LLC, its officers, directors, employees,
+or agents be liable for any indirect, incidental, special, consequential,
+or punitive damages, including but not limited to:
+
+- Loss of profits, data, or business opportunities
+- Business interruption
+- System damage or data corruption
+- Costs of substitute goods or services
+- Any damages resulting from AI-generated outputs, including but not
+  limited to inaccurate information, inappropriate content, or actions
+  taken based on AI recommendations
+
+This limitation applies regardless of the theory of liability (contract,
+tort, strict liability, or otherwise), even if First Strategy LLC has been
+advised of the possibility of such damages.
+
+AI TOOLS WARNING
+
+CoFounder includes AI-powered tools that operate with minimal safety
+guardrails. AI systems can and do:
+
+- Generate inaccurate, misleading, or fabricated information
+- Execute actions that may modify, delete, or corrupt files
+- Make changes to systems, configurations, or data
+- Produce outputs that require human verification
+
+YOU ARE SOLELY RESPONSIBLE for reviewing and approving every action the AI
+takes. Do not blindly accept AI outputs or actions. Always verify critical
+information from authoritative sources.
+
+INDEMNIFICATION
+
+You agree to indemnify, defend, and hold harmless First Strategy LLC and
+its officers, directors, employees, and agents from and against any claims,
+liabilities, damages, losses, and expenses (including reasonable attorneys'
+fees) arising out of or in any way connected with your use of CoFounder.
 
 CONTACT
 

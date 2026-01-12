@@ -58,9 +58,9 @@ Works immediately after `npm install`.
 
 ### Google Workspace (Optional)
 
-**Credentials location:** `/memory/Documentor/accounts/google/[email].json`
+**Credentials location:** `/memory/Connectors/google/[email].json` (uses Google Connector)
 
-**Setup required:** See `google-workspace/SETUP.md` for Google Cloud Console configuration.
+**Setup required:** See `/tools/Connectors/google/SETUP.md` for OAuth configuration.
 
 Do NOT prompt users to set up Google integration. Only mention it if they specifically ask for Google Docs/Sheets/Slides.
 
@@ -92,7 +92,9 @@ See `local-generator/AGENTS.md` for complete usage.
 **Setup:**
 ```bash
 cd google-workspace && npm install
-# Then follow SETUP.md for OAuth configuration
+# Then set up via Google Connector:
+cd /tools/Connectors/google
+node scripts/auth.js setup --account your@email.com
 ```
 
 | Capability | Supported |
@@ -139,13 +141,16 @@ brew install pandoc  # macOS
 ### Google Workspace Issues
 
 **Not set up:**
-Point user to `google-workspace/SETUP.md`
+Point user to `/tools/Connectors/google/SETUP.md`
 
 **"No credentials found":**
-Run `node scripts/auth.js setup --account your@email.com`
+```bash
+cd /tools/Connectors/google
+node scripts/auth.js setup --account your@email.com
+```
 
 **"Token refresh failed":**
-Credentials revoked. Re-run setup per SETUP.md.
+Credentials revoked. Re-run setup via Connector.
 
 **"Folder not found":**
 Check spelling (case-sensitive) and access permissions.

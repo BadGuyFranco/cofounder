@@ -16,6 +16,7 @@ alwaysApply: true
 | Create documents, spreadsheets, or presentations (Word, Excel, PowerPoint, PDF, Google Docs/Sheets/Slides) | `tools/Documentor/` |
 | Browser automation | `tools/Browser Control/` |
 | Build web apps | `tools/Web Tech Stack/` |
+| Connect to external platforms (Airtable, Go High Level, HubSpot, LinkedIn, Make, Monday, Notion, X.com, YouTube) | `tools/Connectors/` |
 
 ### Invoke by name only (specialized methodologies)
 

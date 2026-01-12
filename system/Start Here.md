@@ -7,6 +7,24 @@ Welcome! This guide sets up your AI content creation workspace. By the end, you'
 - A `/workspaces/` folder for your workspace files
 - A workspace file that opens all folders together
 
+## Before You Begin: Read the License
+
+**STOP.** Before proceeding, read the LICENSE file in `/cofounder/LICENSE`.
+
+CoFounder uses AI tools that operate with **minimal safety guardrails**. This means:
+
+1. **AI can take actions on your system.** It can create, modify, and delete files. It can run commands. It can make changes you didn't intend.
+
+2. **AI outputs require verification.** AI systems generate plausible-sounding content that may be inaccurate, misleading, or completely fabricated. Never blindly trust AI outputs.
+
+3. **You must review every action.** Cursor shows you what the AI wants to do before it does it. Read these actions carefully. Approve only what you understand and want.
+
+4. **You are responsible for the results.** First Strategy LLC provides these tools "as is" with no warranty. You assume all risk for how you use them.
+
+**Best practice:** Treat the AI as an eager but fallible assistant. It will confidently propose actions that might be wrong. Your job is to catch mistakes before they happen.
+
+If you accept these terms, continue to setup. If not, stop here.
+
 ## Instructions
 
 Copy and paste the following prompt into Cursor's chat (Cmd+L or Ctrl+L):

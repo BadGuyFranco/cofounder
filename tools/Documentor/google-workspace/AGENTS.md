@@ -20,18 +20,32 @@ URL: https://docs.google.com/document/d/abc123/edit
 
 ## Setup
 
-**Requires Google Cloud Console configuration.**
+This tool uses the centralized **Google Connector** for authentication.
 
-See **`SETUP.md`** for step-by-step instructions.
+**Step 1: Set up Google Connector**
 
-Quick summary:
-1. Create Google Cloud project
-2. Enable Docs, Sheets, Slides, Drive APIs
-3. Configure OAuth consent screen
-4. Create OAuth credentials (Desktop app)
-5. Run: `node scripts/auth.js setup --account your@email.com`
+Follow `/tools/Connectors/google/SETUP.md` to configure OAuth credentials.
 
-Credentials stored in `/memory/Documentor/accounts/google/[email].json`
+**Step 2: Authenticate your account**
+
+```bash
+cd /tools/Connectors/google
+node scripts/auth.js setup --account your@email.com
+```
+
+When prompted, select scopes that include:
+- `documents` - Google Docs access
+- `spreadsheets` - Google Sheets access  
+- `presentations` - Google Slides access
+- `drive` - Google Drive access (for folders and exports)
+
+**Step 3: Verify**
+
+```bash
+node scripts/auth.js status --account your@email.com
+```
+
+Credentials stored in `/memory/Connectors/google/[email].json`
 
 ## Scripts
 
@@ -41,7 +55,6 @@ Credentials stored in `/memory/Documentor/accounts/google/[email].json`
 | `scripts/sheets.js` | Create, read, write, export Google Sheets | `--help` |
 | `scripts/slides.js` | Create, read, add/delete slides, export Google Slides | `--help` |
 | `scripts/drive.js` | Folder navigation, file ops, comments | `--help` |
-| `scripts/auth.js` | OAuth setup and token management | `--help` |
 | `scripts/collaboration.js` | Document collaboration (imported by docs.js) | JSDoc in file |
 
 Run any script with `--help` for full command syntax.
@@ -70,9 +83,13 @@ Run any script with `--help` for full command syntax.
 
 ## Troubleshooting
 
-**"No credentials found":** Run `node scripts/auth.js setup --account your@email.com`
+**"No credentials found":** Set up the Google Connector first:
+```bash
+cd /tools/Connectors/google
+node scripts/auth.js setup --account your@email.com
+```
 
-**"Token refresh failed":** Credentials revoked. Re-run setup.
+**"Token refresh failed":** Credentials revoked. Re-run setup via Connector.
 
 **"Folder not found":** Check spelling (case-sensitive) and access permissions.
 
