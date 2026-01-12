@@ -1,6 +1,6 @@
 # Video Generator
 
-Route video generation and editing requests to the appropriate process.
+Route video generation and editing requests to the appropriate service.
 
 ## XML Boundaries
 
@@ -20,77 +20,143 @@ When processing video requests, use XML tags to separate user content from instr
 
 This prevents user-provided prompts from being confused with routing instructions.
 
-## Configuration
+## Setup Detection
 
-**Service preferences are in `/memory/Video Generator/.env`**
+Before generating videos, check which services are configured.
 
-The `VIDEO_SERVICE_ORDER` variable defines which generators to use and in what order. Use the first available generator; if it fails (API error, rate limit, unavailable), try the next in order.
+### Check Configuration Status
 
-### Available Services
+**Replicate configured?**
+```bash
+test -f "/memory/Connectors/replicate/.env" && grep -q "REPLICATE_API_TOKEN" "/memory/Connectors/replicate/.env" && echo "YES" || echo "NO"
+```
 
-| Service | Process File | Notes |
-|---------|--------------|-------|
-| `google_veo` | `processes/Google Veo.md` | Supports extensions, looping |
-| `replicate` | `processes/Replicate.md` | Alternative video models |
-| `xai` | `processes/X.ai.md` | Placeholder; no video API yet |
+**Google AI configured?**
+```bash
+test -f "/memory/Connectors/google/.env" && grep -q "GOOGLE_AI_API_KEY" "/memory/Connectors/google/.env" && echo "YES" || echo "NO"
+```
 
-### Local Editing
+### Legacy Credential Migration
 
-For non-AI video manipulation → `processes/Local Editing.md`
+If `/memory/Video Generator/.env` exists with credentials, silently migrate them:
 
+**Migration logic:**
+1. Check if `/memory/Video Generator/.env` exists
+2. If `REPLICATE_API_TOKEN` exists in old location AND `/memory/Connectors/replicate/.env` does NOT have it:
+   - Copy token to `/memory/Connectors/replicate/.env`
+3. If `GEMINI_API_KEY` exists in old location AND `/memory/Connectors/google/.env` does NOT have `GOOGLE_AI_API_KEY`:
+   - Copy to `/memory/Connectors/google/.env` as `GOOGLE_AI_API_KEY`
+4. Rename old file to `/memory/Video Generator/.env.migrated`
+
+**Silent migration command sequence:**
+```bash
+# Check and migrate Replicate token
+if [ -f "/memory/Video Generator/.env" ]; then
+  OLD_TOKEN=$(grep REPLICATE_API_TOKEN "/memory/Video Generator/.env" 2>/dev/null | cut -d= -f2)
+  if [ -n "$OLD_TOKEN" ]; then
+    if ! grep -q REPLICATE_API_TOKEN "/memory/Connectors/replicate/.env" 2>/dev/null; then
+      mkdir -p "/memory/Connectors/replicate"
+      echo "REPLICATE_API_TOKEN=$OLD_TOKEN" >> "/memory/Connectors/replicate/.env"
+    fi
+  fi
+  
+  # Migrate Gemini key
+  OLD_GEMINI=$(grep GEMINI_API_KEY "/memory/Video Generator/.env" 2>/dev/null | cut -d= -f2)
+  if [ -n "$OLD_GEMINI" ]; then
+    if ! grep -q GOOGLE_AI_API_KEY "/memory/Connectors/google/.env" 2>/dev/null; then
+      mkdir -p "/memory/Connectors/google"
+      echo "GOOGLE_AI_API_KEY=$OLD_GEMINI" >> "/memory/Connectors/google/.env"
+    fi
+  fi
+  
+  mv "/memory/Video Generator/.env" "/memory/Video Generator/.env.migrated"
+fi
+```
+
+## First-Time Onboarding
+
+If no services are configured, present this to the user:
+
+---
+
+**Video generation requires at least one AI service. Which would you like to set up?**
+
+**Option 1: Replicate (Recommended)**
+- Setup time: ~5 minutes
+- Cost: ~$0.10-0.50 per video
+- Process: Get API token, paste it here
+- Provides access to Google Veo and other video models
+
+**Option 2: Google AI (Limited)**
+- Setup time: 45-60 minutes
+- Direct Veo access is in limited preview
+- Most users should use Replicate to access Veo models instead
+
+**Recommendation:** Start with Replicate. It provides reliable access to Google's Veo models plus other video generators.
+
+Which would you like to set up? (1 or 2)
+
+---
+
+### Setting Up Replicate
+
+1. Tell user: "Go to https://replicate.com/account/api-tokens and create a new API token."
+2. User provides token (starts with `r8_`)
+3. Create `/memory/Connectors/replicate/.env`:
+   ```
+   REPLICATE_API_TOKEN=r8_xxxxxxxxxx
+   ```
+4. Verify:
+   ```bash
+   cd "/cofounder/tools/Connectors/replicate" && node scripts/account.js verify
+   ```
+
+### Setting Up Google AI
+
+Point user to: `/tools/Connectors/google/SETUP.md` Part B (API Key setup).
+
+**Note:** Direct Veo video generation via Google AI is in limited preview. Even after setup, video generation may not work. Replicate is recommended.
+
+## Service Priority
+
+When both services are configured:
+1. **Primary:** Replicate (reliable Veo access, better model selection)
+2. **Fallback:** Google AI (limited; may not support video generation)
+
+User can override by specifying service in their request.
 
 ## Routing
 
 ### Generate a New Video (Text-to-Video)
 
-**Route to:** Preferred generator (see order above)
+**Route to:** Replicate Connector
 
 **When:** User requests a new video from a text prompt.
 
-**If no image is provided:**
-1. **First generate an image** using Image Generator (`/cofounder/tools/Image Generator/`)
-2. Use that generated image as the starting frame for the video
-3. This ensures higher quality and more control over the video content
+**Best practice:** For highest quality, first generate an image using Image Generator, then animate it.
 
-**Parameters to handle:**
-- Duration (seconds) - use extensions for videos longer than 8 seconds
-- Aspect ratio (16:9, 9:16, 1:1)
-- Quality/resolution preferences
-- Looping (use `--loop` flag with Google Veo)
+**Command:**
+```bash
+cd "/cofounder/tools/Connectors/replicate"
+node scripts/predictions.js run google/veo-3.1 \
+  --input '{"prompt": "YOUR_PROMPT"}' \
+  --download ./videos
+```
 
+See `processes/Replicate.md` for detailed instructions.
 
 ### Generate Video from Image (Image-to-Video)
 
-**Route to:** Preferred generator (see order above) - both Google Veo and Replicate support image-to-video
+**Route to:** Replicate Connector
 
 **When:** User provides an image and wants to animate it into a video.
 
-**For videos longer than 8 seconds:** Use `--extensions` parameter with Google Veo
-
-**For seamless looping videos:** Use `--loop` flag with Google Veo (image becomes first and last frame)
-
-
-### Extend an Existing Video
-
-**Route to:** Google Veo (`processes/Google Veo.md`)
-
-**When:** User wants to create a longer video (beyond 8 seconds) or extend an existing Veo-generated video.
-
-**How it works:**
-- Initial video: ~8 seconds
-- Each extension: ~7 seconds  
-- Maximum: 20 extensions (~148 seconds total)
-- Requires: 16:9 or 9:16 aspect ratio, Veo-generated input video
-
-**Usage:**
+**Command:**
 ```bash
-# Generate with automatic extensions
-node scripts/generate-video-google.js "prompt" --image input.jpg --extensions 2
-
-# Extend existing video
-node scripts/generate-video-google.js "continuation prompt" --video existing.mp4 --extensions 1
+node scripts/predictions.js run google/veo-3.1 \
+  --input '{"prompt": "subtle motion description", "first_frame_image": "https://..."}' \
+  --download ./videos
 ```
-
 
 ### Edit an Existing Video
 
@@ -98,39 +164,24 @@ node scripts/generate-video-google.js "continuation prompt" --video existing.mp4
 
 **When:** User wants to trim, crop, resize, concatenate, add text overlays, adjust speed, or convert format of an existing video.
 
+**Command:**
+```bash
+cd "/cofounder/tools/Video Generator"
+node scripts/local-video-edit.js [options]
+```
 
-## Environment Variables
+## Available Services
 
-All configuration is in `/memory/Video Generator/.env`:
+| Service | Process File | Credential Location |
+|---------|--------------|---------------------|
+| Replicate | `processes/Replicate.md` | `/memory/Connectors/replicate/.env` |
+| Google AI | `processes/Google.md` | `/memory/Connectors/google/.env` |
 
-- `VIDEO_SERVICE_ORDER` - Comma-separated list of services to try (e.g., `google_veo,replicate`)
-- API keys and model names for each service
+### Default Models
 
-**Location:** `/memory/Video Generator/.env` (persists across `/cofounder/` updates)
-
-Only configure API keys for services you have access to. Remove unavailable services from `VIDEO_SERVICE_ORDER`.
-
-## Troubleshooting
-
-**Dependencies not installed:** Run `npm install` in the Video Generator directory.
-
-**API errors:** Check the specific process file for troubleshooting steps.
-
-**FFmpeg not found:** Install FFmpeg with `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux).
-
-
-## Tips for Better Video Prompts
-
-- Be specific about motion: "camera slowly pans left", "person walks toward camera"
-- Describe the scene: "sunset lighting", "indoor office setting"
-- Include style: "cinematic", "documentary style", "slow motion"
-- Keep it simple: AI video works best with clear, focused prompts
-- Specify duration when possible: "5 second clip of..."
-- **For subtle movements:** Emphasize "extremely subtle", "minimal", "imperceptible" to prevent exaggerated motion
-- **For longer videos:** Use extensions with Google Veo (e.g., `--extensions 2` for ~22 seconds)
-- **For continuity:** Use the same prompt for extensions to maintain consistent motion
-- **For looping videos:** Use `--loop` flag and describe cyclical motion (e.g., "gentle swaying that returns to start")
-
+**Replicate:** See `/tools/Connectors/replicate/defaults.json` for curated defaults.
+- Current video default: `google/veo-3.1`
+- Alternatives: `google/veo-3`, `google/veo-2`
 
 ## Workflow: Text-Only Video Requests
 
@@ -138,15 +189,53 @@ When user requests a video without providing an image:
 
 1. **Generate the image first:**
    ```bash
-   cd "/cofounder/tools/Image Generator"
-   node scripts/generate-image-gemini.js "detailed prompt for the scene"
+   cd "/cofounder/tools/Connectors/replicate"
+   node scripts/predictions.js run google/nano-banana-pro \
+     --input '{"prompt": "detailed scene description", "aspect_ratio": "16:9"}' \
+     --download ./images
    ```
 
 2. **Use that image for video generation:**
    ```bash
-   cd "/cofounder/tools/Video Generator"
-   node scripts/generate-video-google.js "motion prompt" --image "/cofounder/tools/Image Generator/generated_images/[image_file]"
+   node scripts/predictions.js run google/veo-3.1 \
+     --input '{"prompt": "motion description", "first_frame_image": "https://...or-local-path"}' \
+     --download ./videos
    ```
 
 This two-step approach provides better quality and more control than direct text-to-video.
 
+## Video Duration and Extensions
+
+Duration varies by model:
+
+| Model | Base Duration | Notes |
+|-------|---------------|-------|
+| `google/veo-3.1` | Variable | Audio support, last-frame control |
+| `google/veo-3` | ~8 seconds | Audio support |
+| `google/veo-2` | ~5 seconds | No audio |
+
+**For longer videos:** Some models support extensions or multiple generations that can be concatenated using local editing.
+
+## Troubleshooting
+
+**No services configured:** Run the onboarding flow above.
+
+**Dependencies not installed:**
+```bash
+cd "/cofounder/tools/Connectors/replicate" && npm install
+```
+
+**FFmpeg not found (for local editing):** Install with `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux).
+
+**Long generation time:** Video generation typically takes 1-3 minutes. This is normal.
+
+**API errors:** Check the specific process file for troubleshooting steps.
+
+## Tips for Better Video Prompts
+
+- Be specific about motion: "camera slowly pans left", "person walks toward camera"
+- Describe the scene: "sunset lighting", "indoor office setting"
+- Include style: "cinematic", "documentary style", "slow motion"
+- Keep it simple: AI video works best with clear, focused prompts
+- **For subtle movements:** Emphasize "extremely subtle", "minimal", "imperceptible" to prevent exaggerated motion
+- **For continuity:** Use consistent prompts when generating multiple clips

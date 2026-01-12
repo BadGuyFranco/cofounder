@@ -1,0 +1,13 @@
+{
+  "name": "airtable-connector",
+  "version": "1.0.0",
+  "description": "Airtable Web API connector for managing bases, tables, and records",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2"
+  }
+}

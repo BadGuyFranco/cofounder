@@ -1,0 +1,21 @@
+{
+  "name": "linkedin-connector",
+  "version": "1.0.0",
+  "description": "LinkedIn Marketing API connector for posting content",
+  "type": "module",
+  "scripts": {
+    "auth": "node scripts/auth.js",
+    "profile": "node scripts/profile.js",
+    "posts": "node scripts/posts.js",
+    "media": "node scripts/media.js",
+    "organizations": "node scripts/organizations.js",
+    "comments": "node scripts/comments.js",
+    "reactions": "node scripts/reactions.js",
+    "articles": "node scripts/articles.js",
+    "analytics": "node scripts/analytics.js",
+    "followers": "node scripts/followers.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "hubspot-connector",
+  "version": "1.0.0",
+  "description": "HubSpot CRM connector for cofounder tools",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/contacts.js help"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

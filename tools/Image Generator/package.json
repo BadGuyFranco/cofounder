@@ -1,18 +1,14 @@
 {
   "name": "image-generator",
-  "version": "1.0.0",
-  "description": "AI image generation and editing tools",
+  "version": "2.0.0",
+  "description": "AI image generation and editing tools (routes to Connectors)",
   "type": "module",
   "scripts": {
-    "gemini": "node scripts/generate-image-gemini.js",
-    "replicate": "node scripts/generate-image-replicate.js",
-    "xai": "node scripts/generate-image-xai.js",
     "edit": "node scripts/local-image-edit.js",
     "remove-bg": "node scripts/remove-background.js",
     "overlay": "node scripts/apply-overlay.js"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "dotenv": "^16.3.0",
     "replicate": "^0.25.0",
     "sharp": "^0.33.0"
@@ -21,4 +17,3 @@
     "node": ">=18.0.0"
   }
 }
-

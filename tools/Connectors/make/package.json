@@ -1,0 +1,12 @@
+{
+  "name": "make-connector",
+  "version": "1.0.0",
+  "description": "Make.com API connector for cofounder tools",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/scenarios.js list --team-id test"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

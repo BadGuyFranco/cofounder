@@ -1,21 +1,16 @@
 {
   "name": "video-generator",
-  "version": "1.0.0",
-  "description": "AI video generation and editing tools",
+  "version": "2.0.0",
+  "description": "AI video generation and editing tools (routes to Connectors)",
   "type": "module",
   "scripts": {
-    "google": "node scripts/generate-video-google.js",
-    "replicate": "node scripts/generate-video-replicate.js",
     "edit": "node scripts/local-video-edit.js"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "dotenv": "^16.3.0",
-    "fluent-ffmpeg": "^2.1.0",
-    "replicate": "^0.25.0"
+    "fluent-ffmpeg": "^2.1.0"
   },
   "engines": {
     "node": ">=18.0.0"
   }
 }
-

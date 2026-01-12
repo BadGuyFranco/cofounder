@@ -1,0 +1,16 @@
+{
+  "name": "google-connector",
+  "version": "1.0.0",
+  "description": "Comprehensive Google connector for Drive, Workspace, Gmail, YouTube, Calendar, and AI",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/auth.js list"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "googleapis": "^144.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

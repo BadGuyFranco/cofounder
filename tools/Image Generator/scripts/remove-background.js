@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 /**
- * Background Removal Tool using Replicate API
- * Uses the 'cjwbw/rembg' model to remove backgrounds from images
+ * Background Removal Tool
+ * Thin wrapper around Replicate Connector for background removal
+ * 
+ * Uses credentials and model from Replicate Connector:
+ *   - Credentials: /memory/Connectors/replicate/.env
+ *   - Default model: /tools/Connectors/replicate/defaults.json
  */
 
 import { config } from 'dotenv';
@@ -11,21 +15,51 @@ import { fileURLToPath } from 'url';
 import Replicate from 'replicate';
 import sharp from 'sharp';
 
-// Environment setup
+// Environment setup - use Connector credential location
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const memoryEnvPath = resolve(__dirname, '../../../../memory/Image Generator/.env');
 
-if (existsSync(memoryEnvPath)) {
-  config({ path: memoryEnvPath });
+// Primary: Connector credential location
+const connectorEnvPath = resolve(__dirname, '../../../Connectors/replicate/.env');
+// Fallback: Legacy Image Generator location (for migration)
+const legacyEnvPath = resolve(__dirname, '../../../../memory/Image Generator/.env');
+// Also check memory Connector location
+const memoryConnectorPath = resolve(__dirname, '../../../../memory/Connectors/replicate/.env');
+
+// Load credentials in order of preference
+if (existsSync(memoryConnectorPath)) {
+  config({ path: memoryConnectorPath });
+} else if (existsSync(connectorEnvPath)) {
+  config({ path: connectorEnvPath });
+} else if (existsSync(legacyEnvPath)) {
+  config({ path: legacyEnvPath });
+  console.log('Note: Using legacy credential location. Credentials will be migrated to Connector location.');
 } else {
-  console.log(`Warning: .env not found at ${memoryEnvPath}`);
-  console.log('   Please create /memory/Image Generator/.env with your API keys');
+  console.log('Error: Replicate credentials not found.');
+  console.log('Please set up the Replicate Connector:');
+  console.log('  1. Get API token from https://replicate.com/account/api-tokens');
+  console.log('  2. Create /memory/Connectors/replicate/.env with:');
+  console.log('     REPLICATE_API_TOKEN=r8_xxxxxxxxxx');
+  process.exit(1);
+}
+
+// Load default model from Connector's defaults.json
+const defaultsPath = resolve(__dirname, '../../../Connectors/replicate/defaults.json');
+let DEFAULT_MODEL = 'cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003';
+
+if (existsSync(defaultsPath)) {
+  try {
+    const defaults = JSON.parse(readFileSync(defaultsPath, 'utf8'));
+    if (defaults.backgroundRemoval?.model) {
+      DEFAULT_MODEL = defaults.backgroundRemoval.model;
+    }
+  } catch (e) {
+    console.log(`Warning: Could not read defaults.json: ${e.message}`);
+  }
 }
 
 // Configuration
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
-const REMBG_MODEL = process.env.REPLICATE_REMBG_MODEL;
 
 /**
  * Remove background from an image using Replicate's rembg model
@@ -36,12 +70,7 @@ const REMBG_MODEL = process.env.REPLICATE_REMBG_MODEL;
 async function removeBackground(inputPath, outputPath = null) {
   if (!REPLICATE_API_TOKEN) {
     console.log('Error: REPLICATE_API_TOKEN not configured');
-    return null;
-  }
-
-  if (!REMBG_MODEL) {
-    console.log('Error: REPLICATE_REMBG_MODEL not configured');
-    console.log('Please add REPLICATE_REMBG_MODEL to your .env file');
+    console.log('Set up credentials at /memory/Connectors/replicate/.env');
     return null;
   }
 
@@ -52,7 +81,7 @@ async function removeBackground(inputPath, outputPath = null) {
 
   try {
     console.log(`Removing background from: ${inputPath}`);
-    console.log(`Using model: ${REMBG_MODEL.split(':')[0]}`);
+    console.log(`Using model: ${DEFAULT_MODEL.split(':')[0]}`);
 
     const replicate = new Replicate({ auth: REPLICATE_API_TOKEN });
 
@@ -64,7 +93,7 @@ async function removeBackground(inputPath, outputPath = null) {
 
     console.log('Sending image to Replicate API...');
 
-    const output = await replicate.run(REMBG_MODEL, {
+    const output = await replicate.run(DEFAULT_MODEL, {
       input: {
         image: dataUri,
         model: 'u2net_human_seg',
@@ -161,7 +190,7 @@ async function processHeadshot(inputPath, outputPath = null) {
 // CLI
 function showHelp() {
   console.log(`
-Background Removal Tool using Replicate API
+Background Removal Tool (using Replicate Connector)
 
 Usage:
   node remove-background.js input_image.jpg [output_path.png]
@@ -173,7 +202,8 @@ Arguments:
 The tool removes the background and resizes to 1000px width (maintaining aspect ratio).
 Output is always PNG format to preserve transparency.
 
-Requires: REPLICATE_API_TOKEN and REPLICATE_REMBG_MODEL in .env file
+Credentials: /memory/Connectors/replicate/.env
+Default model: ${DEFAULT_MODEL.split(':')[0]}
 `);
   process.exit(0);
 }
@@ -190,4 +220,3 @@ const outputFile = args[1] || null;
 
 const success = await processHeadshot(inputFile, outputFile);
 process.exit(success ? 0 : 1);
-

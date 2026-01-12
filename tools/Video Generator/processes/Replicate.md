@@ -1,89 +1,107 @@
 # Replicate - Video Generation
 
-Generate videos using Replicate API with your configured video model.
-
+Generate videos using Replicate via the centralized Connector.
 
 ## Prerequisites
 
-Verify these environment variables are set in `/memory/Video Generator/.env`:
-- `REPLICATE_API_TOKEN` - Your Replicate API token (required)
-- `REPLICATE_VIDEO_MODEL` - Video model to use (required)
+**Credential location:** `/memory/Connectors/replicate/.env`
 
+Required variable:
+```
+REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**Not configured?** Follow `/tools/Connectors/replicate/SETUP.md`
 
 ## Generate a Video (Text-to-Video)
 
-**Basic generation:**
+**Using default model:**
 ```bash
-cd "cofounder/tools/Video Generator"
-node scripts/generate-video-replicate.js "your prompt here"
+cd "/cofounder/tools/Connectors/replicate"
+node scripts/predictions.js run google/veo-3.1 \
+  --input '{"prompt": "your prompt here"}' \
+  --download ./videos
 ```
 
-**With custom output:**
+**With specific duration:**
 ```bash
-node scripts/generate-video-replicate.js "your prompt" --output video.mp4
+node scripts/predictions.js run google/veo-3.1 \
+  --input '{"prompt": "sunset over the ocean", "duration": 8}' \
+  --download ./videos
 ```
-
 
 ## Generate Video from Image (Image-to-Video)
 
-Animate a still image into a video:
+Animate a still image:
 
 ```bash
-node scripts/generate-video-replicate.js "camera slowly zooms in" --image input.jpg
+node scripts/predictions.js run google/veo-3.1 \
+  --input '{"prompt": "subtle breathing motion", "first_frame_image": "https://..."}' \
+  --download ./videos
 ```
 
-The prompt describes the motion/action to apply to the image.
+**Note:** For local images, first upload to a URL or use base64 data URI.
 
+## Default Model
 
-## Model Configuration
+Current default: `google/veo-3.1`
 
-The video model is configured in `/memory/Video Generator/.env` via `REPLICATE_VIDEO_MODEL`. 
+Default models are curated in `/tools/Connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
 
-Check the model's Replicate page for specific capabilities (resolution, duration, input types).
+**Alternative models:**
+- `google/veo-3` - Audio support, 8s duration
+- `google/veo-2` - Basic video, no audio, 5s max
+- Other video models on Replicate marketplace
 
+To use an alternative:
+```bash
+node scripts/predictions.js run google/veo-3 \
+  --input '{"prompt": "..."}' \
+  --download ./videos
+```
 
-## Parameters
+## Check Model Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| `prompt` | Text description of the video (required) |
-| `--image`, `-i` | Input image for image-to-video |
-| `--output`, `-o` | Output filename |
-| `--output-dir`, `-d` | Directory to save video |
+To see what parameters a model accepts:
+```bash
+node scripts/models.js get google/veo-3.1
+```
 
+## Video Duration
 
-## Troubleshooting
+Duration varies by model. Check model documentation for specifics:
+- `google/veo-3.1`: Variable duration with audio support
+- `google/veo-3`: Up to 8 seconds with audio
+- `google/veo-2`: Up to 5 seconds, no audio
 
-**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/Video Generator/.env`
+## Supported Features by Model
 
-**Rate limit (429):** Wait and retry
-
-**Model cold start:** First request may take longer as the model loads
-
-**Import error:** Run `npm install` in the Video Generator directory.
-
+| Model | Audio | Duration | Reference Images |
+|-------|-------|----------|------------------|
+| `google/veo-3.1` | ✅ | Variable | ✅ Last-frame control |
+| `google/veo-3` | ✅ | ~8s | ✅ |
+| `google/veo-2` | ❌ | ~5s | Limited |
 
 ## Output
 
-- **Default location:** `./generated_videos/`
-- **Naming format:** `[timestamp]_[prompt-excerpt]_replicate.mp4`
-- **Format:** MP4
+Downloaded videos are saved to the directory specified with `--download`.
 
+Naming format: `output_0.mp4`
+
+## Troubleshooting
+
+**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/Connectors/replicate/.env`
+
+**Rate limit (429):** Wait and retry.
+
+**Long generation time:** Video generation typically takes 1-3 minutes. The script waits by default.
+
+**Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
+
+See `/tools/Connectors/replicate/AGENTS.md` for additional troubleshooting.
 
 ## Pricing
 
-Replicate uses per-second compute pricing. Check [replicate.com/pricing](https://replicate.com/pricing) for current rates. Video generation typically costs more than image generation.
+Video generation costs more than images. Check [replicate.com/pricing](https://replicate.com/pricing) for current rates.
 
-
-## When to Use Replicate
-
-**Best for:**
-- Image-to-video animation
-- Fallback when Google Veo is unavailable
-- Consistent, reliable generation
-
-**Strengths:**
-- Supports both text-to-video and image-to-video
-- High quality output
-- Good API reliability
-
+Typical costs: $0.10-0.50 per video depending on model and duration.

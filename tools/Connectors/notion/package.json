@@ -1,0 +1,13 @@
+{
+  "name": "notion-connector",
+  "version": "1.0.0",
+  "description": "Notion API connector for cofounder tools",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/pages.js search test"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.14",
+    "dotenv": "^16.3.1"
+  }
+}

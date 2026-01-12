@@ -1,40 +1,61 @@
 # Replicate - Image Generation
 
-Generate images using Replicate API with your configured image model.
-
+Generate images using Replicate via the centralized Connector.
 
 ## Prerequisites
 
-Verify these environment variables are set in `/memory/Image Generator/.env`:
-- `REPLICATE_API_TOKEN` - Your Replicate API token (required)
-- `REPLICATE_IMAGE_MODEL` - Image model to use (required)
-- `REPLICATE_REMBG_MODEL` - Background removal model (required for background removal)
+**Credential location:** `/memory/Connectors/replicate/.env`
 
+Required variable:
+```
+REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**Not configured?** Follow `/tools/Connectors/replicate/SETUP.md`
 
 ## Generate an Image
 
-**Basic generation:**
+**Basic generation (uses curated default model):**
 ```bash
-cd "cofounder/tools/Image Generator"
-node scripts/generate-image-replicate.js "your prompt here"
+cd "/cofounder/tools/Connectors/replicate"
+node scripts/predictions.js run google/nano-banana-pro \
+  --input '{"prompt": "your prompt here"}' \
+  --download ./images
 ```
 
-**With custom output:**
+**With aspect ratio:**
 ```bash
-node scripts/generate-image-replicate.js "your prompt" output.png
+node scripts/predictions.js run google/nano-banana-pro \
+  --input '{"prompt": "your prompt here", "aspect_ratio": "16:9"}' \
+  --download ./images
 ```
 
-**With dimensions:**
+**With specific output directory:**
 ```bash
-node scripts/generate-image-replicate.js "your prompt" output.png 1440 810
+node scripts/predictions.js run google/nano-banana-pro \
+  --input '{"prompt": "a professional podcast studio with modern design", "aspect_ratio": "16:9"}' \
+  --download /path/to/output
 ```
 
+## Default Model
+
+Current default: `google/nano-banana-pro`
+
+Default models are curated in `/tools/Connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
+
+**Alternative models:**
+- `black-forest-labs/flux-1.1-pro` - Battle-tested, excellent prompt following
+- `black-forest-labs/flux-2-max` - Highest fidelity
+- `google/imagen-4` - Google flagship, simpler API
+
+To use an alternative:
+```bash
+node scripts/predictions.js run black-forest-labs/flux-1.1-pro \
+  --input '{"prompt": "..."}' \
+  --download ./images
+```
 
 ## Supported Aspect Ratios
-
-The configured image model may support different aspect ratios. Check your model's documentation for specific capabilities.
-
-Common aspect ratios:
 
 | Ratio | Native Resolution |
 |-------|-------------------|
@@ -45,54 +66,36 @@ Common aspect ratios:
 | 3:2 | 1216x832 |
 | 21:9 | 1536x640 |
 
-
 ## Aspect Ratio Translation
 
-The script automatically maps requested dimensions to the closest ratio:
+The Connector maps requested dimensions to the closest ratio:
 
-| Requested | Detected Ratio | Native Size |
-|-----------|----------------|-------------|
-| 1920x1080 | 16:9 | 1344x768 |
-| 1080x1920 | 9:16 | 768x1344 |
-| 1024x1024 | 1:1 | 1024x1024 |
-| 1440x810 | 16:9 | 1344x768 |
-
-
-## Parameters
-
-| Parameter | Description |
-|-----------|-------------|
-| `prompt` | Text description of the image (required) |
-| `output_path` | Output filename (optional) |
-| `width` | Target width in pixels (optional, default: 1024) |
-| `height` | Target height in pixels (optional, default: 1024) |
-
-
-## Remove Background
-
-Use the background removal tool for headshots/products:
-
-```bash
-node scripts/remove-background.js input.jpg output.png
-```
-
-- Removes background using AI (rembg model)
-- Auto-resizes to 1000px width
-- Saves as transparent PNG
-
-
-## Troubleshooting
-
-**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/Image Generator/.env`
-
-**Rate limit (429):** Wait and retry
-
-**Import error:** Run `npm install` in the Image Generator directory.
-
+| Requested | Detected Ratio |
+|-----------|----------------|
+| 1920x1080 | 16:9 |
+| 1080x1920 | 9:16 |
+| 1024x1024 | 1:1 |
+| 1440x810 | 16:9 |
 
 ## Output
 
-- **Default location:** `./generated_images/`
-- **Naming format:** `[timestamp]_[prompt-excerpt]_replicate.png`
-- **Note:** Images generated at native ratio resolution, then resized to target dimensions
+Downloaded images are saved to the directory specified with `--download`.
 
+Naming format: `output_0.png` (or `.jpg` depending on model output)
+
+## Check Model Parameters
+
+To see what parameters a model accepts:
+```bash
+node scripts/models.js get google/nano-banana-pro
+```
+
+## Troubleshooting
+
+**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/Connectors/replicate/.env`
+
+**Rate limit (429):** Wait and retry.
+
+**Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
+
+See `/tools/Connectors/replicate/AGENTS.md` for additional troubleshooting.

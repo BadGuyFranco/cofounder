@@ -1,0 +1,54 @@
+{
+  "_metadata": {
+    "description": "Curated default models for Replicate connector",
+    "maintainer": "cofounder",
+    "lastReviewed": "2026-01-11"
+  },
+  "image": {
+    "model": "google/nano-banana-pro",
+    "updated": "2026-01-11",
+    "notes": "Google state-of-the-art. 2K resolution, editing + reference image support.",
+    "alternatives": [
+      { "model": "black-forest-labs/flux-1.1-pro", "note": "Battle-tested, 66M runs, excellent prompt following" },
+      { "model": "black-forest-labs/flux-2-max", "note": "Newest BFL, highest fidelity" },
+      { "model": "google/imagen-4", "note": "Google flagship, simpler API" }
+    ]
+  },
+  "video": {
+    "model": "google/veo-3.1",
+    "updated": "2026-01-11",
+    "notes": "Latest Google video. Audio generation, reference images, last-frame control for loops.",
+    "alternatives": [
+      { "model": "google/veo-3", "note": "Audio support, 8s duration" },
+      { "model": "google/veo-2", "note": "Basic video, no audio, 5s max" }
+    ]
+  },
+  "backgroundRemoval": {
+    "model": "cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003",
+    "updated": "2026-01-11",
+    "notes": "Fast, reliable background removal. Works well on people and products.",
+    "alternatives": []
+  },
+  "upscale": {
+    "model": "nightmareai/real-esrgan",
+    "updated": "2026-01-11",
+    "notes": "Best general-purpose upscaling. 4x by default.",
+    "alternatives": [
+      { "model": "jingyunliang/swinir", "note": "Alternative upscaler" }
+    ]
+  },
+  "imageToText": {
+    "model": "andreasjansson/blip-2",
+    "updated": "2026-01-11",
+    "notes": "More capable image understanding than BLIP-1. Better for complex scenes.",
+    "alternatives": [
+      { "model": "salesforce/blip", "note": "Simpler, faster, still reliable" }
+    ]
+  },
+  "speechToText": {
+    "model": "openai/whisper",
+    "updated": "2026-01-11",
+    "notes": "Best general-purpose transcription. Supports many languages.",
+    "alternatives": []
+  }
+}

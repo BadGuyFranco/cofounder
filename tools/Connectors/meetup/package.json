@@ -1,0 +1,13 @@
+{
+  "name": "meetup-connector",
+  "version": "1.0.0",
+  "description": "Meetup connector for cofounder library",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/auth.js status"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
