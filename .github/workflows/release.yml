@@ -28,4 +28,5 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 14dede7d41cbeea1d7666cf6ffe4c133
           command: r2 object put cofounder-releases/cofounder-latest.zip --file=cofounder-latest.zip
