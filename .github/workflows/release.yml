@@ -1,0 +1,31 @@
+name: Release to R2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Create release and upload to R2
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create release zip
+        run: |
+          zip -r cofounder-latest.zip . \
+            -x "*.git*" \
+            -x ".github/*" \
+            -x "*.DS_Store" \
+            -x "__MACOSX/*"
+          
+          echo "Release contents:"
+          unzip -l cofounder-latest.zip | tail -20
+      
+      - name: Upload to R2
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: r2 object put cofounder-releases/cofounder-latest.zip --file=cofounder-latest.zip
