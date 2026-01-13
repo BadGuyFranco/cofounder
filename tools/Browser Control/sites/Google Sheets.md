@@ -4,179 +4,166 @@ Site-specific patterns for automating Google Sheets interactions.
 
 **Base URL patterns:** `docs.google.com/spreadsheets/*`
 
+## Limitations on Google Sheets
+
+| Task | MCP Capability |
+|------|----------------|
+| Navigate to sheets | Yes |
+| Read visible cell content | **Partial** (from snapshot, limited) |
+| Extract full table data | **No** (requires JavaScript) |
+| Interact with cells | **Limited** (can click, but editing is complex) |
+
+**For reliable data extraction from Google Sheets:** Use the Google Sheets API connector (`/cofounder/connectors/google/`) or Playwright scripts.
+
 
 ## Published Sheets vs. Edit Mode
 
 ### Published sheets (read-only)
 URL contains `/pubhtml`
 - No authentication required
-- Data is inside an iframe
-- Limited interactivity
+- Data displayed in HTML table format
+- Content may be in iframe
 
 ### Edit mode sheets
 URL contains `/edit`
 - Requires Google authentication
-- Full interactivity
-- More complex DOM structure
+- Complex canvas-based rendering
+- **Very limited automation capability** (cells are rendered on canvas, not DOM)
 
 
-## Iframe Handling (Published Sheets)
+## Published Sheet Navigation
 
-Published Google Sheets embed their content in an iframe. You must navigate to the iframe URL directly.
+### Basic navigation
 
-### Step-by-Step Process
-
-**1. Navigate to published sheet**
 ```
-browser_navigate to pubhtml URL
+1. browser_navigate: https://docs.google.com/spreadsheets/d/[ID]/pubhtml
+2. browser_wait_for time=2  # Allow iframe to load
+3. browser_snapshot
+4. CHECKPOINT: "Sheet loaded, [describe visible content]"
 ```
 
-**2. Extract iframe source**
+### Iframe handling
+
+Published sheets often render content in an iframe. The snapshot may show the wrapper page rather than the actual data.
+
+**What to look for in snapshot:**
+- If you see table data: proceed with extraction
+- If you see minimal content: data is likely in iframe
+
+**Iframe workaround:**
+1. Look for the iframe URL in page source or snapshot
+2. Navigate directly to the iframe URL
+3. Re-snapshot
+
+
+## What You Can Extract from Snapshots
+
+From published sheet snapshots, you may see:
+- Sheet title
+- Tab names (if multiple sheets)
+- Some cell content (depending on rendering)
+- Links within cells
+
+**Extraction is limited because:**
+- Snapshots show accessibility tree, not full DOM
+- Table structure may not be fully represented
+- Large sheets may only show visible portion
+
+
+## Tab Navigation
+
+Published sheets with multiple tabs use the `gid` parameter:
+
+```
+?gid=0        # First tab (default)
+?gid=123456   # Specific tab by ID
+```
+
+To switch tabs:
+```
+1. Construct URL with desired gid
+2. browser_navigate to the new URL
+3. browser_wait_for time=2
+4. browser_snapshot
+```
+
+
+## Edit Mode Limitations
+
+**Google Sheets edit mode uses canvas rendering.** This means:
+- Cell content is drawn on a canvas element
+- Individual cells are NOT in the DOM
+- Snapshots show the canvas, not cell values
+- **Cannot extract cell data via MCP browser tools**
+
+**For edit mode sheets:** Use the Google Sheets API connector instead.
+
+
+## Recommended Alternatives
+
+### For data extraction
+
+**Google Sheets API (preferred):**
+```
+Location: /cofounder/connectors/google/
+Capability: Full read/write access to sheet data
+Requirement: Google API credentials
+```
+
+**Playwright with JavaScript:**
 ```javascript
-// browser_evaluate
-() => {
-  const iframe = document.querySelector('iframe');
-  if (iframe && iframe.src) {
-    return { found: true, src: iframe.src };
-  }
-  return { found: false, message: 'No iframe found' };
-}
+// Can execute JavaScript to query published sheet tables
+const rows = await page.evaluate(() => {
+  return Array.from(document.querySelectorAll('table tr'))
+    .map(row => Array.from(row.querySelectorAll('td'))
+      .map(cell => cell.innerText));
+});
 ```
 
-**3. Navigate to iframe URL**
-```
-browser_navigate to extracted iframe src
-browser_snapshot
-```
+### For simple visual inspection
 
-Now you can interact with the actual sheet content.
-
-
-## Table Data Extraction
-
-### Get all rows from published sheet
-```javascript
-() => {
-  const rows = Array.from(document.querySelectorAll('table tr'));
-  const data = rows.map(row => {
-    const cells = Array.from(row.querySelectorAll('td, th'));
-    return cells.map(cell => cell.innerText.trim());
-  });
-  return { 
-    success: data.length > 0, 
-    rowCount: data.length,
-    rows: data 
-  };
-}
-```
-
-### Find row by column value
-```javascript
-// Find row where column 0 contains "166"
-() => {
-  const rows = Array.from(document.querySelectorAll('table tr'));
-  for (const row of rows) {
-    const cells = Array.from(row.querySelectorAll('td, th'));
-    if (cells[0]?.innerText?.includes('166')) {
-      return {
-        success: true,
-        row: cells.map(c => c.innerText.trim())
-      };
-    }
-  }
-  return { success: false, message: 'Row not found' };
-}
-```
-
-### Get specific cell value
-```javascript
-// Get cell at row 5, column 2 (0-indexed)
-() => {
-  const rows = Array.from(document.querySelectorAll('table tr'));
-  const cell = rows[5]?.querySelectorAll('td, th')[2];
-  if (cell) {
-    return { success: true, value: cell.innerText.trim() };
-  }
-  return { success: false };
-}
-```
-
-
-## Link Extraction from Cells
-
-Sheets often contain hyperlinks. Extract both text and URL:
-
-```javascript
-() => {
-  const links = [];
-  const rows = Array.from(document.querySelectorAll('table tr'));
-  rows.forEach((row, rowIndex) => {
-    const cells = Array.from(row.querySelectorAll('td, th'));
-    cells.forEach((cell, colIndex) => {
-      const anchor = cell.querySelector('a');
-      if (anchor) {
-        links.push({
-          row: rowIndex,
-          col: colIndex,
-          text: anchor.innerText.trim(),
-          href: anchor.href
-        });
-      }
-    });
-  });
-  return { success: true, links };
-}
-```
-
-
-## Known Quirks
-
-### Published sheet loads in iframe
-Always check for iframe and navigate to its source before trying to extract data.
-
-### Multiple tables
-Some sheets have frozen rows/columns that create multiple `table` elements. Check all tables:
-```javascript
-() => {
-  const tables = document.querySelectorAll('table');
-  return { tableCount: tables.length };
-}
-```
-
-### Empty cells
-Empty cells may contain `&nbsp;` or whitespace. Always `.trim()` cell content.
-
-### Merged cells
-Merged cells span multiple columns. The cell count per row may vary.
-
-### Sheet tabs
-Published sheets with multiple tabs require navigating via the tab parameter:
-```
-?gid=0        // First tab
-?gid=123456   // Specific tab by ID
-```
+MCP browser tools work for:
+- Navigating to a sheet
+- Taking screenshots for visual reference
+- Verifying a sheet exists and is accessible
 
 
 ## Common Failures and Fixes
 
 | Failure | Cause | Fix |
 |---------|-------|-----|
-| No table data found | Still on iframe wrapper | Navigate to iframe src first |
-| Wrong tab data | Default tab loaded | Add `?gid=TABID` to URL |
-| Empty results | Sheet still loading | Wait 2 seconds, re-snapshot |
-| Partial data | Frozen rows in separate table | Query all tables |
+| Empty snapshot | Content in iframe | Navigate to iframe URL directly |
+| No table data | Edit mode sheet | Use Sheets API instead |
+| Wrong tab data | Default gid loaded | Add `?gid=TABID` to URL |
+| Access denied | Private sheet | User must share or authenticate |
 
 
-## Example: Extract Row from Production Schedule
+## Example: Published Sheet Inspection
 
 ```
-1. browser_navigate: https://docs.google.com/spreadsheets/d/.../pubhtml?gid=123
-2. browser_evaluate: [extract iframe src]
-   CHECKPOINT: "Found iframe, src is ..."
-3. browser_navigate: [iframe src]
-4. browser_snapshot
-   CHECKPOINT: "Sheet loaded, table visible"
-5. browser_evaluate: [find row where column 0 = "166"]
-   CHECKPOINT: "Found row: Episode 166, Guest Name, LinkedIn URL"
+1. browser_navigate: https://docs.google.com/spreadsheets/d/[ID]/pubhtml?gid=0
+2. browser_wait_for time=2
+3. browser_snapshot
+   CHECKPOINT: "Sheet loaded. Visible in snapshot:
+   - Title: 'Q4 Sales Data'
+   - Tabs visible: Sheet1, Sheet2, Summary
+   - Some table content visible"
+
+4. browser_take_screenshot  # For visual reference
+   CHECKPOINT: "Screenshot captured showing table layout"
+
+5. Report to user: "I can see the sheet is accessible and contains a table
+   with sales data. For full data extraction, I recommend using the
+   Google Sheets API connector which can read all rows programmatically."
 ```
 
+
+## When to Use What
+
+| Need | Tool |
+|------|------|
+| Full table data | Google Sheets API connector |
+| Visual inspection | MCP browser (snapshot/screenshot) |
+| JavaScript extraction | Playwright scripts |
+| Automated edits | Google Sheets API connector |
+| One-time manual viewing | MCP browser navigation |

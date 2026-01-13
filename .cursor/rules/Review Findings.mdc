@@ -1,0 +1,13 @@
+---
+description: Standards for presenting comprehensive review findings (code, content, structure, configuration, documentation reviews)
+alwaysApply: false
+---
+
+# Presenting Review Findings
+
+When conducting comprehensive reviews:
+
+1. Present summary: "I've identified [X] observations to address"
+2. Present first observation with options as "Observation [y] of [x]"
+3. Wait for user decision and implement
+4. Move to next observation

@@ -1,6 +1,6 @@
 # Documentor
 
-Create Word, PDF, and cloud documents (Google Docs/Sheets/Slides).
+Create or convert documents (Word, PDF, Google Docs) from other formats.
 
 ## Quick Start
 
@@ -32,23 +32,19 @@ When processing document requests, use XML tags to separate user content:
 ## Routing Logic
 
 ```
-Request for document (Word, PDF, Google Doc/Sheet/Slide)
+Create or convert document
     │
-    ├─ User explicitly requests Google Doc/Sheet/Slide?
-    │   └─ YES → Check if Google Workspace is configured
-    │             • Configured → Use google-workspace/
-    │             • Not configured → Guide user to SETUP.md
+    ├─ Output is Google Doc/Sheet/Slide?
+    │   └─ Use google-workspace/
     │
-    ├─ User explicitly requests Microsoft 365? (FUTURE)
-    │   └─ YES → Check if Microsoft 365 is configured
+    ├─ Output is Word or PDF?
+    │   └─ Use local-generator/
     │
-    └─ Word or PDF request (default path)
-          └─ Use local-generator/
-              • Word file → Markdown → .docx
-              • PDF file → Markdown → .pdf
+    └─ Microsoft 365? (FUTURE)
+        └─ Use microsoft-365/ when implemented
 ```
 
-**Key principle:** Use Local Generator unless user explicitly asks for Google/365 integration.
+**Key principle:** Documentor creates/converts documents. For reading or editing existing Google Docs, use the Google Connector (`connectors/google/`).
 
 ## Configuration
 
@@ -56,17 +52,9 @@ Request for document (Word, PDF, Google Doc/Sheet/Slide)
 
 Works immediately after `npm install`.
 
-### Google Workspace (Optional)
-
-**Credentials location:** `/memory/Connectors/google/[email].json` (uses Google Connector)
-
-**Setup required:** See `/tools/Connectors/google/SETUP.md` for OAuth configuration.
-
-Do NOT prompt users to set up Google integration. Only mention it if they specifically ask for Google Docs/Sheets/Slides.
-
 ## Sub-tools
 
-### Local Generator (Default)
+### Local Generator
 
 **Location:** `local-generator/`
 
@@ -85,26 +73,18 @@ cd local-generator && npm install
 
 See `local-generator/AGENTS.md` for complete usage.
 
-### Google Workspace (Optional)
+### Google Workspace
 
 **Location:** `google-workspace/`
 
-**Setup:**
-```bash
-cd google-workspace && npm install
-# Then set up via Google Connector:
-cd /tools/Connectors/google
-node scripts/auth.js setup --account your@email.com
-```
+**Setup:** Uses Google Connector credentials. See `google-workspace/AGENTS.md`.
 
 | Capability | Supported |
 |------------|-----------|
-| Google Doc | Yes |
-| Google Sheet | Yes |
-| Google Slides | Yes |
+| Create Google Doc from content | Yes |
+| Create Google Sheet from data | Yes |
+| Create Google Slides from content | Yes |
 | Export to Word/PDF/Excel/PowerPoint | Yes |
-| Document styling (margins, page size) | Yes |
-| Collaboration (inline markers) | Yes |
 
 See `google-workspace/AGENTS.md` for complete usage.
 
@@ -118,11 +98,11 @@ See `google-workspace/AGENTS.md` for complete usage.
 
 **Local Generator:** User-specified path or current directory.
 
-**Google Workspace:** Creates in Google Drive. Exports to same directory as source doc by default.
+**Google Workspace:** Creates in Google Drive. Returns document URL.
 
 ## Troubleshooting
 
-### Local Generator Issues
+### Local Generator
 
 **"Cannot find module" errors:**
 ```bash
@@ -138,22 +118,15 @@ cd local-generator && npm install
 brew install pandoc  # macOS
 ```
 
-### Google Workspace Issues
-
-**Not set up:**
-Point user to `/tools/Connectors/google/SETUP.md`
+### Google Workspace
 
 **"No credentials found":**
 ```bash
-cd /tools/Connectors/google
+cd /connectors/google
 node scripts/auth.js setup --account your@email.com
 ```
 
-**"Token refresh failed":**
-Credentials revoked. Re-run setup via Connector.
-
-**"Folder not found":**
-Check spelling (case-sensitive) and access permissions.
+**"Token refresh failed":** Re-run setup via Google Connector.
 
 ## What Documentor Does NOT Handle
 

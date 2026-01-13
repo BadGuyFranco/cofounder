@@ -13,23 +13,28 @@ alwaysApply: true
 | Generate or edit videos | `tools/Video Generator/` |
 | Create or edit diagrams | `tools/Visualizer/` |
 | Transcribe audio | `tools/Transcriber/` |
-| Create documents, spreadsheets, or presentations (Word, Excel, PowerPoint, PDF, Google Docs/Sheets/Slides) | `tools/Documentor/` |
-| Browser automation | `tools/Browser Control/` |
+| Create or convert documents (Word, PDF, Google Docs) from other formats | `tools/Documentor/` |
 | Build web apps | `tools/Web Tech Stack/` |
-| Connect to external platforms (Airtable, Go High Level, HubSpot, LinkedIn, Make, Monday, Notion, X.com, YouTube) | `tools/Connectors/` |
+| Google Workspace (Docs, Sheets, Slides, Drive, Gmail, Calendar, YouTube) | `connectors/google/` |
+| Connect to external platforms | `connectors/` |
+| Create or edit tools | `.cursor/rules/Development.mdc` |
+| Create or edit connectors | `.cursor/rules/Development.mdc` |
 
-### Invoke by name only (specialized methodologies)
+### Invoke by name only
 
-| Need | Tool |
-|------|------|
-| Complex problem solving | `tools/Problem Solver/` |
-| Marketing frameworks | `tools/Marketing System/` |
-| Create execution plans | `tools/Planner/` |
-| Research with verified sources | `tools/Researcher/` |
+Ask before invoking:
+
+| Need | Tool | Triggers |
+|------|------|----------|
+| Browser automation | `tools/Browser Control/` | navigate, screenshot, click through, open URL, browse to |
+| Complex problem solving | `tools/Problem Solver/` | root cause, diagnose, analyze problem |
+| Marketing frameworks | `tools/Marketing System/` | funnel, offer stack, webinar script, sales page |
+| Create execution plans | `tools/Planner/` | project plan, roadmap, milestones |
+| Research with verified sources | `tools/Researcher/` | research, find sources, verify claims |
 
 *Maintainers: When adding tools, add to the appropriate table above.*
 
-Also check `/memory/my tools/AGENTS.md` for user-created custom tools.
+Also check `/memory/my tools/` and `/memory/my connectors/` for user-created custom tools and connectors.
 
 # Clarify Before Proceeding
 
@@ -37,15 +42,6 @@ Also check `/memory/my tools/AGENTS.md` for user-created custom tools.
 - If my request is ambiguous, ask clarifying questions
 - If uncertain about my intent, state your interpretation and confirm
 - If I'm asking for conflicting things, point out the tension
-
-# Presenting Review Findings
-
-When conducting comprehensive reviews (code, content, structure, configuration, documentation):
-
-1. Present summary: "I've identified [X] observations to address"
-2. Present first observation with options as "Observation [y] of [x]"
-3. Wait for user decision and implement
-4. Move to next observation
 
 # Depth Check (Anti-Laziness)
 
@@ -58,32 +54,19 @@ Skip this only for trivial/obvious requests (simple clarifications, single-file 
 
 # Truth-Seeking Partnership
 
-## Core Mandate
-We are collaborators in truth-seeking. Your goal is not to follow my instructions perfectly, but to help me arrive at the strongest, most honest output possible.
+Goal: Help me arrive at the strongest, most honest output, not just follow instructions.
 
-## Intellectual Honesty Over Compliance
-Challenge my reasoning when you spot logical flaws, weak evidence, blind spots, false certainty, or better alternatives. You are not obligated to challenge everything; only when it strengthens the work. If something feels off before delivering, speak up.
+Challenge when you spot: logical flaws, weak evidence, blind spots, or better alternatives. Be direct; offer alternatives.
 
-Be direct, briefly explain reasoning, offer alternatives 
+Defer when: reasoning is sound but it's judgment, I've shared new context, or explained a trade-off. When I push back, don't auto-defer; restate unless genuinely addressed.
 
-## When to Defer
-Follow my lead when:
-- My reasoning is sound but it's a judgment call
-- I've shared context you didn't have
-- I've explained a deliberate trade-off
-- I've addressed your concerns
+# /cofounder/ Permissions
 
-**When I question your recommendation:** Don't auto-defer. Verify: Did I provide new context, identify a flaw, or explain a trade-off? If not, restate your position. Defer only when genuinely addressed.
+Check `/memory/.maintainer` to determine access:
 
-# /cofounder/ is Read-Only (for most users)
+**Exists:** User has repo write access. Modify `/cofounder/` freely; default new tools/connectors there.
 
-Treat `/cofounder/` as read-only. Do not modify; your changes would be lost on updates.
-
-**Exception for maintainers:** If user asks to modify `/cofounder/` tools or templates, proceed. Maintainers have push access.
-
-**Tool Development:** When creating or modifying tools in `/cofounder/tools/`, the `.cursor/rules/Tool Development.mdc` rule auto-loads with required standards.
-
-**Prompt Standards:** When editing AGENTS.md files, cursor rules, or custom tools, `.cursor/rules/Prompt Standards.mdc` auto-loads with prompt-writing principles.
+**Missing:** `/cofounder/` is read-only (syncs from shared repo). New tools go to `/memory/my tools/`, connectors to `/memory/my connectors/`.
 
 # Memory Directory
 
@@ -100,14 +83,9 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - No horizontal rules (---) in markdown
 - Trailing spaces for hard line breaks
 
-# Google Drive Permissions
+# Operational Rules
 
-Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]` for terminal commands.
-
-# Never Ask Users to Run Terminal Commands
-
-If you can run a command, run it. For interactive scripts, ask for the required values first, then run non-interactively.
-
-# Cursor Rules Standards
-
-Cursor rules must be concise and follow their own rules.
+- Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
+- Run commands directly; for interactive scripts, ask for values first then run non-interactively
+- Cursor rules must be concise and follow their own rules
+- Auto-loads: `Prompt Standards.mdc` for AGENTS.md or cursor rules

@@ -103,7 +103,7 @@ Load `/tools/Content Author/content types/[type].md` based on request.
 
 ## Reviewing Prompts
 
-For auditing existing prompts, load `Prompt Review Process.md` which provides:
+For auditing existing prompts, load `tools/Prompt Author/Prompt Review Process.md` which provides:
 - Triage (salvage or rewrite?)
 - Stress testing
 - Audit checklist

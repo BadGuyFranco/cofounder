@@ -50,7 +50,7 @@ Run this interactive process to discover the author's voice.
 
 1. Create the Writing Samples directory if it doesn't exist:
    ```
-   mkdir -p ../../memory/Content\ Author/Writing\ Samples/
+   mkdir -p /memory/Content\ Author/Writing\ Samples/
    ```
 
 2. Ask the user:
@@ -58,7 +58,7 @@ Run this interactive process to discover the author's voice.
    >
    > These help me see your natural patterns. We'll also do a discovery Q&A to clarify your intent, since samples sometimes contain habits you'd want to change.
    >
-   > Place them in `memory/Content Author/Writing Samples/` or paste them here."
+   > Place them in `/memory/Content Author/Writing Samples/` or paste them here."
 
 3. Wait for samples before proceeding.
 

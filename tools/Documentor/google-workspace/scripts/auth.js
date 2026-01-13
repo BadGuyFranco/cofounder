@@ -6,7 +6,7 @@
  * Credentials are managed by the centralized Google Connector.
  * 
  * Credential location: /memory/Connectors/google/[email].json
- * Setup: See /tools/Connectors/google/SETUP.md
+ * Setup: See /connectors/google/SETUP.md
  */
 
 import { google } from 'googleapis';
@@ -122,8 +122,8 @@ export async function getAuthClient(email) {
     throw new Error(
       `No credentials found for ${email}.\n\n` +
       `Set up Google credentials using the Connector:\n` +
-      `  1. Follow /tools/Connectors/google/SETUP.md\n` +
-      `  2. Run: cd /tools/Connectors/google && node scripts/auth.js setup --account ${email}`
+      `  1. Follow /connectors/google/SETUP.md\n` +
+      `  2. Run: cd /connectors/google && node scripts/auth.js setup --account ${email}`
     );
   }
   
@@ -160,7 +160,7 @@ export async function getAuthClient(email) {
       throw new Error(
         `Token refresh failed for ${email}.\n\n` +
         `Re-run setup using the Connector:\n` +
-        `  cd /tools/Connectors/google && node scripts/auth.js setup --account ${email}`
+        `  cd /connectors/google && node scripts/auth.js setup --account ${email}`
       );
     }
   }
@@ -174,7 +174,7 @@ async function main() {
 Documentor now uses the Google Connector for authentication.
 
 To set up or manage Google credentials:
-  cd /tools/Connectors/google
+  cd /connectors/google
   node scripts/auth.js setup --account your@email.com
 
 To check status:
@@ -183,7 +183,7 @@ To check status:
 To list accounts:
   node scripts/auth.js list
 
-See /tools/Connectors/google/SETUP.md for full instructions.
+See /connectors/google/SETUP.md for full instructions.
 `);
 }
 

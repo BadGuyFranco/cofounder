@@ -77,6 +77,6 @@ This prevents user-provided content from being confused with tool instructions.
 
 <!-- 
 TEMPLATE: Replace all [placeholders] with your content, then delete this comment.
-See .cursor/rules/Tool Development.mdc for required sections and quality standards.
+See tools/DEVELOPMENT.md for required sections and quality standards.
 -->
 

@@ -11,13 +11,13 @@ Required variable:
 REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-**Not configured?** Follow `/tools/Connectors/replicate/SETUP.md`
+**Not configured?** Follow `/connectors/replicate/SETUP.md`
 
 ## Generate a Video (Text-to-Video)
 
 **Using default model:**
 ```bash
-cd "/cofounder/tools/Connectors/replicate"
+cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "your prompt here"}' \
   --download ./videos
@@ -46,7 +46,7 @@ node scripts/predictions.js run google/veo-3.1 \
 
 Current default: `google/veo-3.1`
 
-Default models are curated in `/tools/Connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
+Default models are curated in `/connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
 
 **Alternative models:**
 - `google/veo-3` - Audio support, 8s duration
@@ -98,7 +98,7 @@ Naming format: `output_0.mp4`
 
 **Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
 
-See `/tools/Connectors/replicate/AGENTS.md` for additional troubleshooting.
+See `/connectors/replicate/AGENTS.md` for additional troubleshooting.
 
 ## Pricing
 

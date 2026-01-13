@@ -1,4 +1,10 @@
+# Core transcription
 openai-whisper>=20231117
 torch>=2.0.0
 torchaudio>=2.0.0
 
+# Speaker diarization (optional, requires HuggingFace connector setup)
+pyannote.audio>=3.1.0
+
+# HuggingFace Hub for model access
+huggingface_hub>=0.20.0

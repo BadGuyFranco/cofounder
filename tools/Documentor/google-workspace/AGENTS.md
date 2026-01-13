@@ -1,8 +1,8 @@
 # Google Workspace Sub-tool
 
-Create, edit, read, and export Google Docs, Sheets, and Slides via Google APIs.
+Create Google Docs, Sheets, and Slides from other content formats. Export to Word/PDF/Excel/PowerPoint.
 
-**This is an optional sub-tool.** Only set it up if you specifically need native Google Docs/Sheets/Slides integration. For Word and PDF files, use the Local Generator instead (no setup required).
+**Purpose:** Document creation and format conversion. For reading or editing existing Google Docs, use the Google Connector (`/connectors/google/`).
 
 ## Quick Start
 
@@ -24,12 +24,12 @@ This tool uses the centralized **Google Connector** for authentication.
 
 **Step 1: Set up Google Connector**
 
-Follow `/tools/Connectors/google/SETUP.md` to configure OAuth credentials.
+Follow `/connectors/google/SETUP.md` to configure OAuth credentials.
 
 **Step 2: Authenticate your account**
 
 ```bash
-cd /tools/Connectors/google
+cd /connectors/google
 node scripts/auth.js setup --account your@email.com
 ```
 
@@ -85,7 +85,7 @@ Run any script with `--help` for full command syntax.
 
 **"No credentials found":** Set up the Google Connector first:
 ```bash
-cd /tools/Connectors/google
+cd /connectors/google
 node scripts/auth.js setup --account your@email.com
 ```
 

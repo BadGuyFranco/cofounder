@@ -40,7 +40,8 @@ I'm doing my first-run setup for CoFounder. Help me complete the full setup proc
 
 Before we begin, verify my system is ready:
 1. Check if git is installed (run `git --version`)
-2. If git fails, STOP and tell me how to install it for my operating system
+2. Check if Node.js is installed (run `node --version`)
+3. If either fails, STOP and tell me how to install them for my operating system
 
 ## Step 1: Create Folder Structure
 
@@ -62,21 +63,24 @@ Verify all four folders exist before proceeding:
 
 ## Step 2: Initialize Memory Structure
 
-Inside /memory/, create:
+Inside /memory/, create these directories and files:
 - `/memory/Content Author/` (for voice settings)
 - `/memory/Content Author/Writing Samples/` (for my writing samples)
-- `/memory/my tools/AGENTS.md` (routing for custom tools I create later)
+- `/memory/Connectors/` (for connector credentials)
+- `/memory/Image Generator/` (for image service API keys)
+- `/memory/Video Generator/` (for video service API keys)
+- `/memory/my connectors/AGENTS.md` - use template from `/cofounder/system/templates/Memory Templates/my-connectors-AGENTS.md`
+- `/memory/my tools/AGENTS.md` - use template from `/cofounder/system/templates/Memory Templates/my-tools-AGENTS.md`
 - `/memory/my plans/` (for execution plans)
-- `/memory/README.md` (brief description of what memory contains)
+- `/memory/README.md` - use template from `/cofounder/system/templates/Memory Templates/README.md`
+
+For maintainers with write access to /cofounder/: Also create `/memory/.maintainer` (empty file). This signals you can modify the shared library.
 
 ## Step 3: Initialize Personal Workspace
 
 Inside /[my name]/, create:
 - `/[my name]/content/` (where my generated content goes)
-- `/[my name]/AGENTS.md` with instructions that:
-  - Load Content Author for any writing tasks
-  - Reference /memory/Content Author/voice.md for my voice
-  - Save all content to /[my name]/content/
+- `/[my name]/AGENTS.md` - use template from `/cofounder/system/templates/Personal Workspace Template/AGENTS.md`, replacing [Your Name] with my name
 
 ## Step 4: Create Workspace File
 
@@ -97,6 +101,27 @@ Replace [my name] with my actual name. Do NOT include the workspaces folder itse
 Load /cofounder/tools/Content Author/VoiceSetup.md and follow its complete instructions to create my voice profile.
 
 Take it one step at a time. Explain WHY each step matters before asking me to do it.
+
+## Step 6: Open Your Workspace
+
+After Voice Discovery is complete:
+1. Tell me to close this Cursor window
+2. Tell me to open /workspaces/[my name].code-workspace (double-click in Finder/Explorer)
+3. This loads all my folders together as one workspace
+
+## Step 7: Verify Setup
+
+Once I've reopened in my workspace:
+1. Ask me to request a short paragraph on any topic
+2. Confirm Content Author loads my voice.md and produces output matching my voice
+3. If it fails, troubleshoot before ending setup
+
+## Step 8: What's Next
+
+Show me:
+- The Tool Routing table from .cursor/rules/Always Apply.mdc (what tools are available)
+- That connectors are in /cofounder/connectors/ if I want to connect external platforms
+- That I can ask "what can you help me with?" anytime to see options
 ```
 
 ---
@@ -128,6 +153,11 @@ Your folder structure will look like:
 │   ├── Content Author/
 │   │   ├── voice.md
 │   │   └── Writing Samples/
+│   ├── Connectors/
+│   ├── Image Generator/
+│   ├── Video Generator/
+│   ├── my connectors/
+│   │   └── AGENTS.md
 │   ├── my tools/
 │   │   └── AGENTS.md
 │   └── my plans/

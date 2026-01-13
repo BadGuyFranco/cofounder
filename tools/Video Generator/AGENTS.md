@@ -108,12 +108,12 @@ Which would you like to set up? (1 or 2)
    ```
 4. Verify:
    ```bash
-   cd "/cofounder/tools/Connectors/replicate" && node scripts/account.js verify
+   cd "/cofounder/connectors/replicate" && node scripts/account.js verify
    ```
 
 ### Setting Up Google AI
 
-Point user to: `/tools/Connectors/google/SETUP.md` Part B (API Key setup).
+Point user to: `/connectors/google/SETUP.md` Part B (API Key setup).
 
 **Note:** Direct Veo video generation via Google AI is in limited preview. Even after setup, video generation may not work. Replicate is recommended.
 
@@ -137,7 +137,7 @@ User can override by specifying service in their request.
 
 **Command:**
 ```bash
-cd "/cofounder/tools/Connectors/replicate"
+cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "YOUR_PROMPT"}' \
   --download ./videos
@@ -179,7 +179,7 @@ node scripts/local-video-edit.js [options]
 
 ### Default Models
 
-**Replicate:** See `/tools/Connectors/replicate/defaults.json` for curated defaults.
+**Replicate:** See `/connectors/replicate/defaults.json` for curated defaults.
 - Current video default: `google/veo-3.1`
 - Alternatives: `google/veo-3`, `google/veo-2`
 
@@ -189,7 +189,7 @@ When user requests a video without providing an image:
 
 1. **Generate the image first:**
    ```bash
-   cd "/cofounder/tools/Connectors/replicate"
+   cd "/cofounder/connectors/replicate"
    node scripts/predictions.js run google/nano-banana-pro \
      --input '{"prompt": "detailed scene description", "aspect_ratio": "16:9"}' \
      --download ./images
@@ -222,7 +222,7 @@ Duration varies by model:
 
 **Dependencies not installed:**
 ```bash
-cd "/cofounder/tools/Connectors/replicate" && npm install
+cd "/cofounder/connectors/replicate" && npm install
 ```
 
 **FFmpeg not found (for local editing):** Install with `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux).

@@ -1,10 +1,9 @@
 ---
 description: Core principles for writing effective prompts and instructions
 globs:
-  - "cofounder/tools/**"
-  - "memory/my tools/**"
   - ".cursor/rules/*.mdc"
   - "**/AGENTS.md"
+alwaysApply: false
 ---
 
 # Prompt Standards
@@ -69,6 +68,10 @@ Before delivering any prompt or instruction document:
 | Conflicting instructions | Random behavior | State priority; fix structure |
 | No clarification path | Wrong output on ambiguity | Add "ask if unclear" |
 | Critical buried in middle | Key instructions missed | Apply position principle |
+
+## Single Source of Truth
+
+Each piece of information exists in EXACTLY ONE location. AGENTS.md is complete; other docs reference it.
 
 ## Clarification Over Guessing
 

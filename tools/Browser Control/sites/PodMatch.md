@@ -4,6 +4,17 @@ Site-specific patterns for automating PodMatch interactions.
 
 **Base URL patterns:** `podmatch.com/member/*`, `podmatch.com/podcast/*`
 
+## Limitations on PodMatch
+
+| Task | MCP Capability |
+|------|----------------|
+| Navigate to profiles | Yes |
+| Read visible profile text | Yes (from snapshot) |
+| Extract image URLs | **No** (requires JavaScript) |
+| Click profile elements | Yes |
+
+**For image URL extraction:** Use Playwright scripts.
+
 
 ## Authentication
 
@@ -15,125 +26,143 @@ PodMatch may require login for some content.
 3. Wait for user confirmation before continuing
 
 
-## Profile Photo Extraction
+## Profile Navigation
 
-PodMatch profile photos are typically displayed directly without modal interaction.
+### Navigate to a member profile
 
-### Step-by-Step Process
-
-**1. Navigate and snapshot**
 ```
-browser_navigate to profile URL
-browser_snapshot
-```
-
-**2. Find the profile image**
-
-Look in the snapshot for:
-- `img` elements with src containing profile-related URLs
-- Images near the top of the profile
-- Images with reasonable dimensions (not tiny icons)
-
-**3. Extract image URL**
-
-```javascript
-// browser_evaluate
-() => {
-  // Look for profile images
-  const images = Array.from(document.querySelectorAll('img'))
-    .filter(img => {
-      // Filter out tiny images (icons, logos)
-      if (img.naturalWidth < 100) return false;
-      // Filter out common non-profile images
-      if (img.src.includes('logo')) return false;
-      if (img.src.includes('icon')) return false;
-      return true;
-    })
-    .sort((a, b) => b.naturalWidth - a.naturalWidth);
-  
-  if (images.length > 0) {
-    return { 
-      success: true, 
-      url: images[0].src,
-      width: images[0].naturalWidth,
-      height: images[0].naturalHeight
-    };
-  }
-  return { success: false, message: 'No suitable image found' };
-}
+1. browser_navigate: https://podmatch.com/member/username
+2. browser_wait_for time=2
+3. browser_snapshot
+4. CHECKPOINT: "Profile loaded, found [name/content indicator]"
 ```
 
-**CHECKPOINT:** Verify URL looks like a profile photo (reasonable size, not a placeholder)
+### Navigate to a podcast profile
 
-**4. Download the image**
-
-```bash
-curl -L "extracted_url" -o "output_path.jpg"
+```
+1. browser_navigate: https://podmatch.com/podcast/podcastname
+2. browser_wait_for time=2
+3. browser_snapshot
+4. CHECKPOINT: "Podcast profile loaded"
 ```
 
-Verify file size is reasonable.
+
+## What's Visible in Snapshots
+
+PodMatch profile snapshots typically contain:
+- Member/podcast name (heading elements)
+- Bio or description text
+- Categories or topics
+- Social media links (if displayed as text)
+- "Connect" or action button refs
+
+### What's NOT reliably visible:
+- Profile image URLs (require JavaScript to extract from `img.src` or CSS background)
+- Detailed statistics
+- Private contact information
 
 
-## Profile Data Extraction
+## Extracting Visible Profile Data
 
-### Get name and bio
-```javascript
-() => {
-  // Adjust selectors based on actual PodMatch structure
-  const name = document.querySelector('h1, h2, .profile-name')?.innerText?.trim();
-  const bio = document.querySelector('.bio, .description, p')?.innerText?.trim();
-  return { success: !!name, name, bio };
-}
+From snapshots, report what's visible:
+
+```
+CHECKPOINT: "Profile data from snapshot:
+- Name: [visible name]
+- Bio: [visible bio text, may be truncated]
+- Topics: [any visible categories]
+- Action buttons: [Connect, Message, etc. with refs]"
+```
+
+
+## Profile Photo Limitations
+
+**Unlike LinkedIn, PodMatch typically displays photos directly (no modal).** However:
+
+- Image URLs still require JavaScript to extract
+- Profile photos may be CSS background images (not `img` tags)
+- Lazy loading may show placeholder URLs
+
+**What you CAN do:**
+1. Navigate to profile
+2. Confirm image is visually present (via screenshot)
+3. Report that manual download is needed
+
+**What you CANNOT do:**
+- Extract the image URL programmatically
+- Download the image automatically
+
+**User instructions for manual download:**
+"I can navigate to the profile, but extracting the image URL requires JavaScript. To save the image manually:
+1. Right-click the profile image
+2. Select 'Save image as' or 'Copy image address'
+Or I can write a Playwright script for automated extraction."
+
+
+## Interacting with Profile Elements
+
+### Send connection request
+
+```
+1. browser_snapshot
+2. Find "Connect" or "Request Match" button ref
+3. browser_click ref=[button ref]
+4. browser_wait_for time=1
+5. browser_snapshot
+6. CHECKPOINT: "Connection request sent" or "Follow-up action required"
 ```
 
 
 ## Known Quirks
 
-### No modal required
-Unlike LinkedIn, PodMatch typically displays the full-size image directly on the profile page. No need to click to open a modal.
+### Images may be lazy-loaded
+If the snapshot or screenshot shows a placeholder, the actual image may not have loaded yet. Try:
+1. `browser_wait_for time=3`
+2. Re-snapshot
 
-### Image may be background-image
-Some profile photos are set as CSS background images rather than `img` tags:
+### Background images
+Some profile photos are CSS background images rather than `img` tags. These won't appear in accessibility snapshots at all.
 
-```javascript
-() => {
-  const elements = document.querySelectorAll('[style*="background-image"]');
-  const urls = Array.from(elements)
-    .map(el => {
-      const style = el.style.backgroundImage;
-      const match = style.match(/url\(["']?(.+?)["']?\)/);
-      return match ? match[1] : null;
-    })
-    .filter(Boolean);
-  return { success: urls.length > 0, urls };
-}
-```
-
-### Lazy loading
-Images may lazy-load. If image URL is a placeholder:
-1. Scroll the image into view
-2. Wait 1-2 seconds
-3. Re-extract
+### Dynamic content
+Profile sections may load asynchronously. Use `browser_wait_for` with expected text.
 
 
 ## Common Failures and Fixes
 
 | Failure | Cause | Fix |
 |---------|-------|-----|
-| Wrong image extracted | Picked logo instead of profile | Filter by size and position |
-| Placeholder URL | Lazy loading not triggered | Scroll to element, wait, retry |
-| No image found | Image is background-image | Check CSS background-image property |
+| Profile not found | Wrong URL format | Check URL structure |
+| Content missing | Page still loading | Wait longer, re-snapshot |
+| No image visible | Lazy loading | Wait, re-snapshot |
+| Login required | Session expired | User must log in |
 
 
-## Example: Complete Profile Photo Workflow
+## Example: Profile Inspection Workflow
 
 ```
 1. browser_navigate: https://podmatch.com/member/username
-2. browser_snapshot
-   CHECKPOINT: "Page loaded, profile visible"
-3. browser_evaluate: [extract largest non-icon image]
-   CHECKPOINT: "Found 400x400 image URL"
-4. curl: download to destination
-   CHECKPOINT: "Downloaded 65KB file"
+2. browser_wait_for time=2
+3. browser_snapshot
+   CHECKPOINT: "Page loaded. Found:
+   - Name: Alex Johnson
+   - Bio: 'Podcast host covering tech and startups...'
+   - Connect button at ref e156"
+
+4. browser_take_screenshot  # For visual reference
+   CHECKPOINT: "Screenshot captured showing profile layout and photo"
+
+5. Report to user: "Profile found for Alex Johnson. I can see their bio
+   and profile photo in the browser. To extract the image URL for download,
+   I would need to use a Playwright script with JavaScript execution."
 ```
 
+
+## When to Use What
+
+| Need | Tool |
+|------|------|
+| View profile content | MCP browser (snapshot) |
+| Visual reference | MCP browser (screenshot) |
+| Extract image URLs | Playwright scripts |
+| Automated data collection | Playwright scripts |
+| Send connection request | MCP browser (click) |

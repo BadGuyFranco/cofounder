@@ -107,12 +107,12 @@ Which would you like to set up? (1 or 2)
    ```
 4. Verify:
    ```bash
-   cd "/cofounder/tools/Connectors/replicate" && node scripts/account.js verify
+   cd "/cofounder/connectors/replicate" && node scripts/account.js verify
    ```
 
 ### Setting Up Google AI
 
-Point user to: `/tools/Connectors/google/SETUP.md` Part B (API Key setup).
+Point user to: `/connectors/google/SETUP.md` Part B (API Key setup).
 
 This requires:
 1. Google Cloud Console project
@@ -140,7 +140,7 @@ User can override by specifying service in their request.
 
 **Replicate command:**
 ```bash
-cd "/cofounder/tools/Connectors/replicate"
+cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/nano-banana-pro \
   --input '{"prompt": "YOUR_PROMPT", "aspect_ratio": "16:9"}' \
   --download ./images
@@ -148,7 +148,7 @@ node scripts/predictions.js run google/nano-banana-pro \
 
 **Google AI command:**
 ```bash
-cd "/cofounder/tools/Connectors/google"
+cd "/cofounder/connectors/google"
 node scripts/ai.js image "YOUR_PROMPT" --aspect-ratio 16:9 --output ./image.png
 ```
 
@@ -188,7 +188,7 @@ Uses Replicate Connector credentials and curated default model.
 
 ### Default Models
 
-**Replicate:** See `/tools/Connectors/replicate/defaults.json` for curated defaults.
+**Replicate:** See `/connectors/replicate/defaults.json` for curated defaults.
 - Current image default: `google/nano-banana-pro`
 - Current background removal: `cjwbw/rembg`
 
@@ -200,8 +200,8 @@ Uses Replicate Connector credentials and curated default model.
 
 **Dependencies not installed:**
 ```bash
-cd "/cofounder/tools/Connectors/replicate" && npm install
-cd "/cofounder/tools/Connectors/google" && npm install
+cd "/cofounder/connectors/replicate" && npm install
+cd "/cofounder/connectors/google" && npm install
 ```
 
 **API errors:** Check the specific process file for troubleshooting steps.

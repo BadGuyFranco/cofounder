@@ -5,7 +5,7 @@
  * 
  * Uses credentials and model from Replicate Connector:
  *   - Credentials: /memory/Connectors/replicate/.env
- *   - Default model: /tools/Connectors/replicate/defaults.json
+ *   - Default model: /connectors/replicate/defaults.json
  */
 
 import { config } from 'dotenv';

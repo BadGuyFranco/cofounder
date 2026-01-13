@@ -11,7 +11,7 @@ Required variable:
 GOOGLE_AI_API_KEY=your_gemini_api_key
 ```
 
-**Not configured?** Follow `/tools/Connectors/google/SETUP.md` Part B (API Key setup).
+**Not configured?** Follow `/connectors/google/SETUP.md` Part B (API Key setup).
 
 ## Current Limitations
 
@@ -19,7 +19,7 @@ GOOGLE_AI_API_KEY=your_gemini_api_key
 
 **Recommended alternative:** Use Replicate with Google's Veo models instead:
 ```bash
-cd "/cofounder/tools/Connectors/replicate"
+cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "your prompt"}' \
   --download ./videos
@@ -30,7 +30,7 @@ This provides access to the same Veo models with better reliability.
 ## Generate a Video (When Available)
 
 ```bash
-cd "/cofounder/tools/Connectors/google"
+cd "/cofounder/connectors/google"
 node scripts/ai.js video "your prompt here" --output ./video.mp4
 ```
 
@@ -61,4 +61,4 @@ Replicate hosts Google's Veo models with full API access:
 
 **API key not found:** Verify `GOOGLE_AI_API_KEY` is set in `/memory/Connectors/google/.env`
 
-See `/tools/Connectors/google/AGENTS.md` for additional troubleshooting.
+See `/connectors/google/AGENTS.md` for additional troubleshooting.

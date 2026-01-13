@@ -2,30 +2,133 @@
 
 **100% Local Execution. No API Keys Required. Completely Free.**
 
-Transcribe voice recordings and phone calls locally using OpenAI Whisper with GPU acceleration, then optionally produce comprehensive summaries with analysis.
+Transcribe voice recordings and phone calls locally using OpenAI Whisper with GPU acceleration. Optionally identify different speakers using pyannote speaker diarization.
 
 ## Objective
 
 Convert audio to text and, when requested, produce summaries that capture every key point, nuanced detail, and emotional context. Summaries should be comprehensive enough that someone who didn't hear the recording understands exactly what happened.
 
+## Features
+
+| Feature | Description | Requirements |
+|---------|-------------|--------------|
+| **Basic Transcription** | Convert audio to text | None (works out of box) |
+| **Speaker Diarization** | Label who said what (SPEAKER_00, SPEAKER_01, etc.) | HuggingFace connector |
+| **Comprehensive Summary** | Organized analysis with action items | None (AI generates from transcript) |
+
 ## Pre-Transcription Workflow
 
-**Before running the transcription script, ask the user:**
+**Before running the transcription script, ask the user these two questions:**
 
-> "What output do you need?
-> 1. **Raw transcript only** - Just the verbatim text
-> 2. **Comprehensive summary** - Organized summary with all key points
-> 3. **Both** - Transcript file plus summary
+> **Question 1: Speaker separation?**
 > 
-> Which would you like?"
+> "Is there more than one person speaking in this recording? If so, would you like me to separate and label different speakers (SPEAKER_00, SPEAKER_01, etc.)?
+> 
+> Note: Speaker separation takes roughly twice as long to process and requires one-time HuggingFace setup. If you just need the words, skip it."
+>
+> **Question 2: Output format?**
+>
+> "What output do you need?
+> 1. **Raw transcript only** - Just the text file
+> 2. **Comprehensive summary** - Organized summary with key points and analysis
+> 3. **Both** - Transcript file plus summary"
 
-**Then run the transcription.** After the script completes, proceed based on their choice.
+**Then run the transcription.** After the script completes, proceed based on their choices.
+
+## Quick Start
+
+**Basic transcription (no setup required):**
+```bash
+python transcribe_audio.py recording.m4a
+```
+
+**With specific model:**
+```bash
+python transcribe_audio.py recording.m4a --model medium
+```
+
+**With speaker diarization (requires HuggingFace setup):**
+```bash
+python transcribe_audio.py meeting.mp3 --diarize
+```
+
+**With known speaker count (improves accuracy):**
+```bash
+python transcribe_audio.py call.wav --diarize --speakers 2
+```
+
+## Speaker Diarization Setup
+
+Speaker diarization identifies different voices and labels them (SPEAKER_00, SPEAKER_01, etc.). This requires a one-time setup:
+
+### Step 1: Set Up HuggingFace Connector
+
+Follow the HuggingFace connector setup at `/cofounder/connectors/huggingface/SETUP.md`:
+
+1. Create a free HuggingFace account at https://huggingface.co
+2. Generate an access token with Read permission
+3. Store the token in the connector configuration
+
+### Step 2: Accept Model Licenses
+
+Visit these pages and click "Agree and access repository":
+
+1. https://huggingface.co/pyannote/speaker-diarization-3.1
+2. https://huggingface.co/pyannote/segmentation-3.0
+
+Both are free; they just require you to acknowledge the terms.
+
+### Step 3: Install Dependencies
+
+```bash
+cd "/cofounder/tools/Transcriber"
+pip install -r requirements.txt
+```
+
+### Step 4: Verify
+
+```bash
+python transcribe_audio.py test.mp3 --diarize
+```
+
+First run will download the diarization model (~300MB).
 
 ## Output Modes
 
 ### Mode 1: Raw Transcript Only
 
 Run the script, deliver the transcript file. Done.
+
+**Basic output:**
+```
+TRANSCRIPTION
+
+Audio File: meeting.mp3
+Date: 2025-01-12 10:30:00
+
+---
+
+Good morning, thanks for joining.
+
+Happy to be here. Let's talk about the roadmap.
+```
+
+**Diarized output:**
+```
+TRANSCRIPTION
+
+Audio File: meeting.mp3
+Date: 2025-01-12 10:30:00
+Speakers: 2
+
+---
+
+SPEAKER_00 [0:00]: Good morning, thanks for joining.
+
+SPEAKER_01 [0:03]: Happy to be here. Let's talk about the roadmap.
+
+SPEAKER_00 [0:08]: Sure. First item is the API integration.
+```
 
 ### Mode 2: Comprehensive Summary
 
@@ -46,7 +149,7 @@ The summary must capture everything important. Missing a key point or nuanced de
 
 **Date:** YYYY-MM-DD
 **Duration:** [X minutes]
-**Participants:** [Names/roles if identifiable]
+**Participants:** [Names/roles if identifiable, or SPEAKER_00, SPEAKER_01, etc.]
 
 ## Analysis
 
@@ -93,7 +196,7 @@ The summary must capture everything important. Missing a key point or nuanced de
 ### Action Items
 | Who | What | When |
 |-----|------|------|
-| [Name] | [Action] | [Deadline if mentioned] |
+| [Name/Speaker] | [Action] | [Deadline if mentioned] |
 
 ### Open Questions
 - [Question raised but not resolved]
@@ -117,31 +220,6 @@ The summary must capture everything important. Missing a key point or nuanced de
 
 **Be honest about uncertainty.** If you can't verify something, say so. Don't make up confirmations.
 
-## Why Python (Not Node.js)
-
-This tool uses Python instead of the standard Node.js stack because:
-
-| | Node.js (@xenova/transformers) | Python (openai-whisper) |
-|---|---|---|
-| GPU Support | None (CPU only) | CUDA + MPS (Apple Silicon) |
-| 60-min audio | ~60+ minutes | ~10 minutes |
-| Speed | 1x real-time | 6-10x real-time |
-
-The Node.js Whisper implementation cannot access GPU acceleration, making it 5-10x slower.
-
-**This exception is documented in** `.cursor/rules/Always Apply.mdc` under "Approved Python Exceptions."
-
-## Quick Start
-
-```bash
-python transcribe_audio.py <path_to_audio_file>
-```
-
-**With specific model:**
-```bash
-python transcribe_audio.py recording.m4a --model medium
-```
-
 ## Model Selection
 
 | Model  | Size   | RAM   | GPU Speed  | Accuracy |
@@ -160,6 +238,20 @@ python transcribe_audio.py recording.m4a --model medium
 
 MP3, MP4, MPEG, MPGA, M4A, WAV, WebM, OGG, FLAC
 
+## Why Python (Not Node.js)
+
+This tool uses Python instead of the standard Node.js stack because:
+
+| | Node.js (@xenova/transformers) | Python (openai-whisper) |
+|---|---|---|
+| GPU Support | None (CPU only) | CUDA + MPS (Apple Silicon) |
+| 60-min audio | ~60+ minutes | ~10 minutes |
+| Speed | 1x real-time | 6-10x real-time |
+
+The Node.js Whisper implementation cannot access GPU acceleration, making it 5-10x slower.
+
+**This exception is documented in** `.cursor/rules/Always Apply.mdc` under "Approved Python Exceptions."
+
 ## Troubleshooting
 
 ### Setup
@@ -170,7 +262,9 @@ MP3, MP4, MPEG, MPGA, M4A, WAV, WebM, OGG, FLAC
 pip install -r requirements.txt
 ```
 
-Models download automatically on first use to `~/.cache/whisper/`
+Models download automatically on first use:
+- Whisper models: `~/.cache/whisper/`
+- Diarization models: `~/.cache/huggingface/`
 
 ### Common Issues
 
@@ -178,9 +272,22 @@ Models download automatically on first use to `~/.cache/whisper/`
 - Mac: Ensure macOS 12.3+ and PyTorch 2.0+
 - NVIDIA: Install CUDA toolkit
 
-**Slow performance:** Use smaller model, ensure GPU is being used
+**"Slow performance":** Use smaller model, ensure GPU is being used
 
-**Out of memory:** Use smaller model, close other apps
+**"Out of memory":** Use smaller model, close other apps
+
+**"HuggingFace connector not configured":**
+- Follow setup at `/cofounder/connectors/huggingface/SETUP.md`
+- Or run without `--diarize` for basic transcription
+
+**"401/403 from HuggingFace":**
+- Token may be invalid; regenerate at https://huggingface.co/settings/tokens
+- Model licenses not accepted; visit the model pages and click "Agree"
+
+**"Speaker labels seem wrong":**
+- Try specifying `--speakers N` if you know the count
+- Diarization works best with distinct voices and clear audio
+- Overlapping speech can confuse the model
 
 ## Cost
 

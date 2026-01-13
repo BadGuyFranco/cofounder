@@ -1,0 +1,12 @@
+{
+  "name": "cloudflare-connector",
+  "version": "1.0.0",
+  "description": "Cloudflare API connector for cofounder",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/zones.js list"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

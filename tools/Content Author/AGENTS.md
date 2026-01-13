@@ -6,10 +6,9 @@ Produce content that says impactful things plainly. Every piece should pass enfo
 
 ## Required: Load Voice File
 
-Before writing, load from `../../memory/Content Author/`:
-- `voice.md` - Voice patterns, examples, and persona (required)
+Before writing, load `/memory/Content Author/voice.md` (voice patterns, examples, and persona).
 
-**If voice.md is missing:** Stop. Do not proceed with content writing. Tell the user: "voice.md is missing. Run VoiceSetup.md to create it, or provide a voice.md file."
+**If voice.md is missing:** Stop. Do not proceed with content writing. Tell the user: "voice.md is missing. Run `tools/Content Author/VoiceSetup.md` to create it, or provide a voice.md file."
 
 **Do NOT load VoiceSetup.md during normal content writing.** VoiceSetup.md is only for creating voice.md, not for writing content.
 
@@ -106,7 +105,7 @@ Common deletion targets: "very," "really," "quite," "rather," "somewhat," unnece
 
 ## Required Structure
 
-**Opening:** Lead with claim, not context. First line earns the second. No setup paragraphs. For headlines, titles, and opening hooks, see `content types/spark.md` (optional for reference docs, guides, academic writing).
+**Opening:** Lead with claim, not context. First line earns the second. No setup paragraphs. For headlines, titles, and opening hooks, see `tools/Content Author/content types/spark.md` (optional for reference docs, guides, academic writing).
 
 **Body:** 
 - Every sentence advances the argument AND earns the next (Bridge Check)
@@ -171,7 +170,7 @@ If any check fails, rewrite until it passes.
 
 ## Format Files
 
-Format-specific workflows live in `content types/`. Format files reference these rules; they don't replace them.
+Format-specific workflows live in `tools/Content Author/content types/`. Format files reference these rules; they don't replace them.
 
 ## Limitations
 

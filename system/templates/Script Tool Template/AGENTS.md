@@ -143,6 +143,6 @@ npm install
 <!-- 
 TEMPLATE: Replace all [placeholders] with your content, then delete this comment.
 Remove sections marked "if applicable" that don't apply to your tool.
-See .cursor/rules/Tool Development.mdc for required sections and quality standards.
+See tools/DEVELOPMENT.md for required sections and quality standards.
 -->
 

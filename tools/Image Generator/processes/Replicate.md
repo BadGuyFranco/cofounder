@@ -11,13 +11,13 @@ Required variable:
 REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-**Not configured?** Follow `/tools/Connectors/replicate/SETUP.md`
+**Not configured?** Follow `/connectors/replicate/SETUP.md`
 
 ## Generate an Image
 
 **Basic generation (uses curated default model):**
 ```bash
-cd "/cofounder/tools/Connectors/replicate"
+cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/nano-banana-pro \
   --input '{"prompt": "your prompt here"}' \
   --download ./images
@@ -41,7 +41,7 @@ node scripts/predictions.js run google/nano-banana-pro \
 
 Current default: `google/nano-banana-pro`
 
-Default models are curated in `/tools/Connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
+Default models are curated in `/connectors/replicate/defaults.json`. The maintainer updates these when better models become available.
 
 **Alternative models:**
 - `black-forest-labs/flux-1.1-pro` - Battle-tested, excellent prompt following
@@ -98,4 +98,4 @@ node scripts/models.js get google/nano-banana-pro
 
 **Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
 
-See `/tools/Connectors/replicate/AGENTS.md` for additional troubleshooting.
+See `/connectors/replicate/AGENTS.md` for additional troubleshooting.

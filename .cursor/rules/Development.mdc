@@ -1,0 +1,35 @@
+---
+description: Standards for creating and modifying tools and connectors
+globs:
+  - "cofounder/tools/**"
+  - "memory/my tools/**"
+  - "cofounder/connectors/**"
+  - "memory/my connectors/**"
+alwaysApply: false
+---
+
+# Development Standards
+
+**Routing:** Check path. If `tools/` → see `tools/DEVELOPMENT.md`. If `connectors/` → see `connectors/DEVELOPMENT.md`.
+
+## Tool Quick Reference
+
+**Required files:** AGENTS.md, README.md
+
+**Tool types:** Behavior (instructions only), Script (Node/Python), Composite (routes to sub-tools)
+
+**Config location:** `/memory/[Tool Name]/`
+
+**Templates:** `/cofounder/system/templates/`
+
+**Before building:** See `tools/DEVELOPMENT.md` for full standards.
+
+## Connector Quick Reference
+
+**Step 0 is mandatory.** Before writing any code, complete the planning phase in `connectors/DEVELOPMENT.md` Step 0.
+
+**Required files:** AGENTS.md, SETUP.md, CAPABILITIES.md, README.md, package.json, scripts/utils.js
+
+**Credentials location:** `/memory/Connectors/[platform]/.env`
+
+**Auth patterns:** API Key (reference: airtable/), OAuth 2.0 (reference: linkedin/), OAuth 1.0a (reference: xcom/)

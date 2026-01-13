@@ -11,12 +11,12 @@ Required variable:
 GOOGLE_AI_API_KEY=your_gemini_api_key
 ```
 
-**Not configured?** Follow `/tools/Connectors/google/SETUP.md` Part B (API Key setup only; OAuth not required for image generation).
+**Not configured?** Follow `/connectors/google/SETUP.md` Part B (API Key setup only; OAuth not required for image generation).
 
 ## Generate an Image
 
 ```bash
-cd "/cofounder/tools/Connectors/google"
+cd "/cofounder/connectors/google"
 node scripts/ai.js image "your prompt here" --output ./image.png
 ```
 
@@ -67,4 +67,4 @@ If user requests specific dimensions, calculate the closest supported ratio:
 
 **Dependencies missing:** Run `npm install` in the Connectors/google directory.
 
-See `/tools/Connectors/google/AGENTS.md` for additional troubleshooting.
+See `/connectors/google/AGENTS.md` for additional troubleshooting.

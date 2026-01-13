@@ -2,7 +2,7 @@
 
 Scaffolding for creating new tools and workspaces in CoFounder.
 
-**For rules and standards, see `.cursor/rules/Tool Development.mdc`** (auto-loaded when working in `/cofounder/tools/`).
+**For rules and standards, see `tools/DEVELOPMENT.md`** (cursor rule `.cursor/rules/Development.mdc` auto-loads when working in tools).
 
 ## Available Templates
 
@@ -11,7 +11,9 @@ Scaffolding for creating new tools and workspaces in CoFounder.
 | **Behavior Tool** | Instructions/methodology only (no scripts) |
 | **Script Tool** | Node/Python scripts with dependencies |
 | **Composite Tool** | Parent that routes to multiple sub-tools |
-| **Workspace Root** | Standalone project using CoFounder |
+| **Workspace Root** | Complex workspace (clients, marketing, etc.) |
+| **Personal Workspace** | Simple content workspace from setup |
+| **Memory Templates/** | Files for `/memory/` directory during setup |
 
 ## Choosing a Template
 
@@ -31,8 +33,18 @@ Scaffolding for creating new tools and workspaces in CoFounder.
 - User only sets up sub-tools they need
 
 **Workspace Root** (CRO, FirstStrategy.ai)
-- Standalone project directory
+- Complex workspace with clients, marketing, internal docs
 - References `/cofounder/` for tool access
+
+**Personal Workspace** (from Start Here setup)
+- Simple content creation workspace
+- Just `/content/` directory
+- Created during first-run setup
+
+**Memory Templates** (for `/memory/` setup)
+- `my-connectors-AGENTS.md` - Custom connector routing
+- `my-tools-AGENTS.md` - Custom tool routing
+- `README.md` - Memory directory description
 
 ## Creating a New Tool
 
