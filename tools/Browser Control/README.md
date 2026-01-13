@@ -15,14 +15,6 @@ Automate web browser interactions for data extraction, form filling, and site mo
 - User needs to interact manually (just provide URL)
 - API is available (use API directly)
 
-## Setup
-
-**MCP Browser Tools** (built into Cursor): Enable the `cursor-ide-browser` MCP server in Cursor Settings > Features > MCP Servers.
-
-**Playwright Scripts** (external): Install Node.js and run `npm install playwright && npx playwright install chromium` in your automation directory.
-
-See `AGENTS.md` for detailed setup instructions.
-
 ## Quick Start
 
 Navigate to a page and take a snapshot:
@@ -37,6 +29,7 @@ Then interact using element refs from the snapshot.
 ## Documentation
 
 - **AGENTS.md** - Complete AI agent instructions (MCP tools, patterns, strategies)
+- **SETUP.md** - Installation and configuration for MCP browser tools and Playwright
 - **sites/** - Site-specific guides with domain quirks
 
 ## Site Guides

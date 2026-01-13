@@ -26,50 +26,13 @@ Automate browser interactions reliably: navigate pages, read content, interact w
 
 **What this means:** Data extraction is limited to what's visible in the accessibility snapshot. You cannot execute JavaScript to query the DOM or extract computed values.
 
-## Setup
+## Setup Detection
 
-### MCP Browser Tools (Built into Cursor)
+**Before using browser tools, verify setup is complete.**
 
-MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
+**MCP Browser Tools:** Try `browser_navigate` to any URL. If it fails with "MCP server not found" or similar, walk user through `SETUP.md` (MCP Browser Tools section).
 
-**Check if already configured:**
-1. Try `browser_navigate` to any URL
-2. If it works, setup is complete
-3. If it fails with "MCP server not found" or similar, follow setup below
-
-**To enable:**
-1. Open Cursor Settings (Cmd+, on Mac, Ctrl+, on Windows)
-2. Search for "MCP" or navigate to Features > MCP Servers
-3. Enable the `cursor-ide-browser` server
-4. Restart Cursor if prompted
-
-**Troubleshooting:**
-- If browser tools still don't work after enabling, check Cursor's MCP server logs
-- Some Cursor versions may require updating to support MCP browser tools
-
-### Playwright Scripts (External Automation)
-
-For Playwright scripts that run outside Cursor, install Node.js and Playwright:
-
-```bash
-# Install Node.js (if not installed)
-# Download from https://nodejs.org or use your package manager
-
-# Create automation directory
-mkdir -p ~/playwright-automation
-cd ~/playwright-automation
-
-# Initialize and install Playwright
-npm init -y
-npm install playwright
-npx playwright install chromium
-```
-
-**Verify installation:**
-```bash
-cd ~/playwright-automation
-node -e "const { chromium } = require('playwright'); console.log('Playwright installed successfully');"
-```
+**Playwright Scripts:** If user needs external automation, check `~/playwright-automation/` exists. If not, walk user through `SETUP.md` (Playwright Scripts section).
 
 ## Quality Checks
 
