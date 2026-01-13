@@ -41,6 +41,18 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 
 **Credentials location:** `/memory/Connectors/[platform]/.env`
 
+## Credential Setup Rules
+
+**NEVER open a browser during credential setup.** Provide step-by-step text instructions only.
+
+When walking users through `SETUP.md`:
+- Give instructions one step at a time
+- Wait for user confirmation before proceeding
+- Never use browser automation tools
+- Never navigate to URLs on behalf of the user
+
+The user handles all browser interactions. The AI provides guidance.
+
 ## File Structure
 
 | File | Audience | Purpose |
@@ -58,6 +70,6 @@ See `DEVELOPMENT.md` for patterns, templates, and testing checklist.
 
 ## Not Handled
 
-- Browser automation (use Browser Control)
-- OAuth flows requiring user interaction
+- Browser automation (connectors use APIs only; never open browsers)
+- OAuth flows requiring user interaction (provide manual instructions)
 - Real-time webhook servers
