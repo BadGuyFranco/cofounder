@@ -24,9 +24,13 @@ jobs:
           echo "Release contents:"
           unzip -l cofounder-latest.zip | tail -20
       
+      - name: Install Wrangler
+        run: npm install -g wrangler
+      
       - name: Upload to R2
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 14dede7d41cbeea1d7666cf6ffe4c133
-          command: r2 object put cofounder-releases/cofounder-latest.zip --file=cofounder-latest.zip
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 14dede7d41cbeea1d7666cf6ffe4c133
+        run: |
+          echo "Uploading to R2..."
+          wrangler r2 object put cofounder-releases/cofounder-latest.zip --file=cofounder-latest.zip --remote
