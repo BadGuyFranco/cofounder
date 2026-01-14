@@ -21,7 +21,7 @@ Once you have your API key, provide it to the AI. The AI will create the configu
 **Required credential:**
 - `NOTION_API_KEY` - Your Internal Integration Secret (starts with `secret_`)
 
-**File location:** `/memory/Connectors/notion/.env`
+**File location:** `/memory/connectors/notion/.env`
 
 ## Step 4: Connect Integration to Pages/Databases
 

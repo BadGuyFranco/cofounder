@@ -4,26 +4,32 @@ User-specific configuration that persists across `/cofounder/` library updates.
 
 ## Structure
 
-Most directories in `/memory/` mirror directories in `/cofounder/tools/`. The `my tools/` directory is for your custom tools.
+The `/memory/` directory structure mirrors `/cofounder/`:
+- `/memory/tools/` mirrors `/cofounder/tools/` (tool configuration)
+- `/memory/connectors/` mirrors `/cofounder/connectors/` (credentials)
+- `/memory/my tools/` and `/memory/my connectors/` are for your custom creations
 
 ```
 /memory/
-├── Connectors/            ← Credentials for all connectors
+├── system/
+│   └── version.txt        ← Last applied migration version (YYYY-MM-DD)
+├── tools/                 ← Tool configuration (mirrors /cofounder/tools/)
+│   ├── Content Author/
+│   │   └── voice.md       ← Writing voice and persona
+│   ├── Image Generator/
+│   │   └── .env           ← API keys, models, service order
+│   └── Video Generator/
+│       └── .env           ← API keys, models, service order
+├── connectors/            ← Connector credentials (mirrors /cofounder/connectors/)
 │   └── [platform]/
 │       └── .env
-├── Content Author/
-│   └── voice.md           ← Writing voice and persona
-├── Image Generator/
-│   └── .env               ← API keys, models, service order
-├── Video Generator/
-│   └── .env               ← API keys, models, service order
-├── my connectors/         ← Your custom connectors (not in /cofounder/)
-│   └── [platform]/
-│       └── AGENTS.md, scripts/, etc.
 ├── my tools/              ← Your custom tools (not in /cofounder/)
 │   └── [Your Tool]/
 │       └── AGENTS.md
-├── my plans/              ← Execution plans from Planner tool
+├── my connectors/         ← Your custom connectors (not in /cofounder/)
+│   └── [platform]/
+│       └── AGENTS.md, scripts/, etc.
+├── plans/                 ← Execution plans from Planner tool
 └── README.md
 ```
 
@@ -48,7 +54,7 @@ Most directories in `/memory/` mirror directories in `/cofounder/tools/`. The `m
 
 **Code vs. Credentials:**
 - Connector **code** (scripts, AGENTS.md) goes in `/memory/my connectors/[platform]/`
-- Connector **credentials** (.env files) go in `/memory/Connectors/[platform]/`
+- Connector **credentials** (.env files) go in `/memory/connectors/[platform]/`
 
 This separation keeps credentials in one secure location regardless of where the connector code lives.
 
@@ -57,7 +63,7 @@ This separation keeps credentials in one secure location regardless of where the
 2. Create a directory: `/memory/my connectors/[platform]/`
 3. Build required files (AGENTS.md, SETUP.md, CAPABILITIES.md, scripts/)
 4. Add to routing table in `/memory/my connectors/AGENTS.md`
-5. Store credentials in `/memory/Connectors/[platform]/.env`
+5. Store credentials in `/memory/connectors/[platform]/.env`
 
 **Routing priority:** When you request a connector, the system checks `/memory/my connectors/` first, then falls back to `/cofounder/connectors/`. Your custom connectors take priority.
 
@@ -65,17 +71,17 @@ This separation keeps credentials in one secure location regardless of where the
 
 ### Content Author
 
-`/memory/Content Author/voice.md` - Writing voice, persona, and style preferences.
+`/memory/tools/Content Author/voice.md` - Writing voice, persona, and style preferences.
 
 ### Image Generator
 
-`/memory/Image Generator/.env` - Service configuration:
+`/memory/tools/Image Generator/.env` - Service configuration:
 - `IMAGE_SERVICE_ORDER` - Comma-separated list of services in preference order (e.g., `nano_banana,replicate,xai`)
 - API keys and model names for each service you have access to
 
 ### Video Generator
 
-`/memory/Video Generator/.env` - Service configuration:
+`/memory/tools/Video Generator/.env` - Service configuration:
 - `VIDEO_SERVICE_ORDER` - Comma-separated list of services in preference order (e.g., `google_veo,replicate`)
 - API keys and model names for each service you have access to
 
@@ -85,14 +91,14 @@ This separation keeps credentials in one secure location regardless of where the
 
 Use workspace-rooted absolute paths (`/memory/...`, `/cofounder/...`). These work regardless of which directory the agent is running from.
 
-Example: `/memory/Content Author/voice.md`
+Example: `/memory/tools/Content Author/voice.md`
 
 Relative paths like `../../memory/` are fragile; they break when files are loaded from different contexts.
 
 ### Directory Naming
 
 - Directory names in `/memory/` must **exactly match** their `/cofounder/tools/` counterparts
-- Example: `/memory/Content Author/` (matches `/cofounder/tools/Content Author/`)
+- Example: `/memory/tools/Content Author/` (matches `/cofounder/tools/Content Author/`)
 
 ### Missing Memory Directory
 
@@ -113,7 +119,7 @@ If a shared library references `/memory/` and the directory doesn't exist:
 | User-specific configuration | Reusable frameworks |
 | Custom tools (`my tools/`) | Shared tools (`tools/`) |
 | Custom connectors (`my connectors/`) | Shared connectors (`connectors/`) |
-| Connector credentials (`Connectors/`) | Connector code and patterns |
+| Connector credentials (`connectors/`) | Connector code and patterns |
 
 ### What Does NOT Belong Here
 
@@ -128,4 +134,4 @@ When creating a new shared library that needs user configuration:
 1. Document required memory files in your library's `AGENTS.md`
 2. Provide a template or example in your library
 3. Include setup instructions for first-time users
-4. Add validation that checks for `/memory/[Your Library]/` before proceeding (library names match `/cofounder/tools/` directory names)
+4. Add validation that checks for `/memory/tools/[Your Library]/` before proceeding (library names match `/cofounder/tools/` directory names)

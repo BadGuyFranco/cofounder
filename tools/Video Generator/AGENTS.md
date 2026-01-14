@@ -28,48 +28,48 @@ Before generating videos, check which services are configured.
 
 **Replicate configured?**
 ```bash
-test -f "/memory/Connectors/replicate/.env" && grep -q "REPLICATE_API_TOKEN" "/memory/Connectors/replicate/.env" && echo "YES" || echo "NO"
+test -f "/memory/connectors/replicate/.env" && grep -q "REPLICATE_API_TOKEN" "/memory/connectors/replicate/.env" && echo "YES" || echo "NO"
 ```
 
 **Google AI configured?**
 ```bash
-test -f "/memory/Connectors/google/.env" && grep -q "GOOGLE_AI_API_KEY" "/memory/Connectors/google/.env" && echo "YES" || echo "NO"
+test -f "/memory/connectors/google/.env" && grep -q "GOOGLE_AI_API_KEY" "/memory/connectors/google/.env" && echo "YES" || echo "NO"
 ```
 
 ### Legacy Credential Migration
 
-If `/memory/Video Generator/.env` exists with credentials, silently migrate them:
+If `/memory/tools/Video Generator/.env` exists with credentials, silently migrate them:
 
 **Migration logic:**
-1. Check if `/memory/Video Generator/.env` exists
-2. If `REPLICATE_API_TOKEN` exists in old location AND `/memory/Connectors/replicate/.env` does NOT have it:
-   - Copy token to `/memory/Connectors/replicate/.env`
-3. If `GEMINI_API_KEY` exists in old location AND `/memory/Connectors/google/.env` does NOT have `GOOGLE_AI_API_KEY`:
-   - Copy to `/memory/Connectors/google/.env` as `GOOGLE_AI_API_KEY`
-4. Rename old file to `/memory/Video Generator/.env.migrated`
+1. Check if `/memory/tools/Video Generator/.env` exists
+2. If `REPLICATE_API_TOKEN` exists in old location AND `/memory/connectors/replicate/.env` does NOT have it:
+   - Copy token to `/memory/connectors/replicate/.env`
+3. If `GEMINI_API_KEY` exists in old location AND `/memory/connectors/google/.env` does NOT have `GOOGLE_AI_API_KEY`:
+   - Copy to `/memory/connectors/google/.env` as `GOOGLE_AI_API_KEY`
+4. Rename old file to `/memory/tools/Video Generator/.env.migrated`
 
 **Silent migration command sequence:**
 ```bash
 # Check and migrate Replicate token
-if [ -f "/memory/Video Generator/.env" ]; then
-  OLD_TOKEN=$(grep REPLICATE_API_TOKEN "/memory/Video Generator/.env" 2>/dev/null | cut -d= -f2)
+if [ -f "/memory/tools/Video Generator/.env" ]; then
+  OLD_TOKEN=$(grep REPLICATE_API_TOKEN "/memory/tools/Video Generator/.env" 2>/dev/null | cut -d= -f2)
   if [ -n "$OLD_TOKEN" ]; then
-    if ! grep -q REPLICATE_API_TOKEN "/memory/Connectors/replicate/.env" 2>/dev/null; then
-      mkdir -p "/memory/Connectors/replicate"
-      echo "REPLICATE_API_TOKEN=$OLD_TOKEN" >> "/memory/Connectors/replicate/.env"
+    if ! grep -q REPLICATE_API_TOKEN "/memory/connectors/replicate/.env" 2>/dev/null; then
+      mkdir -p "/memory/connectors/replicate"
+      echo "REPLICATE_API_TOKEN=$OLD_TOKEN" >> "/memory/connectors/replicate/.env"
     fi
   fi
   
   # Migrate Gemini key
-  OLD_GEMINI=$(grep GEMINI_API_KEY "/memory/Video Generator/.env" 2>/dev/null | cut -d= -f2)
+  OLD_GEMINI=$(grep GEMINI_API_KEY "/memory/tools/Video Generator/.env" 2>/dev/null | cut -d= -f2)
   if [ -n "$OLD_GEMINI" ]; then
-    if ! grep -q GOOGLE_AI_API_KEY "/memory/Connectors/google/.env" 2>/dev/null; then
-      mkdir -p "/memory/Connectors/google"
-      echo "GOOGLE_AI_API_KEY=$OLD_GEMINI" >> "/memory/Connectors/google/.env"
+    if ! grep -q GOOGLE_AI_API_KEY "/memory/connectors/google/.env" 2>/dev/null; then
+      mkdir -p "/memory/connectors/google"
+      echo "GOOGLE_AI_API_KEY=$OLD_GEMINI" >> "/memory/connectors/google/.env"
     fi
   fi
   
-  mv "/memory/Video Generator/.env" "/memory/Video Generator/.env.migrated"
+  mv "/memory/tools/Video Generator/.env" "/memory/tools/Video Generator/.env.migrated"
 fi
 ```
 
@@ -102,7 +102,7 @@ Which would you like to set up? (1 or 2)
 
 1. Tell user: "Go to https://replicate.com/account/api-tokens and create a new API token."
 2. User provides token (starts with `r8_`)
-3. Create `/memory/Connectors/replicate/.env`:
+3. Create `/memory/connectors/replicate/.env`:
    ```
    REPLICATE_API_TOKEN=r8_xxxxxxxxxx
    ```
@@ -174,8 +174,8 @@ node scripts/local-video-edit.js [options]
 
 | Service | Process File | Credential Location |
 |---------|--------------|---------------------|
-| Replicate | `processes/Replicate.md` | `/memory/Connectors/replicate/.env` |
-| Google AI | `processes/Google.md` | `/memory/Connectors/google/.env` |
+| Replicate | `processes/Replicate.md` | `/memory/connectors/replicate/.env` |
+| Google AI | `processes/Google.md` | `/memory/connectors/google/.env` |
 
 ### Default Models
 

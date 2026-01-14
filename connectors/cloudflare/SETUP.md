@@ -172,7 +172,7 @@ If your token is compromised:
 2. Find the token
 3. Click "..." menu > "Roll" (regenerates) or "Delete"
 4. Create new token if deleted
-5. Update `/memory/Connectors/cloudflare/.env`
+5. Update `/memory/connectors/cloudflare/.env`
 
 ## Troubleshooting
 

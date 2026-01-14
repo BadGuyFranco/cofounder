@@ -35,7 +35,7 @@ Once you have your Personal Access Token, provide it to the AI. The AI will crea
 **Required credential:**
 - `AIRTABLE_PAT` - Your Personal Access Token (starts with `pat`)
 
-**File location:** `/memory/Connectors/airtable/.env`
+**File location:** `/memory/connectors/airtable/.env`
 
 ## Step 4: Verify Setup
 
@@ -82,7 +82,7 @@ If your token is compromised:
 1. Go to Developer Hub
 2. Find the token
 3. Click "Regenerate" or delete and create new
-4. Update `/memory/Connectors/airtable/.env`
+4. Update `/memory/connectors/airtable/.env`
 
 ## Troubleshooting
 

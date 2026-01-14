@@ -48,7 +48,7 @@ Once you have your Access Token, provide it to the AI. The AI will create the co
 **Required credential:**
 - `HUBSPOT_ACCESS_TOKEN` - Your Private App access token (starts with `pat-`)
 
-**File location:** `/memory/Connectors/hubspot/.env`
+**File location:** `/memory/connectors/hubspot/.env`
 
 ## Step 5: Verify Setup
 

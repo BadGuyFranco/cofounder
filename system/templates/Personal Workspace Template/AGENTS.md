@@ -13,7 +13,7 @@ My content creation workspace.
 For any writing task:
 
 1. Load `/cofounder/tools/Content Author/AGENTS.md`
-2. Apply my voice from `/memory/Content Author/voice.md`
+2. Apply my voice from `/memory/tools/Content Author/voice.md`
 3. Save output to `/[Your Name]/content/`
 
 ## Available Tools

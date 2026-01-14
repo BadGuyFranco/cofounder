@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Memory directory for credentials
-export const MEMORY_DIR = '/memory/Connectors/google';
+export const MEMORY_DIR = '/memory/connectors/google';
 
 // Fallback for development (relative to script location)
 function getMemoryDir() {

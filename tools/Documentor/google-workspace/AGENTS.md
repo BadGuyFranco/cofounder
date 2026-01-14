@@ -45,7 +45,7 @@ When prompted, select scopes that include:
 node scripts/auth.js status --account your@email.com
 ```
 
-Credentials stored in `/memory/Connectors/google/[email].json`
+Credentials stored in `/memory/connectors/google/[email].json`
 
 ## Scripts
 

@@ -128,7 +128,7 @@ Every connector MUST have:
 | `scripts/utils.js` | Shared utilities: auth, env loading, error handling |
 | `scripts/[domain].js` | Feature scripts (one per domain/resource type) |
 
-Credentials stored in: `/memory/Connectors/[platform]/.env`
+Credentials stored in: `/memory/connectors/[platform]/.env`
 
 ## File-by-File Guide
 
@@ -146,7 +146,7 @@ Active | Stubbed | Planned
 [Single command to verify setup works]
 
 ## Credentials
-Location: `/memory/Connectors/[platform]/.env`
+Location: `/memory/connectors/[platform]/.env`
 
 Required variables:
 - `VAR_NAME` - Description
@@ -317,7 +317,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Memory directory for credentials
-const MEMORY_DIR = '/memory/Connectors/[platform]';
+const MEMORY_DIR = '/memory/connectors/[platform]';
 
 /**
  * Load environment variables from .env file
@@ -622,7 +622,7 @@ For connectors supporting multiple accounts.
 
 Directory structure:
 ```
-/memory/Connectors/[platform]/
+/memory/connectors/[platform]/
 ├── [account1]/
 │   └── .env
 ├── [account2]/

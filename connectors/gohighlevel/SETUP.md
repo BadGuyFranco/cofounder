@@ -49,7 +49,7 @@ Once you have your API key and Location ID, provide them to the AI. The AI will 
 - `GHL_API_KEY` - Your Private Integration Token
 - `GHL_LOCATION_ID` - Your Location/Company ID
 
-**File location:** `/memory/Connectors/gohighlevel/.env`
+**File location:** `/memory/connectors/gohighlevel/.env`
 
 ## Step 4: Verify Setup
 

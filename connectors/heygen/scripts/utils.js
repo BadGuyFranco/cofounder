@@ -11,7 +11,7 @@ import fs from 'fs';
 
 const MEMORY_DIR = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/heygen'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/heygen'
 );
 const API_BASE = 'https://api.heygen.com';
 
@@ -87,12 +87,12 @@ export function loadEnv(account = null) {
         console.error('Example: node scripts/videos.js list --account personal');
       } else {
         console.error('Error: No .env file found.');
-        console.error('Create /memory/Connectors/heygen/.env with:');
+        console.error('Create /memory/connectors/heygen/.env with:');
         console.error('  HEYGEN_API_KEY=your_api_key_here');
         console.error('');
         console.error('For multiple accounts, create subdirectories:');
-        console.error('  /memory/Connectors/heygen/personal/.env');
-        console.error('  /memory/Connectors/heygen/business/.env');
+        console.error('  /memory/connectors/heygen/personal/.env');
+        console.error('  /memory/connectors/heygen/business/.env');
         console.error('');
         console.error('See SETUP.md for instructions.');
       }
@@ -120,7 +120,7 @@ export function getCredentials() {
   
   if (!apiKey) {
     console.error('Error: HEYGEN_API_KEY not found in environment.');
-    console.error('Add HEYGEN_API_KEY=your_key to /memory/Connectors/heygen/.env');
+    console.error('Add HEYGEN_API_KEY=your_key to /memory/connectors/heygen/.env');
     process.exit(1);
   }
   
@@ -257,8 +257,8 @@ export function printAccounts() {
   if (accounts.length === 0) {
     console.log('No accounts configured.\n');
     console.log('To set up an account:');
-    console.log('1. Create /memory/Connectors/heygen/.env for a default account');
-    console.log('2. Or create /memory/Connectors/heygen/<name>/.env for named accounts');
+    console.log('1. Create /memory/connectors/heygen/.env for a default account');
+    console.log('2. Or create /memory/connectors/heygen/<name>/.env for named accounts');
     console.log('');
     console.log('See SETUP.md for detailed instructions.');
     return;

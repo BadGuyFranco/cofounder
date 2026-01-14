@@ -19,7 +19,7 @@
  *     --help          Show this help message
  *
  * Configuration:
- *     Environment variables loaded from /memory/[Tool Name]/.env
+ *     Environment variables loaded from /memory/tools/[Tool Name]/.env
  *     See /memory/README.md for setup.
  */
 
@@ -36,14 +36,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Navigate from script location to memory directory
-// Path: /cofounder/tools/[Tool Name]/scripts/ -> /memory/[Tool Name]/
-const memoryEnvPath = resolve(__dirname, '../../../../memory/[Tool Name]/.env');
+// Path: /cofounder/tools/[Tool Name]/scripts/ -> /memory/tools/[Tool Name]/
+const memoryEnvPath = resolve(__dirname, '../../../../memory/tools/[Tool Name]/.env');
 
 if (existsSync(memoryEnvPath)) {
   config({ path: memoryEnvPath });
 } else {
   console.log(`Warning: .env not found at ${memoryEnvPath}`);
-  console.log('   Create /memory/[Tool Name]/.env with your configuration');
+  console.log('   Create /memory/tools/[Tool Name]/.env with your configuration');
   console.log('   See /memory/README.md for setup instructions');
 }
 
@@ -65,13 +65,13 @@ let VERBOSE = false;
 function validateConfig() {
   if (!API_KEY) {
     console.log('Error: API_KEY not found!');
-    console.log('   Add API_KEY to /memory/[Tool Name]/.env');
+    console.log('   Add API_KEY to /memory/tools/[Tool Name]/.env');
     process.exit(1);
   }
 
   if (!MODEL_NAME) {
     console.log('Error: MODEL_NAME not found!');
-    console.log('   Add MODEL_NAME to /memory/[Tool Name]/.env');
+    console.log('   Add MODEL_NAME to /memory/tools/[Tool Name]/.env');
     process.exit(1);
   }
 
@@ -159,7 +159,7 @@ Options:
     --help          Show this help message
 
 Configuration:
-    Environment variables loaded from /memory/[Tool Name]/.env
+    Environment variables loaded from /memory/tools/[Tool Name]/.env
     See /memory/README.md for setup.
 `);
   process.exit(0);
@@ -201,7 +201,7 @@ process.exit(exitCode);
  *
  * Path calculation for /memory/:
  * - Scripts at: /cofounder/tools/[Tool Name]/scripts/
- * - Memory at: /memory/[Tool Name]/
- * - Relative: ../../../../memory/[Tool Name]/.env
+ * - Memory at: /memory/tools/[Tool Name]/
+ * - Relative: ../../../../memory/tools/[Tool Name]/.env
  */
 

@@ -90,10 +90,10 @@ For complex prompt work, invoke Prompt Author tool for full methodology.
 
 ## Configuration
 
-- Config lives in `/memory/[Tool Name]/`, not in tool code
+- Config lives in `/memory/tools/[Tool Name]/`, not in tool code
 - CLI `--help` is source of truth for command options; AGENTS.md summarizes
 
-User configuration goes in `/memory/[Tool Name]/`:
+User configuration goes in `/memory/tools/[Tool Name]/`:
 - `.env` files for API keys and settings
 - Account credentials (OAuth tokens)
 - User preferences

@@ -23,7 +23,7 @@ node scripts/contacts.js search "john" --location "First Strategy"
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/gohighlevel/.env`
+**Credentials:** `/memory/connectors/gohighlevel/.env`
 
 ```
 GHL_FIRST_STRATEGY_ID=VKxBzjSxzspKqBPmB1cV
@@ -59,7 +59,7 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 cd "/cofounder/connectors/gohighlevel" && npm install
 ```
 
-**"No .env file found":** Create `/memory/Connectors/gohighlevel/.env` with your credentials.
+**"No .env file found":** Create `/memory/connectors/gohighlevel/.env` with your credentials.
 
 **"No location specified":** Use `--location "Name"` or set `GHL_DEFAULT` in .env.
 

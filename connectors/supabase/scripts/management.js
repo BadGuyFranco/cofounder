@@ -33,7 +33,7 @@ const MANAGEMENT_API_URL = 'https://api.supabase.com/v1';
 function loadAccessToken() {
   const memoryEnvPath = path.join(
     process.env.HOME || '',
-    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/supabase/.env'
+    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase/.env'
   );
   const localEnvPath = path.join(__dirname, '..', '.env');
 
@@ -49,7 +49,7 @@ function loadAccessToken() {
     console.error('Create a Personal Access Token at:');
     console.error('  https://supabase.com/dashboard/account/tokens');
     console.error('');
-    console.error('Then add to /memory/Connectors/supabase/.env:');
+    console.error('Then add to /memory/connectors/supabase/.env:');
     console.error('  SUPABASE_ACCESS_TOKEN=sbp_xxxxxxxxxxxx');
     process.exit(1);
   }
@@ -101,7 +101,7 @@ async function managementRequest(endpoint, options = {}) {
 function getProjectsDir() {
   return path.join(
     process.env.HOME || '',
-    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/supabase/projects'
+    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase/projects'
   );
 }
 
@@ -470,7 +470,7 @@ function showHelp() {
   console.log('  1. Create a Personal Access Token at:');
   console.log('     https://supabase.com/dashboard/account/tokens');
   console.log('');
-  console.log('  2. Add to /memory/Connectors/supabase/.env:');
+  console.log('  2. Add to /memory/connectors/supabase/.env:');
   console.log('     SUPABASE_ACCESS_TOKEN=sbp_xxxxxxxxxxxx');
   console.log('');
   console.log('Examples:');

@@ -5,7 +5,7 @@
  * This module provides getAuthClient() for other Documentor scripts.
  * Credentials are managed by the centralized Google Connector.
  * 
- * Credential location: /memory/Connectors/google/[email].json
+ * Credential location: /memory/connectors/google/[email].json
  * Setup: See /connectors/google/SETUP.md
  */
 

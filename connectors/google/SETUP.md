@@ -258,7 +258,7 @@ Give the AI your Client ID and Client Secret. The AI will:
 - `GOOGLE_CLIENT_ID` - The Client ID from Step 5
 - `GOOGLE_CLIENT_SECRET` - The Client Secret from Step 5
 
-**Credential storage location:** `/memory/Connectors/google/[your-email].json`
+**Credential storage location:** `/memory/connectors/google/[your-email].json`
 
 ### Step 7: Complete OAuth Flow
 
@@ -328,7 +328,7 @@ The Gemini API uses a simpler API key (not OAuth). This is separate from the OAu
 ### Step 2: Provide API Key to AI
 
 Give the AI your Gemini API key. The AI will store it in:
-`/memory/Connectors/google/.env`
+`/memory/connectors/google/.env`
 
 **Required:**
 - `GOOGLE_AI_API_KEY` - Your Gemini API key
@@ -364,8 +364,8 @@ The `--account` flag determines which account credentials to use for operations.
 
 | Credential Type | Location |
 |-----------------|----------|
-| OAuth per account | `/memory/Connectors/google/[email].json` |
-| API keys | `/memory/Connectors/google/.env` |
+| OAuth per account | `/memory/connectors/google/[email].json` |
+| API keys | `/memory/connectors/google/.env` |
 
 ## Scopes Reference
 

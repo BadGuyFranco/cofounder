@@ -28,7 +28,7 @@ node scripts/posts.js list           # List posts
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/publer/.env`
+**Credentials:** `/memory/connectors/publer/.env`
 
 ```
 PUBLER_API_KEY=your_api_key_here

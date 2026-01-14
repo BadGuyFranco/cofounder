@@ -4,7 +4,7 @@ Generate videos using Google's Veo model via the centralized Connector.
 
 ## Prerequisites
 
-**Credential location:** `/memory/Connectors/google/.env`
+**Credential location:** `/memory/connectors/google/.env`
 
 Required variable:
 ```
@@ -59,6 +59,6 @@ Replicate hosts Google's Veo models with full API access:
 
 **"Video generation (Veo) is currently in limited preview":** This is expected. Use Replicate instead.
 
-**API key not found:** Verify `GOOGLE_AI_API_KEY` is set in `/memory/Connectors/google/.env`
+**API key not found:** Verify `GOOGLE_AI_API_KEY` is set in `/memory/connectors/google/.env`
 
 See `/connectors/google/AGENTS.md` for additional troubleshooting.

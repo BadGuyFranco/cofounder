@@ -13,7 +13,7 @@ User-created custom connectors. Build connectors for platforms not included in `
 Custom connectors follow the same patterns as built-in connectors. The difference is where they live.
 
 **Code lives here:** `/memory/my connectors/[platform]/`  
-**Credentials live there:** `/memory/Connectors/[platform]/.env`
+**Credentials live there:** `/memory/connectors/[platform]/.env`
 
 ### Quick Start
 
@@ -54,10 +54,10 @@ Copy the pattern that matches your target API:
 
 ### Credential Storage
 
-All credentials (built-in or custom connectors) go in `/memory/Connectors/`:
+All credentials (built-in or custom connectors) go in `/memory/connectors/`:
 
 ```
-/memory/Connectors/
+/memory/connectors/
 ├── [your-platform]/
 │   └── .env
 ```

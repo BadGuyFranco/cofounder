@@ -95,14 +95,14 @@ Once you have all credentials, provide them to the AI. The AI will create the co
 - `X_ACCESS_TOKEN_SECRET` - Access Token Secret
 - `X_BEARER_TOKEN` - Bearer Token
 
-**File location:** `/memory/Connectors/xcom/.env`
+**File location:** `/memory/connectors/xcom/.env`
 
 ### Multiple Account Setup
 
 For multiple X accounts, tell the AI the account name (e.g., "personal", "business"). The AI will create credentials in subdirectories:
 
 ```
-/memory/Connectors/xcom/
+/memory/connectors/xcom/
   personal/.env    <- Credentials for @your_personal_handle
   business/.env    <- Credentials for @your_business_handle
 ```

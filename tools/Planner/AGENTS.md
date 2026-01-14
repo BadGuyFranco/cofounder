@@ -82,10 +82,10 @@ If the user's request is vague, ask clarifying questions. Don't generate a plan 
 
 ## Plan Storage
 
-**Default location:** `/memory/my plans/`
+**Default location:** `/memory/plans/`
 
 **Before creating a plan, ask:**
-> "I'll save this plan to `/memory/my plans/`. Want a different location?"
+> "I'll save this plan to `/memory/plans/`. Want a different location?"
 
 **Naming convention:** `YYYY-MM-DD-[descriptive-slug].plan.md`
 

@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Memory directory for credentials
 const memoryEnvPath = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/clickup/.env'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/clickup/.env'
 );
 const localEnvPath = path.join(__dirname, '..', '.env');
 
@@ -31,7 +31,7 @@ export function loadConfig() {
     dotenv.config({ path: localEnvPath });
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/clickup/.env with your CLICKUP_API_KEY');
+    console.error('Create /memory/connectors/clickup/.env with your CLICKUP_API_KEY');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
   }

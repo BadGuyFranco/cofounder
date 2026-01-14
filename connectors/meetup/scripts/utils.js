@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/meetup');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/meetup');
 const GRAPHQL_URL = 'https://api.meetup.com/gql';
 const AUTH_URL = 'https://secure.meetup.com/oauth2/authorize';
 const TOKEN_URL = 'https://secure.meetup.com/oauth2/access';
@@ -31,7 +31,7 @@ export function loadEnv(localDir) {
     return localEnvPath;
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/meetup/.env with:');
+    console.error('Create /memory/connectors/meetup/.env with:');
     console.error('  MEETUP_CLIENT_ID=your_client_id');
     console.error('  MEETUP_CLIENT_SECRET=your_client_secret');
     console.error('  MEETUP_ACCESS_TOKEN=your_access_token');
@@ -47,7 +47,7 @@ export function getToken() {
   const token = process.env.MEETUP_ACCESS_TOKEN;
   if (!token) {
     console.error('Error: MEETUP_ACCESS_TOKEN not found in environment.');
-    console.error('Add it to /memory/Connectors/meetup/.env');
+    console.error('Add it to /memory/connectors/meetup/.env');
     console.error('Run: node scripts/auth.js flow to get a token');
     process.exit(1);
   }
@@ -63,7 +63,7 @@ export function getClientCredentials() {
   
   if (!clientId || !clientSecret) {
     console.error('Error: MEETUP_CLIENT_ID and MEETUP_CLIENT_SECRET required.');
-    console.error('Add them to /memory/Connectors/meetup/.env');
+    console.error('Add them to /memory/connectors/meetup/.env');
     process.exit(1);
   }
   

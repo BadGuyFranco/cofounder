@@ -23,7 +23,7 @@ node scripts/pages.js create "My Page Title" --parent-id abc123 --content "Hello
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/notion/.env`
+**Credentials:** `/memory/connectors/notion/.env`
 
 ```
 NOTION_API_KEY=secret_xxxxxxxxxxxxx
@@ -40,7 +40,7 @@ NOTION_API_KEY=secret_xxxxxxxxxxxxx
 cd "/cofounder/connectors/notion" && npm install
 ```
 
-**"NOTION_API_KEY not found":** Create `/memory/Connectors/notion/.env` with your key.
+**"NOTION_API_KEY not found":** Create `/memory/connectors/notion/.env` with your key.
 
 **"Could not find page/database":** The integration must be explicitly connected to the page. In Notion: "..." menu > "Add connections" > Select your integration.
 

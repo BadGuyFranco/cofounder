@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/wordpress');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/wordpress');
 
 let loadedSite = null;
 let siteConfig = null;
@@ -84,14 +84,14 @@ export function loadEnv(localDir, site = null) {
         console.error('Example: node scripts/posts.js list --site myblog');
       } else {
         console.error('Error: No .env file found.');
-        console.error('Create /memory/Connectors/wordpress/.env with:');
+        console.error('Create /memory/connectors/wordpress/.env with:');
         console.error('  WP_SITE_URL=https://yoursite.com');
         console.error('  WP_USERNAME=your_username');
         console.error('  WP_APP_PASSWORD=xxxx xxxx xxxx xxxx xxxx xxxx');
         console.error('');
         console.error('For multiple sites, create subdirectories:');
-        console.error('  /memory/Connectors/wordpress/myblog/.env');
-        console.error('  /memory/Connectors/wordpress/myshop/.env');
+        console.error('  /memory/connectors/wordpress/myblog/.env');
+        console.error('  /memory/connectors/wordpress/myshop/.env');
         console.error('');
         console.error('See SETUP.md for instructions.');
       }
@@ -386,8 +386,8 @@ export function printSites() {
   if (sites.length === 0) {
     console.log('No WordPress sites configured.\n');
     console.log('To set up a site:');
-    console.log('1. Create /memory/Connectors/wordpress/.env for a default site');
-    console.log('2. Or create /memory/Connectors/wordpress/<name>/.env for named sites');
+    console.log('1. Create /memory/connectors/wordpress/.env for a default site');
+    console.log('2. Or create /memory/connectors/wordpress/<name>/.env for named sites');
     console.log('');
     console.log('See SETUP.md for detailed instructions.');
     return;

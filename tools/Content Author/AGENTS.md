@@ -6,7 +6,7 @@ Produce content that says impactful things plainly. Every piece should pass enfo
 
 ## Required: Load Voice File
 
-Before writing, load `/memory/Content Author/voice.md` (voice patterns, examples, and persona).
+Before writing, load `/memory/tools/Content Author/voice.md` (voice patterns, examples, and persona).
 
 **If voice.md is missing:** Stop. Do not proceed with content writing. Tell the user: "voice.md is missing. Run `tools/Content Author/VoiceSetup.md` to create it, or provide a voice.md file."
 

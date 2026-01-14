@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/gohighlevel');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/gohighlevel');
 const BASE_URL = 'https://services.leadconnectorhq.com';
 
 /**
@@ -29,7 +29,7 @@ export function loadEnv(localDir) {
     return localEnvPath;
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/gohighlevel/.env');
+    console.error('Create /memory/connectors/gohighlevel/.env');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
   }

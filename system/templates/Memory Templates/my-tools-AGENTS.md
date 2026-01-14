@@ -44,4 +44,4 @@ To customize a built-in tool:
 2. Modify as needed
 3. Your version takes priority (routing checks here first)
 
-Note: Most customization happens in `/memory/[Tool Name]/` (configuration) rather than creating a full tool override. Only create a tool override if you need to change the tool's behavior, not just its settings.
+Note: Most customization happens in `/memory/tools/[Tool Name]/` (configuration) rather than creating a full tool override. Only create a tool override if you need to change the tool's behavior, not just its settings.

@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Load environment from memory directory or local
 const memoryEnvPath = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/airtable/.env'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/airtable/.env'
 );
 const localEnvPath = path.join(__dirname, '..', '.env');
 
@@ -24,7 +24,7 @@ export function loadConfig() {
     dotenv.config({ path: localEnvPath });
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/airtable/.env with your AIRTABLE_PAT');
+    console.error('Create /memory/connectors/airtable/.env with your AIRTABLE_PAT');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
   }

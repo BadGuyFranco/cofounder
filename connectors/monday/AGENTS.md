@@ -23,7 +23,7 @@ node scripts/boards.js list
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/monday/.env`
+**Credentials:** `/memory/connectors/monday/.env`
 
 ```
 MONDAY_API_KEY=eyJhbGciOiJIUzI1NiJ9...
@@ -49,7 +49,7 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 cd "/cofounder/connectors/monday" && npm install
 ```
 
-**"MONDAY_API_KEY not found":** Create `/memory/Connectors/monday/.env` with your token.
+**"MONDAY_API_KEY not found":** Create `/memory/connectors/monday/.env` with your token.
 
 **"Not Authenticated":** Token may be invalid or expired. Generate a new one in Monday.com.
 

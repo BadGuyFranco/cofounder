@@ -58,7 +58,7 @@ Once you have your Client ID and Secret, provide them to the AI. The AI will cre
 - `LINKEDIN_CLIENT_ID` - Your app's Client ID
 - `LINKEDIN_CLIENT_SECRET` - Your app's Client Secret
 
-**File location:** `/memory/Connectors/linkedin/.env`
+**File location:** `/memory/connectors/linkedin/.env`
 
 ## Step 6: Get Access Token
 

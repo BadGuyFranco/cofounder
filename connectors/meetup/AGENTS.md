@@ -24,7 +24,7 @@ node scripts/auth.js status    # Test your connection
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/meetup/.env`
+**Credentials:** `/memory/connectors/meetup/.env`
 
 ```
 MEETUP_CLIENT_ID=your_client_id
@@ -67,7 +67,7 @@ node scripts/auth.js flow      # Full re-authentication
 cd "/cofounder/connectors/meetup" && npm install
 ```
 
-**"MEETUP_ACCESS_TOKEN not found":** Create `/memory/Connectors/meetup/.env`. Run `node scripts/auth.js flow` to get a token.
+**"MEETUP_ACCESS_TOKEN not found":** Create `/memory/connectors/meetup/.env`. Run `node scripts/auth.js flow` to get a token.
 
 **"401 Unauthorized":** Token expired (1-hour limit). Run `node scripts/auth.js refresh` to get a new token.
 

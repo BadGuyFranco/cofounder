@@ -49,7 +49,7 @@ Once you have your API token, provide it to the AI. The AI will create the confi
 **Required credential:**
 - `MONDAY_API_KEY` - Your API token (long JWT string starting with `eyJ...`)
 
-**File location:** `/memory/Connectors/monday/.env`
+**File location:** `/memory/connectors/monday/.env`
 
 ## Step 3: Verify Setup
 

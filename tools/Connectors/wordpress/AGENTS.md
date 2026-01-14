@@ -19,7 +19,7 @@ node scripts/site.js verify
 
 ## Configuration
 
-**Single Site:** `/memory/Connectors/wordpress/.env`
+**Single Site:** `/memory/connectors/wordpress/.env`
 
 ```
 WP_SITE_URL=https://yoursite.com
@@ -30,7 +30,7 @@ WP_APP_PASSWORD=xxxx xxxx xxxx xxxx xxxx xxxx
 **Multiple Sites:** Create subdirectories for each site:
 
 ```
-/memory/Connectors/wordpress/
+/memory/connectors/wordpress/
   myblog/.env      <- blog.example.com
   myshop/.env      <- shop.example.com
 ```

@@ -8,7 +8,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Load environment from memory directory or local
-const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/make/.env');
+const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/make/.env');
 const localEnvPath = path.join(path.dirname(new URL(import.meta.url).pathname), '..', '.env');
 
 if (fs.existsSync(memoryEnvPath)) {
@@ -23,7 +23,7 @@ export function validateEnv() {
   if (!process.env.MAKE_API_TOKEN) {
     console.error('Error: MAKE_API_TOKEN not found in environment.');
     console.error('');
-    console.error('Create /memory/Connectors/make/.env with:');
+    console.error('Create /memory/connectors/make/.env with:');
     console.error('  MAKE_API_TOKEN=your-token-here');
     console.error('  MAKE_REGION=us1');
     console.error('');

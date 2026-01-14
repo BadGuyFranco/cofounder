@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Memory directory for credentials
 const memoryEnvPath = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/replicate/.env'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/replicate/.env'
 );
 const localEnvPath = path.join(__dirname, '..', '.env');
 
@@ -29,7 +29,7 @@ export function loadConfig() {
     dotenv.config({ path: localEnvPath });
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/replicate/.env with your REPLICATE_API_TOKEN');
+    console.error('Create /memory/connectors/replicate/.env with your REPLICATE_API_TOKEN');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
   }

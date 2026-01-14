@@ -105,7 +105,7 @@ async function exchangeCode(code, args) {
     console.log(`Refresh Token: ${data.refresh_token.substring(0, 20)}...`);
   }
   
-  console.log('\n--- Add to /memory/Connectors/meetup/.env ---');
+  console.log('\n--- Add to /memory/connectors/meetup/.env ---');
   console.log(`MEETUP_ACCESS_TOKEN=${data.access_token}`);
   if (data.refresh_token) {
     console.log(`MEETUP_REFRESH_TOKEN=${data.refresh_token}`);
@@ -157,7 +157,7 @@ async function refreshToken(args) {
   console.log(`New Access Token: ${data.access_token.substring(0, 20)}...`);
   console.log(`Expires In: ${data.expires_in} seconds (${Math.round(data.expires_in / 60)} minutes)`);
   
-  console.log('\n--- Update in /memory/Connectors/meetup/.env ---');
+  console.log('\n--- Update in /memory/connectors/meetup/.env ---');
   console.log(`MEETUP_ACCESS_TOKEN=${data.access_token}`);
   if (data.refresh_token) {
     console.log(`MEETUP_REFRESH_TOKEN=${data.refresh_token}`);

@@ -23,7 +23,7 @@ node scripts/teams.js list --org-id YOUR_ORG_ID
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/make/.env`
+**Credentials:** `/memory/connectors/make/.env`
 
 ```
 MAKE_API_TOKEN=xxx
@@ -41,7 +41,7 @@ MAKE_REGION=us2
 cd "/cofounder/connectors/make" && npm install
 ```
 
-**"MAKE_API_TOKEN not found":** Create `/memory/Connectors/make/.env` with your token.
+**"MAKE_API_TOKEN not found":** Create `/memory/connectors/make/.env` with your token.
 
 **"401 Unauthorized":** Check your API token is valid and has required scopes.
 

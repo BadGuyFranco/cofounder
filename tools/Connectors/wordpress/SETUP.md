@@ -89,7 +89,7 @@ Roles: administrator
 To manage multiple WordPress sites, create a subdirectory for each:
 
 ```
-/memory/Connectors/wordpress/
+/memory/connectors/wordpress/
   myblog/.env      <- First site
   myshop/.env      <- Second site
 ```

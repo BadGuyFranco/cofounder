@@ -23,7 +23,7 @@ node scripts/zones.js list
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/cloudflare/.env`
+**Credentials:** `/memory/connectors/cloudflare/.env`
 
 ```
 CLOUDFLARE_API_TOKEN=your_api_token_here
@@ -87,7 +87,7 @@ CLOUDFLARE_API_TOKEN=your_api_token_here
 cd "/cofounder/connectors/cloudflare" && npm install
 ```
 
-**"CLOUDFLARE_API_TOKEN not found":** Create `/memory/Connectors/cloudflare/.env` with your token.
+**"CLOUDFLARE_API_TOKEN not found":** Create `/memory/connectors/cloudflare/.env` with your token.
 
 **"Authentication error" (10000):** Token is invalid or expired. Generate a new token.
 

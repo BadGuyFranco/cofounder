@@ -19,7 +19,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 // Load environment from memory directory
-const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/notion/.env');
+const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/notion/.env');
 const localEnvPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '.env');
 
 if (fs.existsSync(memoryEnvPath)) {
@@ -28,7 +28,7 @@ if (fs.existsSync(memoryEnvPath)) {
   dotenv.config({ path: localEnvPath });
 } else {
   console.error('Error: No .env file found.');
-  console.error('Create /memory/Connectors/notion/.env with your NOTION_API_KEY');
+  console.error('Create /memory/connectors/notion/.env with your NOTION_API_KEY');
   console.error('See SETUP.md for instructions.');
   process.exit(1);
 }

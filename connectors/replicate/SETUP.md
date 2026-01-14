@@ -24,7 +24,7 @@ Once you have your API token, provide it to the AI. The AI will create the confi
 **Required credential:**
 - `REPLICATE_API_TOKEN` - Your API token (starts with `r8_`)
 
-**File location:** `/memory/Connectors/replicate/.env`
+**File location:** `/memory/connectors/replicate/.env`
 
 **Note:** Default models are managed in the connector itself (`defaults.js`), not in your credentials file. This ensures you always get the latest curated models. Advanced users can override defaults by adding model variables to their .env.
 
@@ -82,7 +82,7 @@ If your token is compromised:
 1. Go to https://replicate.com/account/api-tokens
 2. Delete the compromised token
 3. Create a new token
-4. Update `/memory/Connectors/replicate/.env`
+4. Update `/memory/connectors/replicate/.env`
 
 ## Troubleshooting
 

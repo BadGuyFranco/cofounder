@@ -42,7 +42,7 @@ function getGeminiClient() {
       'Set up your API key:\n' +
       '1. Go to https://aistudio.google.com/apikey\n' +
       '2. Create an API key\n' +
-      '3. Add to /memory/Connectors/google/.env:\n' +
+      '3. Add to /memory/connectors/google/.env:\n' +
       '   GOOGLE_AI_API_KEY=your_key_here'
     );
   }
@@ -319,7 +319,7 @@ function printHelp() {
       'node ai.js models'
     ],
     'Notes': [
-      'Requires GOOGLE_AI_API_KEY in /memory/Connectors/google/.env',
+      'Requires GOOGLE_AI_API_KEY in /memory/connectors/google/.env',
       'Get your key at https://aistudio.google.com/apikey',
       'Image generation requires gemini-2.0-flash-exp or newer',
       'Video generation (Veo) is in limited preview'

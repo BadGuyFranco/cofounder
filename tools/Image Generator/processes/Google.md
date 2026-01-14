@@ -4,7 +4,7 @@ Generate images using Google Gemini via the centralized Connector.
 
 ## Prerequisites
 
-**Credential location:** `/memory/Connectors/google/.env`
+**Credential location:** `/memory/connectors/google/.env`
 
 Required variable:
 ```
@@ -61,7 +61,7 @@ If user requests specific dimensions, calculate the closest supported ratio:
 
 ## Troubleshooting
 
-**API key not found:** Verify `GOOGLE_AI_API_KEY` is set in `/memory/Connectors/google/.env`
+**API key not found:** Verify `GOOGLE_AI_API_KEY` is set in `/memory/connectors/google/.env`
 
 **Model overloaded (503):** Wait a moment and retry.
 

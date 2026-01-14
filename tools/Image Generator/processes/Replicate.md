@@ -4,7 +4,7 @@ Generate images using Replicate via the centralized Connector.
 
 ## Prerequisites
 
-**Credential location:** `/memory/Connectors/replicate/.env`
+**Credential location:** `/memory/connectors/replicate/.env`
 
 Required variable:
 ```
@@ -92,7 +92,7 @@ node scripts/models.js get google/nano-banana-pro
 
 ## Troubleshooting
 
-**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/Connectors/replicate/.env`
+**API token not found:** Verify `REPLICATE_API_TOKEN` is set in `/memory/connectors/replicate/.env`
 
 **Rate limit (429):** Wait and retry.
 

@@ -23,7 +23,7 @@ node scripts/contacts.js list
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/hubspot/.env`
+**Credentials:** `/memory/connectors/hubspot/.env`
 
 ```
 HUBSPOT_ACCESS_TOKEN=pat-na2-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -49,7 +49,7 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 cd "/cofounder/connectors/hubspot" && npm install
 ```
 
-**"HUBSPOT_ACCESS_TOKEN not found":** Create `/memory/Connectors/hubspot/.env` with your token.
+**"HUBSPOT_ACCESS_TOKEN not found":** Create `/memory/connectors/hubspot/.env` with your token.
 
 **"401 Unauthorized":** Token may be expired or missing required scopes. Regenerate in HubSpot.
 

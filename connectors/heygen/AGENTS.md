@@ -23,7 +23,7 @@ node scripts/videos.js list
 
 ## Configuration
 
-**Single Account:** `/memory/Connectors/heygen/.env`
+**Single Account:** `/memory/connectors/heygen/.env`
 
 ```
 HEYGEN_API_KEY=your_api_key_here
@@ -32,7 +32,7 @@ HEYGEN_API_KEY=your_api_key_here
 **Multiple Accounts:** Create subdirectories for each account:
 
 ```
-/memory/Connectors/heygen/
+/memory/connectors/heygen/
   personal/.env    <- Personal HeyGen account
   business/.env    <- Business HeyGen account
 ```
@@ -67,7 +67,7 @@ node scripts/avatars.js help
 cd "/cofounder/connectors/heygen" && npm install
 ```
 
-**"HEYGEN_API_KEY not found":** Create `/memory/Connectors/heygen/.env` with your API key.
+**"HEYGEN_API_KEY not found":** Create `/memory/connectors/heygen/.env` with your API key.
 
 **"401 Unauthorized":** API key is invalid or expired. Generate a new one in HeyGen settings.
 

@@ -145,7 +145,7 @@ async function exchangeCode(code, args) {
     console.log(`Refresh Expires In: ${data.refresh_token_expires_in} seconds`);
   }
   
-  console.log('\n--- Add to /memory/Connectors/linkedin/.env ---');
+  console.log('\n--- Add to /memory/connectors/linkedin/.env ---');
   console.log(`LINKEDIN_ACCESS_TOKEN=${data.access_token}`);
   if (data.refresh_token) {
     console.log(`LINKEDIN_REFRESH_TOKEN=${data.refresh_token}`);
@@ -198,7 +198,7 @@ async function refreshToken(args) {
   console.log(`New Access Token: ${data.access_token.substring(0, 20)}...`);
   console.log(`Expires In: ${data.expires_in} seconds (${Math.round(data.expires_in / 86400)} days)`);
   
-  console.log('\n--- Update in /memory/Connectors/linkedin/.env ---');
+  console.log('\n--- Update in /memory/connectors/linkedin/.env ---');
   console.log(`LINKEDIN_ACCESS_TOKEN=${data.access_token}`);
   if (data.refresh_token) {
     console.log(`LINKEDIN_REFRESH_TOKEN=${data.refresh_token}`);

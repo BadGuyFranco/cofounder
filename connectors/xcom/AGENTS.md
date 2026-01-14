@@ -23,7 +23,7 @@ node scripts/user.js me
 
 ## Configuration
 
-**Single Account:** `/memory/Connectors/xcom/.env`
+**Single Account:** `/memory/connectors/xcom/.env`
 
 ```
 X_API_KEY=your_api_key
@@ -36,7 +36,7 @@ X_BEARER_TOKEN=your_bearer_token
 **Multiple Accounts:** Create subdirectories for each account:
 
 ```
-/memory/Connectors/xcom/
+/memory/connectors/xcom/
   personal/.env    <- @your_personal_handle
   business/.env    <- @your_business_handle
 ```
@@ -77,7 +77,7 @@ When multiple accounts are configured and no `--account` flag is specified, ask 
 cd "/cofounder/connectors/xcom" && npm install
 ```
 
-**"X_API_KEY not found":** Create `/memory/Connectors/xcom/.env` with your credentials.
+**"X_API_KEY not found":** Create `/memory/connectors/xcom/.env` with your credentials.
 
 **"401 Unauthorized":** Check all OAuth 1.0a credentials are correct.
 

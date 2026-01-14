@@ -79,7 +79,7 @@ function showConfig() {
     console.log('  (none - using connector defaults)');
   }
 
-  console.log('\nCredentials file: /memory/Connectors/replicate/.env');
+  console.log('\nCredentials file: /memory/connectors/replicate/.env');
 }
 
 /**
@@ -106,7 +106,7 @@ function showDefaults() {
       console.log('');
     }
 
-    console.log('To override a default, add to /memory/Connectors/replicate/.env:');
+    console.log('To override a default, add to /memory/connectors/replicate/.env:');
     console.log('  REPLICATE_IMAGE_MODEL=owner/model-name');
     console.log('  REPLICATE_VIDEO_MODEL=owner/model-name');
   } catch (e) {

@@ -17,7 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Memory directory for credentials
 const memoryEnvPath = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/publer/.env'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/publer/.env'
 );
 const localEnvPath = path.join(__dirname, '..', '.env');
 
@@ -41,7 +41,7 @@ export function loadConfig() {
     dotenv.config({ path: localEnvPath });
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/publer/.env with your credentials.');
+    console.error('Create /memory/connectors/publer/.env with your credentials.');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
   }
@@ -412,7 +412,7 @@ export function validateEnv(required) {
   
   if (missing.length > 0) {
     console.error(`Error: Missing required configuration: ${missing.join(', ')}`);
-    console.error('Add these to /memory/Connectors/publer/.env');
+    console.error('Add these to /memory/connectors/publer/.env');
     process.exit(1);
   }
   

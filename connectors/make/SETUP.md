@@ -28,7 +28,7 @@ Once you have your API token and region, provide them to the AI. The AI will cre
 - `MAKE_API_TOKEN` - Your Make.com API token
 - `MAKE_REGION` - Your region (us1, us2, eu1, or eu2)
 
-**File location:** `/memory/Connectors/make/.env`
+**File location:** `/memory/connectors/make/.env`
 
 ## Step 4: Verify Setup
 

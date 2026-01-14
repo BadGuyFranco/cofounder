@@ -18,7 +18,7 @@ alwaysApply: false
 
 **Tool types:** Behavior (instructions only), Script (Node/Python), Composite (routes to sub-tools)
 
-**Config location:** `/memory/[Tool Name]/`
+**Config location:** `/memory/tools/[Tool Name]/`
 
 **Templates:** `/cofounder/system/templates/`
 
@@ -30,6 +30,6 @@ alwaysApply: false
 
 **Required files:** AGENTS.md, SETUP.md, CAPABILITIES.md, README.md, package.json, scripts/utils.js
 
-**Credentials location:** `/memory/Connectors/[platform]/.env`
+**Credentials location:** `/memory/connectors/[platform]/.env`
 
 **Auth patterns:** API Key (reference: airtable/), OAuth 2.0 (reference: linkedin/), OAuth 1.0a (reference: xcom/)

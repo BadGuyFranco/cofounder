@@ -39,7 +39,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 3. If credentials missing → Walk through `SETUP.md`
 4. For command syntax → Run `node scripts/[script].js help`
 
-**Credentials location:** `/memory/Connectors/[platform]/.env`
+**Credentials location:** `/memory/connectors/[platform]/.env`
 
 ## Credential Setup Rules
 

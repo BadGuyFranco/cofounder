@@ -10,7 +10,7 @@ import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/linkedin');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/linkedin');
 const BASE_URL = 'https://api.linkedin.com/v2';
 const REST_API_URL = 'https://api.linkedin.com/rest';
 
@@ -29,7 +29,7 @@ export function loadEnv(localDir) {
     return localEnvPath;
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/linkedin/.env with:');
+    console.error('Create /memory/connectors/linkedin/.env with:');
     console.error('  LINKEDIN_ACCESS_TOKEN=your_access_token');
     console.error('  LINKEDIN_CLIENT_ID=your_client_id');
     console.error('  LINKEDIN_CLIENT_SECRET=your_client_secret');
@@ -45,7 +45,7 @@ export function getToken() {
   const token = process.env.LINKEDIN_ACCESS_TOKEN;
   if (!token) {
     console.error('Error: LINKEDIN_ACCESS_TOKEN not found in environment.');
-    console.error('Add it to /memory/Connectors/linkedin/.env');
+    console.error('Add it to /memory/connectors/linkedin/.env');
     console.error('Run: node scripts/auth.js flow to get a token');
     process.exit(1);
   }
@@ -61,7 +61,7 @@ export function getClientCredentials() {
   
   if (!clientId || !clientSecret) {
     console.error('Error: LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET required.');
-    console.error('Add them to /memory/Connectors/linkedin/.env');
+    console.error('Add them to /memory/connectors/linkedin/.env');
     process.exit(1);
   }
   

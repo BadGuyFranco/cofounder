@@ -24,7 +24,7 @@ node scripts/profile.js me     # Test your connection
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/linkedin/.env`
+**Credentials:** `/memory/connectors/linkedin/.env`
 
 ```
 LINKEDIN_CLIENT_ID=your_client_id
@@ -57,7 +57,7 @@ LinkedIn actively monitors API usage and will revoke access for violations.
 cd "/cofounder/connectors/linkedin" && npm install
 ```
 
-**"LINKEDIN_ACCESS_TOKEN not found":** Create `/memory/Connectors/linkedin/.env`. Run `node scripts/auth.js flow` to get a token.
+**"LINKEDIN_ACCESS_TOKEN not found":** Create `/memory/connectors/linkedin/.env`. Run `node scripts/auth.js flow` to get a token.
 
 **"401 Unauthorized":** Token expired (60-day limit). Run `node scripts/auth.js flow` to get a new token.
 

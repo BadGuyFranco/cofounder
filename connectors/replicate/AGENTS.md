@@ -34,7 +34,7 @@ Run any script with `help` for full command syntax.
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/replicate/.env`
+**Credentials:** `/memory/connectors/replicate/.env`
 
 ```
 REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

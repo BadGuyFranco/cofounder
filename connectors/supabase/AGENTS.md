@@ -30,10 +30,10 @@ node scripts/tables.js list --project test-project
 
 ## Configuration
 
-**Credentials location:** `/memory/Connectors/supabase/`
+**Credentials location:** `/memory/connectors/supabase/`
 
 ```
-/memory/Connectors/supabase/
+/memory/connectors/supabase/
   .env                      # Account access token
   projects/
     test-project.env        # Human-readable names (auto-generated)
@@ -61,7 +61,7 @@ All project-level scripts accept `--project <name>` where `<name>` is the human-
 
 **"SUPABASE_ACCESS_TOKEN not found":**
 Create a Personal Access Token at https://supabase.com/dashboard/account/tokens
-Add to `/memory/Connectors/supabase/.env`
+Add to `/memory/connectors/supabase/.env`
 
 **"Project 'xxx' not configured":**
 Run `node scripts/management.js configure <project-ref>` first.

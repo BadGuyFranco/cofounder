@@ -56,7 +56,7 @@ Works immediately after `npm install`.
 
 ### [Optional Sub-tool] (Requires setup)
 
-**Credentials location:** `/memory/[Tool Name]/[config-file]`
+**Credentials location:** `/memory/tools/[Tool Name]/[config-file]`
 
 **Setup required:** See `[sub-tool]/SETUP.md` for configuration.
 

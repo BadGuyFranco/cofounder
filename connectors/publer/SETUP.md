@@ -47,7 +47,7 @@ Step-by-step guide. The AI will walk you through each step one at a time.
 
 Create a `.env` file:
 
-**Location:** `/memory/Connectors/publer/.env`
+**Location:** `/memory/connectors/publer/.env`
 
 **Content:**
 ```
@@ -109,7 +109,7 @@ Publer allows 100 API requests per 2 minutes per user. The connector handles rat
 
 ### "No .env file found"
 - Configuration file missing
-- Solution: Create `/memory/Connectors/publer/.env` with your credentials
+- Solution: Create `/memory/connectors/publer/.env` with your credentials
 
 ## Need Help?
 

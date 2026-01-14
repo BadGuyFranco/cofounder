@@ -4,7 +4,7 @@
  * Thin wrapper around Replicate Connector for background removal
  * 
  * Uses credentials and model from Replicate Connector:
- *   - Credentials: /memory/Connectors/replicate/.env
+ *   - Credentials: /memory/connectors/replicate/.env
  *   - Default model: /connectors/replicate/defaults.json
  */
 
@@ -22,9 +22,9 @@ const __dirname = dirname(__filename);
 // Primary: Connector credential location
 const connectorEnvPath = resolve(__dirname, '../../../Connectors/replicate/.env');
 // Fallback: Legacy Image Generator location (for migration)
-const legacyEnvPath = resolve(__dirname, '../../../../memory/Image Generator/.env');
+const legacyEnvPath = resolve(__dirname, '../../../../memory/tools/Image Generator/.env');
 // Also check memory Connector location
-const memoryConnectorPath = resolve(__dirname, '../../../../memory/Connectors/replicate/.env');
+const memoryConnectorPath = resolve(__dirname, '../../../../memory/connectors/replicate/.env');
 
 // Load credentials in order of preference
 if (existsSync(memoryConnectorPath)) {
@@ -38,7 +38,7 @@ if (existsSync(memoryConnectorPath)) {
   console.log('Error: Replicate credentials not found.');
   console.log('Please set up the Replicate Connector:');
   console.log('  1. Get API token from https://replicate.com/account/api-tokens');
-  console.log('  2. Create /memory/Connectors/replicate/.env with:');
+  console.log('  2. Create /memory/connectors/replicate/.env with:');
   console.log('     REPLICATE_API_TOKEN=r8_xxxxxxxxxx');
   process.exit(1);
 }
@@ -70,7 +70,7 @@ const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 async function removeBackground(inputPath, outputPath = null) {
   if (!REPLICATE_API_TOKEN) {
     console.log('Error: REPLICATE_API_TOKEN not configured');
-    console.log('Set up credentials at /memory/Connectors/replicate/.env');
+    console.log('Set up credentials at /memory/connectors/replicate/.env');
     return null;
   }
 
@@ -202,7 +202,7 @@ Arguments:
 The tool removes the background and resizes to 1000px width (maintaining aspect ratio).
 Output is always PNG format to preserve transparency.
 
-Credentials: /memory/Connectors/replicate/.env
+Credentials: /memory/connectors/replicate/.env
 Default model: ${DEFAULT_MODEL.split(':')[0]}
 `);
   process.exit(0);

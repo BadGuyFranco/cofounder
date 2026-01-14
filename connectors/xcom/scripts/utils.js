@@ -12,7 +12,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/xcom');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/xcom');
 const API_BASE = 'https://api.x.com/2';
 const UPLOAD_BASE = 'https://upload.twitter.com/1.1';
 
@@ -94,15 +94,15 @@ export function loadEnv(localDir, account = null) {
         console.error('Example: node scripts/user.js me --account personal');
       } else {
         console.error('Error: No .env file found.');
-        console.error('Create /memory/Connectors/xcom/.env with:');
+        console.error('Create /memory/connectors/xcom/.env with:');
         console.error('  X_API_KEY=your_api_key');
         console.error('  X_API_SECRET=your_api_secret');
         console.error('  X_ACCESS_TOKEN=your_access_token');
         console.error('  X_ACCESS_TOKEN_SECRET=your_access_token_secret');
         console.error('');
         console.error('For multiple accounts, create subdirectories:');
-        console.error('  /memory/Connectors/xcom/personal/.env');
-        console.error('  /memory/Connectors/xcom/business/.env');
+        console.error('  /memory/connectors/xcom/personal/.env');
+        console.error('  /memory/connectors/xcom/business/.env');
         console.error('');
         console.error('See SETUP.md for instructions.');
       }
@@ -134,7 +134,7 @@ export function getCredentials() {
   
   if (!apiKey || !apiSecret) {
     console.error('Error: X_API_KEY and X_API_SECRET are required.');
-    console.error('Add them to /memory/Connectors/xcom/.env');
+    console.error('Add them to /memory/connectors/xcom/.env');
     process.exit(1);
   }
   
@@ -197,7 +197,7 @@ export function generateOAuthHeader(method, url, params = {}, credentials) {
   
   if (!accessToken || !accessTokenSecret) {
     console.error('Error: X_ACCESS_TOKEN and X_ACCESS_TOKEN_SECRET are required for this operation.');
-    console.error('Add them to /memory/Connectors/xcom/.env');
+    console.error('Add them to /memory/connectors/xcom/.env');
     process.exit(1);
   }
   
@@ -530,8 +530,8 @@ export function printAccounts() {
   if (accounts.length === 0) {
     console.log('No accounts configured.\n');
     console.log('To set up an account:');
-    console.log('1. Create /memory/Connectors/xcom/.env for a default account');
-    console.log('2. Or create /memory/Connectors/xcom/<name>/.env for named accounts');
+    console.log('1. Create /memory/connectors/xcom/.env for a default account');
+    console.log('2. Or create /memory/connectors/xcom/<name>/.env for named accounts');
     console.log('');
     console.log('See SETUP.md for detailed instructions.');
     return;

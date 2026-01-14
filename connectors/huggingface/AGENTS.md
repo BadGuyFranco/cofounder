@@ -35,7 +35,7 @@ Run any script with `help` for full command syntax.
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/huggingface/.env`
+**Credentials:** `/memory/connectors/huggingface/.env`
 
 ```
 HUGGINGFACE_API_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

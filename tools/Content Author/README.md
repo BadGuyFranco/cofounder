@@ -6,7 +6,7 @@ A content writing system that produces authentic, practitioner-quality content. 
 
 **Load these two files together (both required):**
 1. `AGENTS.md` - Universal craft rules (enforcement mechanisms, prohibitions)
-2. `memory/Content Author/voice.md` - This author's voice (patterns, examples, verification)
+2. `memory/tools/Content Author/voice.md` - This author's voice (patterns, examples, verification)
 
 Then load format file from `content types/` directory. Load `content types/spark.md` if format uses opening hooks.
 
@@ -20,7 +20,7 @@ Both must be loaded. They cannot function independently.
 
 ## If voice.md Is Missing
 
-This file lives in `/memory/Content Author/` and is author-specific.
+This file lives in `/memory/tools/Content Author/` and is author-specific.
 
 **See `VoiceSetup.md` for complete setup instructions.** That document covers:
 - Voice Discovery Q&A process (works even without writing samples)
@@ -37,7 +37,7 @@ This file lives in `/memory/Content Author/` and is author-specific.
 | File | Purpose | Location |
 |------|---------|----------|
 | AGENTS.md | Universal craft rules, enforcement mechanisms | `/cofounder/tools/Content Author/` |
-| voice.md | Persona-specific patterns, examples, verification | `/memory/Content Author/` |
+| voice.md | Persona-specific patterns, examples, verification | `/memory/tools/Content Author/` |
 | VoiceSetup.md | Setup guide for creating voice.md | `/cofounder/tools/Content Author/` |
 
 ### Format Files

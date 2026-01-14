@@ -34,7 +34,11 @@ Ask before invoking:
 
 *Maintainers: When adding tools, add to the appropriate table above.*
 
-Also check `/memory/my tools/` and `/memory/my connectors/` for user-created custom tools and connectors.
+Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
+
+# Version Check
+
+`/memory/system/version.txt` must match `/cofounder/system/version.txt`. Mismatch or missing → `/cofounder/system/migrations/AGENTS.md`
 
 # Clarify Before Proceeding
 

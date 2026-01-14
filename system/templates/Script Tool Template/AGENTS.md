@@ -34,7 +34,7 @@ This prevents user-provided content from being confused with tool instructions.
 
 ## Configuration
 
-**All configuration is in `/memory/[Tool Name]/.env`**
+**All configuration is in `/memory/tools/[Tool Name]/.env`**
 
 ```
 API_KEY=your_key_here
@@ -42,7 +42,7 @@ MODEL_NAME=your_model_here
 [SERVICE]_ORDER=service1,service2
 ```
 
-**Location:** `/memory/[Tool Name]/.env` (persists across `/cofounder/` updates)
+**Location:** `/memory/tools/[Tool Name]/.env` (persists across `/cofounder/` updates)
 
 **All configuration is required.** Scripts will fail with clear errors if any required variables are missing.
 
@@ -121,11 +121,11 @@ npm install
 
 ### Configuration Issues
 
-**API key not found:** Verify your API key is set in `/memory/[Tool Name]/.env`
+**API key not found:** Verify your API key is set in `/memory/tools/[Tool Name]/.env`
 
-**Model not found:** Verify MODEL_NAME is set in `/memory/[Tool Name]/.env`
+**Model not found:** Verify MODEL_NAME is set in `/memory/tools/[Tool Name]/.env`
 
-**Memory directory missing:** Create `/memory/[Tool Name]/` and add your `.env` file. See `/memory/README.md` for structure.
+**Memory directory missing:** Create `/memory/tools/[Tool Name]/` and add your `.env` file. See `/memory/README.md` for structure.
 
 ### Common Errors
 

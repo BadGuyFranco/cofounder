@@ -23,7 +23,7 @@ node scripts/bases.js list
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/airtable/.env`
+**Credentials:** `/memory/connectors/airtable/.env`
 
 ```
 AIRTABLE_PAT=patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -40,7 +40,7 @@ AIRTABLE_PAT=patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 cd "/cofounder/connectors/airtable" && npm install
 ```
 
-**"AIRTABLE_PAT not found":** Create `/memory/Connectors/airtable/.env` with your token.
+**"AIRTABLE_PAT not found":** Create `/memory/connectors/airtable/.env` with your token.
 
 **"AUTHENTICATION_REQUIRED":** Token is invalid or expired. Generate a new PAT.
 

@@ -10,7 +10,7 @@ import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/hubspot');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/hubspot');
 const BASE_URL = 'https://api.hubapi.com';
 
 /**
@@ -28,7 +28,7 @@ export function loadEnv(localDir) {
     return localEnvPath;
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/hubspot/.env with:');
+    console.error('Create /memory/connectors/hubspot/.env with:');
     console.error('  HUBSPOT_ACCESS_TOKEN=pat-xxx');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
@@ -42,7 +42,7 @@ export function getToken() {
   const token = process.env.HUBSPOT_ACCESS_TOKEN;
   if (!token) {
     console.error('Error: HUBSPOT_ACCESS_TOKEN not found in environment.');
-    console.error('Add it to /memory/Connectors/hubspot/.env');
+    console.error('Add it to /memory/connectors/hubspot/.env');
     process.exit(1);
   }
   return token;

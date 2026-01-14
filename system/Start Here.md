@@ -64,15 +64,16 @@ Verify all four folders exist before proceeding:
 ## Step 2: Initialize Memory Structure
 
 Inside /memory/, create these directories and files:
-- `/memory/Content Author/` (for voice settings)
-- `/memory/Content Author/Writing Samples/` (for my writing samples)
-- `/memory/Connectors/` (for connector credentials)
-- `/memory/Image Generator/` (for image service API keys)
-- `/memory/Video Generator/` (for video service API keys)
+- `/memory/tools/Content Author/` (for voice settings)
+- `/memory/tools/Content Author/Writing Samples/` (for my writing samples)
+- `/memory/connectors/` (for connector credentials)
+- `/memory/tools/Image Generator/` (for image service API keys)
+- `/memory/tools/Video Generator/` (for video service API keys)
 - `/memory/my connectors/AGENTS.md` - use template from `/cofounder/system/templates/Memory Templates/my-connectors-AGENTS.md`
 - `/memory/my tools/AGENTS.md` - use template from `/cofounder/system/templates/Memory Templates/my-tools-AGENTS.md`
-- `/memory/my plans/` (for execution plans)
+- `/memory/plans/` (for execution plans)
 - `/memory/README.md` - use template from `/cofounder/system/templates/Memory Templates/README.md`
+- `/memory/system/version.txt` - copy from `/cofounder/system/version.txt` (tracks which migrations have been applied)
 
 For maintainers with write access to /cofounder/: Also create `/memory/.maintainer` (empty file). This signals you can modify the shared library.
 
@@ -148,19 +149,21 @@ Your folder structure will look like:
 │   │   ├── Content Author/
 │   │   ├── Image Generator/
 │   │   └── ...
+│   ├── connectors/
 │   └── system/
 ├── memory/
-│   ├── Content Author/
-│   │   ├── voice.md
-│   │   └── Writing Samples/
-│   ├── Connectors/
-│   ├── Image Generator/
-│   ├── Video Generator/
-│   ├── my connectors/
-│   │   └── AGENTS.md
+│   ├── tools/
+│   │   ├── Content Author/
+│   │   │   ├── voice.md
+│   │   │   └── Writing Samples/
+│   │   ├── Image Generator/
+│   │   └── Video Generator/
+│   ├── connectors/
 │   ├── my tools/
 │   │   └── AGENTS.md
-│   └── my plans/
+│   ├── my connectors/
+│   │   └── AGENTS.md
+│   └── plans/
 ├── [your name]/
 │   ├── AGENTS.md
 │   └── content/
@@ -194,4 +197,6 @@ cd /path/to/cofounder
 git pull
 ```
 
-Your `/memory/`, personal folder, and `/workspaces/` are unaffected by updates.
+After pulling, check `/cofounder/system/migrations/` for any required changes. See `/cofounder/system/migrations/README.md` for details.
+
+Your `/memory/`, personal folder, and `/workspaces/` are unaffected by updates (though migrations may require you to reorganize `/memory/`).

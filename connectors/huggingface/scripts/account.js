@@ -72,7 +72,7 @@ function showConfig() {
 
   console.log('Current configuration:');
   console.log(`  API Token: ${config.apiToken.slice(0, 8)}...`);
-  console.log('\nCredentials file: /memory/Connectors/huggingface/.env');
+  console.log('\nCredentials file: /memory/connectors/huggingface/.env');
 }
 
 // Show help

@@ -44,7 +44,7 @@ node scripts/gmail.js help
 
 ### OAuth Credentials
 
-**Location:** `/memory/Connectors/google/[email].json`
+**Location:** `/memory/connectors/google/[email].json`
 
 ```json
 {
@@ -59,7 +59,7 @@ node scripts/gmail.js help
 
 ### API Key (Gemini AI)
 
-**Location:** `/memory/Connectors/google/.env`
+**Location:** `/memory/connectors/google/.env`
 
 ```
 GOOGLE_AI_API_KEY=your_gemini_api_key

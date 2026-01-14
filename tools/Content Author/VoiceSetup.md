@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document guides creation of `memory/Content Author/voice.md` when:
+This document guides creation of `memory/tools/Content Author/voice.md` when:
 - Setting up Content Author for the first time
 - Rebuilding after memory deletion
 - Adapting Content Author for a different author
@@ -20,7 +20,7 @@ Content Author uses two files that cannot function independently:
 | File | Contains | Location |
 |------|----------|----------|
 | AGENTS.md | Universal craft rules (voice-agnostic) | `/cofounder/tools/Content Author/` |
-| voice.md | This author's specific voice | `/memory/Content Author/` |
+| voice.md | This author's specific voice | `/memory/tools/Content Author/` |
 
 **Segmentation principle:** If guidance applies to ANY good writer, it belongs in AGENTS.md. If it's specific to THIS author's style, it belongs in voice.md.
 
@@ -50,7 +50,7 @@ Run this interactive process to discover the author's voice.
 
 1. Create the Writing Samples directory if it doesn't exist:
    ```
-   mkdir -p /memory/Content\ Author/Writing\ Samples/
+   mkdir -p /memory/tools/Content\ Author/Writing\ Samples/
    ```
 
 2. Ask the user:
@@ -58,7 +58,7 @@ Run this interactive process to discover the author's voice.
    >
    > These help me see your natural patterns. We'll also do a discovery Q&A to clarify your intent, since samples sometimes contain habits you'd want to change.
    >
-   > Place them in `/memory/Content Author/Writing Samples/` or paste them here."
+   > Place them in `/memory/tools/Content Author/Writing Samples/` or paste them here."
 
 3. Wait for samples before proceeding.
 
@@ -482,10 +482,10 @@ Fewer than 4 patterns produces generic output. If you can't find 4 distinctive p
 
 ## File Checklist
 
-When complete, `memory/Content Author/` should contain:
+When complete, `memory/tools/Content Author/` should contain:
 
 ```
-memory/Content Author/
+memory/tools/Content Author/
 ├── voice.md (required - the voice file you created)
 └── Writing Samples/ (optional - keep for future reference)
     └── [author's writing samples if provided]

@@ -23,7 +23,7 @@ node scripts/workspaces.js list
 
 ## Configuration
 
-**Credentials:** `/memory/Connectors/clickup/.env`
+**Credentials:** `/memory/connectors/clickup/.env`
 
 ```
 CLICKUP_API_KEY=pk_XXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -64,7 +64,7 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 cd "/cofounder/connectors/clickup" && npm install
 ```
 
-**"CLICKUP_API_KEY not found":** Create `/memory/Connectors/clickup/.env` with your token.
+**"CLICKUP_API_KEY not found":** Create `/memory/connectors/clickup/.env` with your token.
 
 **"OAUTH_017":** Token is invalid or expired. Generate a new API token in ClickUp.
 

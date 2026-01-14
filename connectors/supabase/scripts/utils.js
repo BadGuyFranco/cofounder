@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Base paths
 const MEMORY_BASE = path.join(
   process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/supabase'
+  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase'
 );
 
 // Load environment from memory directory or local
@@ -111,7 +111,7 @@ export function loadConfig(projectId = null) {
       console.error('Error: No Supabase project configured.');
       console.error('');
       console.error('Setup steps:');
-      console.error('  1. Add your access token to /memory/Connectors/supabase/.env:');
+      console.error('  1. Add your access token to /memory/connectors/supabase/.env:');
       console.error('     SUPABASE_ACCESS_TOKEN=sbp_xxxxxxxxxxxx');
       console.error('');
       console.error('  2. Configure a project:');

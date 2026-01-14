@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/Connectors/monday');
+const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/monday');
 const API_URL = 'https://api.monday.com/v2';
 
 /**
@@ -29,7 +29,7 @@ export function loadEnv(localDir) {
     return localEnvPath;
   } else {
     console.error('Error: No .env file found.');
-    console.error('Create /memory/Connectors/monday/.env with:');
+    console.error('Create /memory/connectors/monday/.env with:');
     console.error('  MONDAY_API_KEY=eyJhbGciOiJIUzI1NiJ9...');
     console.error('See SETUP.md for instructions.');
     process.exit(1);
@@ -43,7 +43,7 @@ export function getToken() {
   const token = process.env.MONDAY_API_KEY;
   if (!token) {
     console.error('Error: MONDAY_API_KEY not found in environment.');
-    console.error('Add it to /memory/Connectors/monday/.env');
+    console.error('Add it to /memory/connectors/monday/.env');
     process.exit(1);
   }
   return token;

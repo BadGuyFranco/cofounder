@@ -32,7 +32,7 @@ Once you have your Personal Access Token, provide it to the AI. The AI will crea
 **Required credential:**
 - `SUPABASE_ACCESS_TOKEN` - Your Personal Access Token (starts with `sbp_`)
 
-**File location:** `/memory/Connectors/supabase/.env`
+**File location:** `/memory/connectors/supabase/.env`
 
 ## Step 4: Verify Setup
 
@@ -75,7 +75,7 @@ node scripts/projects.js health --project <project-ref>
 After setup, your credentials are stored at:
 
 ```
-/memory/Connectors/supabase/
+/memory/connectors/supabase/
   .env                          # Account access token
   projects/
     <project-ref>.env           # Auto-generated project credentials
@@ -130,7 +130,7 @@ The connector uses:
 1. Go to https://supabase.com/dashboard/account/tokens
 2. Delete the compromised token
 3. Generate a new one
-4. Update `/memory/Connectors/supabase/.env`
+4. Update `/memory/connectors/supabase/.env`
 
 **If project keys are compromised:**
 1. Go to project Settings > API in dashboard

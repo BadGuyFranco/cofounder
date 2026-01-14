@@ -31,7 +31,7 @@ Active. Full functionality for:
 ```bash
 cd "/cofounder/connectors/publer"
 npm install
-# Add credentials to /memory/Connectors/publer/.env
+# Add credentials to /memory/connectors/publer/.env
 node scripts/user.js me  # Verify setup
 ```
 
