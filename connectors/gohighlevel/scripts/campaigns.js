@@ -156,8 +156,18 @@ async function addToWorkflow(contactId, workflowId, location, verbose, force = f
     process.exit(0);
   }
   
+  // GHL API requires timezone offset format (e.g., 2021-06-23T03:30:00+01:00)
+  const now = new Date();
+  const tzOffset = -now.getTimezoneOffset();
+  const tzSign = tzOffset >= 0 ? '+' : '-';
+  const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, '0');
+  const tzMins = String(Math.abs(tzOffset) % 60).padStart(2, '0');
+  // Format: YYYY-MM-DDTHH:mm:ss+HH:MM (no milliseconds)
+  const isoBase = now.toISOString().replace(/\.\d{3}Z$/, '');
+  const eventStartTime = isoBase + tzSign + tzHours + ':' + tzMins;
+  
   const data = await apiRequest('POST', `/contacts/${contactId}/workflow/${workflowId}`, location.key, {
-    eventStartTime: new Date().toISOString()
+    eventStartTime
   });
   
   console.log('Contact added to workflow successfully!');
