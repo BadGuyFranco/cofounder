@@ -9,10 +9,10 @@ https://clickup.com/api/
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/clickup"
-npm install
 node scripts/workspaces.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/workspaces.js list
 ## Configuration
 
 **Credentials:** `/memory/connectors/clickup/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 CLICKUP_API_KEY=pk_XXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -58,11 +60,6 @@ Workspace (Team)
 Scripts will prompt for confirmation. Use `--force` only when the user has already confirmed.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/clickup" && npm install
-```
 
 **"CLICKUP_API_KEY not found":** Create `/memory/connectors/clickup/.env` with your token.
 

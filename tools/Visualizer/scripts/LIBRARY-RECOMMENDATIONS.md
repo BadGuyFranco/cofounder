@@ -32,9 +32,9 @@ Manual SVG coding for complex visualizations leads to positioning errors, misali
 // Cytoscape.js: 20 lines for same result, perfect positioning
 
 cy.add([
-  { data: { id: 'canons', label: 'WISER Canons' } },
-  { data: { id: 'recipes', label: 'Recipes' } },
-  { data: { source: 'canons', target: 'recipes', label: 'guided by' } }
+  { data: { id: 'principles', label: 'Core Principles' } },
+  { data: { id: 'practices', label: 'Practices' } },
+  { data: { source: 'principles', target: 'practices', label: 'guided by' } }
 ]);
 cy.layout({ name: 'cose' }).run(); // Automatic layout
 ```
@@ -143,7 +143,7 @@ cy.layout({ name: 'cose' }).run(); // Automatic layout
 ### Phase 1: High-Impact Fix ✅ COMPLETE
 1. ✅ Create Cytoscape.js template for concept maps
 2. ✅ Update `AGENTS.md` with library-first approach
-3. ✅ Rebuild WISER Foundations visualization using Cytoscape.js
+3. ✅ Rebuild complex visualizations using Cytoscape.js
 4. ✅ Create remaining library templates
 
 ### Phase 2: Complete Library Suite ✅ COMPLETE
@@ -267,7 +267,7 @@ Libraries enhance cognitive fit by:
 
 1. ✅ Create scripts directory structure
 2. ✅ Build Cytoscape.js concept map template
-3. ⏳ Test template with WISER Foundations content
+3. ⏳ Test templates with real content
 4. ⏳ Create remaining library templates
 5. ⏳ Update all technique files with library references
 6. ⏳ Update AGENTS.md with new workflow

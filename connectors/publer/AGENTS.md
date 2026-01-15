@@ -12,12 +12,12 @@ Connect to Publer to schedule and publish social media content across multiple p
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/publer"
-npm install
 node scripts/user.js me              # Verify credentials
 node scripts/workspaces.js list      # List workspaces
 node scripts/posts.js list           # List posts
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -29,6 +29,8 @@ node scripts/posts.js list           # List posts
 ## Configuration
 
 **Credentials:** `/memory/connectors/publer/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 PUBLER_API_KEY=your_api_key_here

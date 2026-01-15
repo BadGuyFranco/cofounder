@@ -198,7 +198,7 @@ Options:
   --account EMAIL    Google account email (required)
   --id SHEET_ID      Spreadsheet ID (required for read/write/append/export)
   --title TITLE      Spreadsheet title (required for create)
-  --folder PATH      Folder path like "Shared drives/GPT" (optional for create)
+  --folder PATH      Folder path like "Shared drives/Work" (optional for create)
   --range RANGE      Cell range like "A1:C10" or "Sheet1!A1:C10"
   --data DATA        JSON array of arrays, or path to JSON file
   --format FORMAT    Export format: xlsx, csv, ods, pdf

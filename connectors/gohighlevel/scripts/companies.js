@@ -312,12 +312,12 @@ Options:
   --force               Skip confirmation prompts
 
 Examples:
-  node companies.js list --location "WISER"
-  node companies.js list --query "tech" --location "WISER"
-  node companies.js create --name "Acme Corp" --industry "Technology" --employees "50" --location "WISER"
-  node companies.js get comp123 --location "WISER"
-  node companies.js update comp123 --website "https://acme.com" --location "WISER"
-  node companies.js delete comp123 --location "WISER"
+  node companies.js list --location "My Account"
+  node companies.js list --query "tech" --location "My Account"
+  node companies.js create --name "Acme Corp" --industry "Technology" --employees "50" --location "My Account"
+  node companies.js get comp123 --location "My Account"
+  node companies.js update comp123 --website "https://acme.com" --location "My Account"
+  node companies.js delete comp123 --location "My Account"
 
 NOTE: Companies is a B2B feature for tracking company records separate from contacts.
 Contacts can be linked to companies for organization-level relationships.

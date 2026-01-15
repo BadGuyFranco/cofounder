@@ -9,11 +9,11 @@ https://learn.microsoft.com/en-us/linkedin/marketing/
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/linkedin"
-npm install
 node scripts/auth.js flow      # Get access token
 node scripts/profile.js me     # Test your connection
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,6 +25,8 @@ node scripts/profile.js me     # Test your connection
 ## Configuration
 
 **Credentials:** `/memory/connectors/linkedin/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 LINKEDIN_CLIENT_ID=your_client_id
@@ -51,11 +53,6 @@ LINKEDIN_REFRESH_TOKEN=your_refresh_token  # optional
 LinkedIn actively monitors API usage and will revoke access for violations.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/linkedin" && npm install
-```
 
 **"LINKEDIN_ACCESS_TOKEN not found":** Create `/memory/connectors/linkedin/.env`. Run `node scripts/auth.js flow` to get a token.
 

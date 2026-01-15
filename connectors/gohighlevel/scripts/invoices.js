@@ -427,11 +427,11 @@ Options:
   --force                 Skip confirmation prompts
 
 Examples:
-  node invoices.js list --location "WISER"
-  node invoices.js get abc123 --location "WISER"
-  node invoices.js create --contact-id xyz --name "Consulting" --item "Strategy Session:500:1" --location "WISER"
-  node invoices.js send abc123 --location "WISER"
-  node invoices.js record-payment abc123 --amount 250 --mode cash --location "WISER"
+  node invoices.js list --location "My Account"
+  node invoices.js get abc123 --location "My Account"
+  node invoices.js create --contact-id xyz --name "Consulting" --item "Strategy Session:500:1" --location "My Account"
+  node invoices.js send abc123 --location "My Account"
+  node invoices.js record-payment abc123 --amount 250 --mode cash --location "My Account"
 
 Invoice Statuses: draft, sent, paid, void, partially_paid
 `);

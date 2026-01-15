@@ -2,6 +2,8 @@
 
 Step-by-step guide. The AI will walk you through each step one at a time.
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Prerequisites
 
 - HuggingFace account (free tier available)

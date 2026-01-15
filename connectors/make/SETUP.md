@@ -1,5 +1,7 @@
 # Make Connector Setup
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Step 1: Create a Make API Token
 
 1. Log in to [make.com](https://www.make.com)

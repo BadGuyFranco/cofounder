@@ -5,10 +5,10 @@ Comprehensive access to Google services: Drive, Workspace, Gmail, YouTube, Calen
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/google"
-npm install
 node scripts/auth.js test --account user@example.com  # Test all APIs
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -45,6 +45,8 @@ node scripts/gmail.js help
 ### OAuth Credentials
 
 **Location:** `/memory/connectors/google/[email].json`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```json
 {
@@ -115,11 +117,6 @@ node scripts/auth.js configure-apis --account your@email.com --apis "+api_name"
 **"Token refresh failed":** Re-run setup.
 
 **"Quota exceeded":** Wait for daily reset or request increase in Cloud Console.
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/google" && npm install
-```
 
 ## API Documentation
 

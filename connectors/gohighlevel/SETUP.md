@@ -1,5 +1,7 @@
 # Go High Level Connector Setup
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Step 1: Get Your API Key
 
 Go High Level offers two authentication methods:

@@ -1,5 +1,7 @@
 # Notion Connector Setup
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Step 1: Create a Notion Integration
 
 1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations)

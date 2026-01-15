@@ -2,6 +2,8 @@
 
 Complete guide to setting up your X.com API credentials.
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Prerequisites
 
 - X.com account

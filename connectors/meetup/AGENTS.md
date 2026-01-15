@@ -9,11 +9,11 @@ https://www.meetup.com/api/
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/meetup"
-npm install
 node scripts/auth.js flow      # Get access token
 node scripts/auth.js status    # Test your connection
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,6 +25,8 @@ node scripts/auth.js status    # Test your connection
 ## Configuration
 
 **Credentials:** `/memory/connectors/meetup/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 MEETUP_CLIENT_ID=your_client_id
@@ -61,11 +63,6 @@ node scripts/auth.js flow      # Full re-authentication
 ```
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/meetup" && npm install
-```
 
 **"MEETUP_ACCESS_TOKEN not found":** Create `/memory/connectors/meetup/.env`. Run `node scripts/auth.js flow` to get a token.
 

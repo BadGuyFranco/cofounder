@@ -6,7 +6,7 @@
  * 
  * Usage:
  *   node docs.js create --title "My Doc" --account user@example.com
- *   node docs.js create --title "My Doc" --folder "Shared drives/GPT" --content content.md --account user@example.com
+ *   node docs.js create --title "My Doc" --folder "Shared drives/Work" --content content.md --account user@example.com
  *   node docs.js read --id DOC_ID --account user@example.com
  *   node docs.js edit --id DOC_ID --content updates.md --account user@example.com
  *   node docs.js export --id DOC_ID --format pdf --output ./doc.pdf --account user@example.com
@@ -547,7 +547,7 @@ Options:
   --account EMAIL    Google account email (required)
   --id DOC_ID        Document ID (required for read/edit/export)
   --title TITLE      Document title (required for create)
-  --folder PATH      Folder path like "Shared drives/GPT/Docs" (optional for create)
+  --folder PATH      Folder path like "Shared drives/Work/Docs" (optional for create)
   --content FILE     Markdown file or text to add (optional for create/edit)
   --replace          Replace all content instead of appending (for edit)
   --format FORMAT    Export format: pdf, docx, txt, html, rtf, odt

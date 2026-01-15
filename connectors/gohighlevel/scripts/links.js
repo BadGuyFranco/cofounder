@@ -245,11 +245,11 @@ Options:
   --force               Skip confirmation prompts
 
 Examples:
-  node links.js list --location "WISER"
-  node links.js create --name "Book Call" --redirect "https://calendly.com/me" --location "WISER"
-  node links.js create --name "Interest Click" --redirect "https://example.com" --workflow-id "wf123" --location "WISER"
-  node links.js update link123 --name "Updated Name" --location "WISER"
-  node links.js delete link123 --location "WISER"
+  node links.js list --location "My Account"
+  node links.js create --name "Book Call" --redirect "https://calendly.com/me" --location "My Account"
+  node links.js create --name "Interest Click" --redirect "https://example.com" --workflow-id "wf123" --location "My Account"
+  node links.js update link123 --name "Updated Name" --location "My Account"
+  node links.js delete link123 --location "My Account"
 
 TRIGGER LINKS:
 Trigger links are trackable URLs that can:

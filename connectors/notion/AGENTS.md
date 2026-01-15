@@ -9,10 +9,10 @@ https://developers.notion.com/reference
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/notion"
-npm install
 node scripts/pages.js create "My Page Title" --parent-id abc123 --content "Hello world"
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,6 +25,8 @@ node scripts/pages.js create "My Page Title" --parent-id abc123 --content "Hello
 
 **Credentials:** `/memory/connectors/notion/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
 NOTION_API_KEY=secret_xxxxxxxxxxxxx
 ```
@@ -34,11 +36,6 @@ NOTION_API_KEY=secret_xxxxxxxxxxxxx
 **What can I do?** See `CAPABILITIES.md` for all available scripts and commands.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/notion" && npm install
-```
 
 **"NOTION_API_KEY not found":** Create `/memory/connectors/notion/.env` with your key.
 

@@ -9,10 +9,10 @@ https://developers.cloudflare.com/api/
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/cloudflare"
-npm install
 node scripts/zones.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/zones.js list
 ## Configuration
 
 **Credentials:** `/memory/connectors/cloudflare/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 CLOUDFLARE_API_TOKEN=your_api_token_here
@@ -81,11 +83,6 @@ CLOUDFLARE_API_TOKEN=your_api_token_here
 | `domain-check.js` | Check domain availability (uses RDAP, free, no account) |
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/cloudflare" && npm install
-```
 
 **"CLOUDFLARE_API_TOKEN not found":** Create `/memory/connectors/cloudflare/.env` with your token.
 

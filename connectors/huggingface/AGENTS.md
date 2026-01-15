@@ -5,10 +5,10 @@ Access HuggingFace Hub: models, datasets, repositories, and inference.
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/huggingface"
-npm install
 node scripts/account.js verify
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -37,16 +37,13 @@ Run any script with `help` for full command syntax.
 
 **Credentials:** `/memory/connectors/huggingface/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
 HUGGINGFACE_API_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/huggingface" && npm install
-```
 
 **"HUGGINGFACE_API_TOKEN not found":** Create `.env` with your token.
 

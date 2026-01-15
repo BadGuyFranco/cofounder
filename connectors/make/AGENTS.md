@@ -9,10 +9,10 @@ https://developers.make.com/api-documentation
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/make"
-npm install
 node scripts/teams.js list --org-id YOUR_ORG_ID
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,6 +25,8 @@ node scripts/teams.js list --org-id YOUR_ORG_ID
 
 **Credentials:** `/memory/connectors/make/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
 MAKE_API_TOKEN=xxx
 MAKE_REGION=us2
@@ -35,11 +37,6 @@ MAKE_REGION=us2
 **What can I do?** See `CAPABILITIES.md` for all available scripts and commands.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/make" && npm install
-```
 
 **"MAKE_API_TOKEN not found":** Create `/memory/connectors/make/.env` with your token.
 

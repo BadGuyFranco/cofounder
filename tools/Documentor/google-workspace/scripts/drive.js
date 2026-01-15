@@ -4,7 +4,7 @@
  * 
  * Usage:
  *   node drive.js detect-account /path/to/google/drive/folder
- *   node drive.js get-folder-id "Shared drives/GPT/Documents" --account user@example.com
+ *   node drive.js get-folder-id "Shared drives/Work/Documents" --account user@example.com
  *   node drive.js export FILE_ID pdf ./output.pdf --account user@example.com
  *   node drive.js move FILE_ID FOLDER_ID --account user@example.com
  */
@@ -496,7 +496,7 @@ Export Formats:
 
 Examples:
   node drive.js detect-account "/Users/me/GoogleDrive-user@example.com/Shared drives/Work"
-  node drive.js get-folder-id "Shared drives/GPT/Documents" --account user@example.com
+  node drive.js get-folder-id "Shared drives/Work/Documents" --account user@example.com
   node drive.js export abc123 pdf ./document.pdf --account user@example.com
   node drive.js move abc123 xyz789 --account user@example.com
 `);

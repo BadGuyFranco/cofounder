@@ -390,11 +390,11 @@ Options:
   --verbose               Show full API response
 
 Examples:
-  node payments.js orders --location "WISER"
-  node payments.js order ord123 --location "WISER"
-  node payments.js transactions --status completed --location "WISER"
-  node payments.js subscriptions --status active --location "WISER"
-  node payments.js integration --location "WISER"
+  node payments.js orders --location "My Account"
+  node payments.js order ord123 --location "My Account"
+  node payments.js transactions --status completed --location "My Account"
+  node payments.js subscriptions --status active --location "My Account"
+  node payments.js integration --location "My Account"
 
 Order Statuses: pending, completed, cancelled, refunded
 Transaction Statuses: pending, succeeded, failed

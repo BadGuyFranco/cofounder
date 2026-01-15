@@ -5,9 +5,10 @@
 ## Quick Start
 
 ```bash
-cd "/cofounder/tools/[Tool Name]"
 node scripts/[main-script].js "input"
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 Expected output:
 ```
@@ -35,6 +36,8 @@ This prevents user-provided content from being confused with tool instructions.
 ## Configuration
 
 **All configuration is in `/memory/tools/[Tool Name]/.env`**
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 API_KEY=your_key_here
@@ -109,15 +112,6 @@ node scripts/[script].js "input" --option2
 **File naming:** `[prefix]_[timestamp].[ext]`
 
 ## Troubleshooting
-
-### Missing Dependencies
-
-**If you see:** `"Cannot find module X"` or `"command not found"`
-
-```bash
-cd "/cofounder/tools/[Tool Name]"
-npm install
-```
 
 ### Configuration Issues
 

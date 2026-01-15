@@ -9,10 +9,10 @@ https://airtable.com/developers/web/api/introduction
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/airtable"
-npm install
 node scripts/bases.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,6 +25,8 @@ node scripts/bases.js list
 
 **Credentials:** `/memory/connectors/airtable/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
 AIRTABLE_PAT=patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
@@ -34,11 +36,6 @@ AIRTABLE_PAT=patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 **What can I do?** See `CAPABILITIES.md` for all available scripts and commands.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/airtable" && npm install
-```
 
 **"AIRTABLE_PAT not found":** Create `/memory/connectors/airtable/.env` with your token.
 

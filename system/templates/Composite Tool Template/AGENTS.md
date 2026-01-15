@@ -5,10 +5,10 @@
 ## Quick Start
 
 ```bash
-cd "/cofounder/tools/[Tool Name]/[default-sub-tool]"
-npm install
 node scripts/[main-script].js "input"
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 Expected output:
 ```
@@ -57,6 +57,8 @@ Works immediately after `npm install`.
 ### [Optional Sub-tool] (Requires setup)
 
 **Credentials location:** `/memory/tools/[Tool Name]/[config-file]`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 **Setup required:** See `[sub-tool]/SETUP.md` for configuration.
 

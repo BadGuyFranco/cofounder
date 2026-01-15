@@ -5,11 +5,11 @@
  * Create, read, update, delete, and search contacts.
  * 
  * Usage:
- *   node contacts.js search "query" --location "First Strategy"
- *   node contacts.js get <contact-id> --location "WISER"
- *   node contacts.js create --email "email" --firstName "name" --location "AI First Principles"
- *   node contacts.js update <contact-id> --firstName "name" --location "First Strategy"
- *   node contacts.js delete <contact-id> --location "WISER"
+ *   node contacts.js search "query" --location "My Account"
+ *   node contacts.js get <contact-id> --location "My Account"
+ *   node contacts.js create --email "email" --firstName "name" --location "My Account"
+ *   node contacts.js update <contact-id> --firstName "name" --location "My Account"
+ *   node contacts.js delete <contact-id> --location "My Account"
  *   node contacts.js locations                          # List available locations
  */
 
@@ -146,6 +146,21 @@ async function getContact(contactId, location, verbose) {
   return contact;
 }
 
+// Parse custom fields from args (format: --customField "id=value" or multiple)
+function parseCustomFields(options) {
+  const customFields = [];
+  if (options.customField) {
+    const fields = Array.isArray(options.customField) ? options.customField : [options.customField];
+    for (const field of fields) {
+      const [id, ...valueParts] = field.split('=');
+      if (id && valueParts.length > 0) {
+        customFields.push({ id: id.trim(), field_value: valueParts.join('=').trim() });
+      }
+    }
+  }
+  return customFields.length > 0 ? customFields : null;
+}
+
 // Create contact
 async function createContact(options, location, verbose) {
   const body = {
@@ -158,6 +173,9 @@ async function createContact(options, location, verbose) {
   if (options.phone) body.phone = options.phone;
   if (options.tags) body.tags = options.tags.split(',').map(t => t.trim());
   if (options.source) body.source = options.source;
+  
+  const customFields = parseCustomFields(options);
+  if (customFields) body.customFields = customFields;
   
   const data = await localApiRequest('POST', '/contacts/', location.key, body);
   
@@ -182,6 +200,9 @@ async function updateContact(contactId, options, location, verbose) {
   if (options.lastName) body.lastName = options.lastName;
   if (options.phone) body.phone = options.phone;
   if (options.tags) body.tags = options.tags.split(',').map(t => t.trim());
+  
+  const customFields = parseCustomFields(options);
+  if (customFields) body.customFields = customFields;
   
   const data = await localApiRequest('PUT', `/contacts/${contactId}`, location.key, body);
   
@@ -337,6 +358,7 @@ async function main() {
         console.log('  --lastName "name"             Last name');
         console.log('  --phone "+1234567890"         Phone with country code');
         console.log('  --tags "tag1,tag2"            Comma-separated tags');
+        console.log('  --customField "id=value"      Set custom field (can use multiple times)');
         console.log('');
         console.log('Global Options:');
         console.log('  --verbose                     Show full API responses');

@@ -286,11 +286,11 @@ Options:
   --verbose               Show full API response
 
 Examples:
-  node surveys.js list --location "WISER"
-  node surveys.js get survey123 --location "WISER"
-  node surveys.js submissions survey123 --location "WISER"
-  node surveys.js submission sub123 --location "WISER"
-  node surveys.js all-submissions --start-date "2024-01-01" --location "WISER"
+  node surveys.js list --location "My Account"
+  node surveys.js get survey123 --location "My Account"
+  node surveys.js submissions survey123 --location "My Account"
+  node surveys.js submission sub123 --location "My Account"
+  node surveys.js all-submissions --start-date "2024-01-01" --location "My Account"
 
 NOTE: This connector is READ-ONLY.
 Survey creation and editing should be done through the Go High Level UI.

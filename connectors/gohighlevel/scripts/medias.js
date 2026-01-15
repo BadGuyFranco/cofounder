@@ -274,11 +274,11 @@ Options:
   --force               Skip confirmation prompts
 
 Examples:
-  node medias.js list --location "WISER"
-  node medias.js list --type image --location "WISER"
-  node medias.js upload --file "/path/to/image.jpg" --location "WISER"
-  node medias.js get file123 --location "WISER"
-  node medias.js delete file123 --location "WISER"
+  node medias.js list --location "My Account"
+  node medias.js list --type image --location "My Account"
+  node medias.js upload --file "/path/to/image.jpg" --location "My Account"
+  node medias.js get file123 --location "My Account"
+  node medias.js delete file123 --location "My Account"
 
 Supported file types: Images (JPG, PNG, GIF, WebP), Videos (MP4, MOV),
 Documents (PDF, DOC, DOCX)

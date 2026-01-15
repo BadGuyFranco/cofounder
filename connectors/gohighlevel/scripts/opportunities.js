@@ -5,7 +5,7 @@
  * Manage opportunities (deals) in pipelines.
  * 
  * Usage:
- *   node opportunities.js list --location "First Strategy" [--pipeline-id <id>]
+ *   node opportunities.js list --location "My Account" [--pipeline-id <id>]
  *   node opportunities.js get <opportunity-id> --location "Name"
  *   node opportunities.js create --name "Deal" --contact-id <id> --pipeline-id <id> --stage-id <id> --location "Name"
  *   node opportunities.js update <opportunity-id> [--stage-id <id>] [--status "won"] --location "Name"

@@ -7,10 +7,10 @@ Manage WordPress sites via REST API: posts, pages, media, comments, and taxonomi
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/wordpress"
-npm install
 node scripts/site.js verify
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -22,6 +22,8 @@ node scripts/site.js verify
 ## Configuration
 
 **Single Site:** `/memory/connectors/wordpress/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 WP_SITE_URL=https://yoursite.com
@@ -60,11 +62,6 @@ Run any script with `help` for full command syntax.
 When multiple sites are configured and no `--site` flag is specified, ask which site to use before executing operations.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/wordpress" && npm install
-```
 
 **"WP_SITE_URL not found":** Create `.env` with your site URL and credentials.
 

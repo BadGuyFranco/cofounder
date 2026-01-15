@@ -9,10 +9,10 @@ https://developer.monday.com/api-reference/docs
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/monday"
-npm install
 node scripts/boards.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/boards.js list
 ## Configuration
 
 **Credentials:** `/memory/connectors/monday/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 MONDAY_API_KEY=eyJhbGciOiJIUzI1NiJ9...
@@ -43,11 +45,6 @@ MONDAY_API_KEY=eyJhbGciOiJIUzI1NiJ9...
 Scripts will prompt for confirmation. Use `--force` only when the user has already confirmed.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/monday" && npm install
-```
 
 **"MONDAY_API_KEY not found":** Create `/memory/connectors/monday/.env` with your token.
 

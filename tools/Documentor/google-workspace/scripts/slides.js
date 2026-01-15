@@ -238,7 +238,7 @@ Options:
   --account EMAIL    Google account email (required)
   --id PRES_ID       Presentation ID (required for read/add-slide/delete-slide/export)
   --title TITLE      Presentation or slide title
-  --folder PATH      Folder path like "Shared drives/GPT" (optional for create)
+  --folder PATH      Folder path like "Shared drives/Work" (optional for create)
   --layout LAYOUT    Slide layout (for add-slide)
   --body TEXT        Slide body content (for add-slide)
   --slide-id ID      Slide object ID (for delete-slide)

@@ -9,10 +9,10 @@ https://developers.hubspot.com/docs/api/crm/contacts
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/hubspot"
-npm install
 node scripts/contacts.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/contacts.js list
 ## Configuration
 
 **Credentials:** `/memory/connectors/hubspot/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 HUBSPOT_ACCESS_TOKEN=pat-na2-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -43,11 +45,6 @@ HUBSPOT_ACCESS_TOKEN=pat-na2-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 Scripts will prompt for confirmation. Use `--force` only when the user has already confirmed.
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/hubspot" && npm install
-```
 
 **"HUBSPOT_ACCESS_TOKEN not found":** Create `/memory/connectors/hubspot/.env` with your token.
 

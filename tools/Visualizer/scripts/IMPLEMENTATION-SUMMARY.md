@@ -6,7 +6,7 @@
 ## What Changed
 
 ### Problem Identified
-Manual SVG positioning caused arrow alignment errors, made maintenance difficult, and broke at scale (15+ nodes). The WISER Foundations visualization had trailing arrows and mispositioned connections.
+Manual SVG positioning caused arrow alignment errors, made maintenance difficult, and broke at scale (15+ nodes). Complex visualizations had trailing arrows and mispositioned connections.
 
 ### Solution Implemented
 Integrated professional visualization libraries that handle automatic layout, eliminating positioning errors entirely.
@@ -101,7 +101,7 @@ All templates include:
 
 ## Immediate Impact
 
-### WISER Foundations Visualization
+### Complex Visualization Example
 - **V1 (manual SVG):** Trailing arrows, misaligned connections, maintenance burden
 - **V2 (Cytoscape.js):** Perfect connections, 7 layout options, expandable/collapsible, drag-adjustable
 
@@ -145,7 +145,7 @@ All templates include:
 
 ✅ **All 6 core visualization types have library templates**  
 ✅ **Documentation updated to library-first approach**  
-✅ **WISER Foundations rebuilt with zero positioning errors**  
+✅ **Complex visualizations rebuilt with zero positioning errors**  
 ✅ **Templates tested and working in modern browsers**  
 ✅ **Clear migration path from manual SVG**
 
@@ -160,7 +160,6 @@ All templates include:
 - `/scripts/mindmap-d3.html`
 - `/scripts/timeline-vis.html`
 - `/scripts/fishbone-d3.html`
-- `/a - WISER METHOD/git/WISER Method Foundations Visualization v2.html`
 
 **Updated:**
 - `/AGENTS.md` - Library-first workflow

@@ -2,6 +2,10 @@
 
 **100% Local Execution. No API Keys Required. Completely Free.**
 
+## Path Resolution
+
+`/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
+
 Transcribe voice recordings and phone calls locally using OpenAI Whisper with GPU acceleration. Optionally identify different speakers using pyannote speaker diarization.
 
 ## Objective

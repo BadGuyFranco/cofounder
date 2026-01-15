@@ -279,10 +279,10 @@ Options:
   --force               Skip confirmation prompts
 
 Examples:
-  node businesses.js list --location "WISER"
-  node businesses.js create --name "Acme Corp" --email "info@acme.com" --city "Austin" --state "TX" --location "WISER"
-  node businesses.js update biz123 --phone "+15551234567" --location "WISER"
-  node businesses.js delete biz123 --location "WISER"
+  node businesses.js list --location "My Account"
+  node businesses.js create --name "Acme Corp" --email "info@acme.com" --city "Austin" --state "TX" --location "My Account"
+  node businesses.js update biz123 --phone "+15551234567" --location "My Account"
+  node businesses.js delete biz123 --location "My Account"
 `);
 }
 

@@ -401,10 +401,10 @@ Options:
   --force                 Skip confirmation prompts
 
 Examples:
-  node social-planner.js accounts --location "WISER"
-  node social-planner.js posts --status scheduled --location "WISER"
-  node social-planner.js create --content "Hello world!" --account-ids "acc1,acc2" --schedule "2024-01-15T10:00:00" --location "WISER"
-  node social-planner.js delete post123 --location "WISER"
+  node social-planner.js accounts --location "My Account"
+  node social-planner.js posts --status scheduled --location "My Account"
+  node social-planner.js create --content "Hello world!" --account-ids "acc1,acc2" --schedule "2024-01-15T10:00:00" --location "My Account"
+  node social-planner.js delete post123 --location "My Account"
 
 Post Statuses: draft, scheduled, publishing, published, failed
 

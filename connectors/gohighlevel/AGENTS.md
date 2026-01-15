@@ -9,10 +9,10 @@ https://highlevel.stoplight.io/docs/integrations
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/gohighlevel"
-npm install
-node scripts/contacts.js search "john" --location "First Strategy"
+node scripts/contacts.js search "john" --location "My Account"
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -25,14 +25,13 @@ node scripts/contacts.js search "john" --location "First Strategy"
 
 **Credentials:** `/memory/connectors/gohighlevel/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
-GHL_FIRST_STRATEGY_ID=VKxBzjSxzspKqBPmB1cV
-GHL_FIRST_STRATEGY_KEY=pit-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+GHL_MY_ACCOUNT_ID=your-location-id
+GHL_MY_ACCOUNT_KEY=pit-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
-GHL_WISER_ID=BbJWkTXiYkK3LrkcdCYo
-GHL_WISER_KEY=pit-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
-GHL_DEFAULT=First Strategy
+GHL_DEFAULT=My Account
 ```
 
 **Not configured?** Follow `SETUP.md` to get your API key and Location ID.
@@ -54,12 +53,7 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 
 ## Troubleshooting
 
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/gohighlevel" && npm install
-```
-
-**"No .env file found":** Create `/memory/connectors/gohighlevel/.env` with your credentials.
+**"No .env file found":** Create the `.env` file in `/memory/connectors/gohighlevel/` (resolve `/memory/` from `user_info.Workspace Paths`).
 
 **"No location specified":** Use `--location "Name"` or set `GHL_DEFAULT` in .env.
 

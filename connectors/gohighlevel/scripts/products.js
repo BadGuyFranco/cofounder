@@ -373,10 +373,10 @@ Options:
   --force                  Skip confirmation prompts
 
 Examples:
-  node products.js list --location "WISER"
-  node products.js create --name "Consulting Package" --type SERVICE --location "WISER"
-  node products.js create-price prod123 --amount 50000 --name "Monthly" --interval month --location "WISER"
-  node products.js delete prod123 --location "WISER"
+  node products.js list --location "My Account"
+  node products.js create --name "Consulting Package" --type SERVICE --location "My Account"
+  node products.js create-price prod123 --amount 50000 --name "Monthly" --interval month --location "My Account"
+  node products.js delete prod123 --location "My Account"
 
 Product Types: DIGITAL, PHYSICAL, SERVICE
 Price Types: one_time, recurring

@@ -2,6 +2,10 @@
 
 Create or convert documents (Word, PDF, Google Docs) from other formats.
 
+## Path Resolution
+
+`/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
+
 ## Quick Start
 
 ```bash

@@ -10,9 +10,6 @@ Connect to Supabase to manage databases, storage, auth, and edge functions acros
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/supabase"
-npm install
-
 # First time: configure access token and project
 node scripts/management.js list
 node scripts/management.js configure <project-ref>
@@ -20,6 +17,8 @@ node scripts/management.js configure <project-ref>
 # Then use project-specific commands (use human-readable name)
 node scripts/tables.js list --project test-project
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -31,6 +30,8 @@ node scripts/tables.js list --project test-project
 ## Configuration
 
 **Credentials location:** `/memory/connectors/supabase/`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 /memory/connectors/supabase/
@@ -68,11 +69,6 @@ Run `node scripts/management.js configure <project-ref>` first.
 
 **"Multiple projects configured":**
 Specify which project with `--project <name>`.
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/supabase" && npm install
-```
 
 **"Invalid API key":** Token may be expired or revoked. Generate a new one.
 

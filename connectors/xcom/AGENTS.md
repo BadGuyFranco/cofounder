@@ -9,10 +9,10 @@ https://developer.x.com/en/docs/twitter-api
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/xcom"
-npm install
 node scripts/user.js me
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/user.js me
 ## Configuration
 
 **Single Account:** `/memory/connectors/xcom/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 X_API_KEY=your_api_key
@@ -71,11 +73,6 @@ When multiple accounts are configured and no `--account` flag is specified, ask 
 **When in doubt:** "Would X consider this authentic human behavior, or automated manipulation?"
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/xcom" && npm install
-```
 
 **"X_API_KEY not found":** Create `/memory/connectors/xcom/.env` with your credentials.
 

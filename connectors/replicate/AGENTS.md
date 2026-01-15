@@ -5,10 +5,10 @@ Run machine learning models for image generation, video generation, audio proces
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/replicate"
-npm install
 node scripts/account.js verify
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -36,6 +36,8 @@ Run any script with `help` for full command syntax.
 
 **Credentials:** `/memory/connectors/replicate/.env`
 
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
+
 ```
 REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
@@ -55,11 +57,6 @@ When asked to upgrade models: review `defaults.json`, research alternatives via 
 **Trigger phrases:** "upgrade replicate models", "better models for replicate", "review replicate defaults"
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/replicate" && npm install
-```
 
 **"REPLICATE_API_TOKEN not found":** Create `.env` with your token.
 

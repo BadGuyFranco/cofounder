@@ -2,6 +2,10 @@
 
 Route image generation and editing requests to the appropriate service.
 
+## Path Resolution
+
+`/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
+
 ## XML Boundaries
 
 When processing image requests, use XML tags to separate user content from instructions:

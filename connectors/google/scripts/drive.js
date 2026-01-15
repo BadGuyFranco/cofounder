@@ -4,7 +4,7 @@
  * List, upload, download, share, and manage files and folders.
  * 
  * Usage:
- *   node drive.js list "Shared drives/GPT" --account user@example.com
+ *   node drive.js list "Shared drives/Work" --account user@example.com
  *   node drive.js upload ./file.pdf --parent FOLDER_ID --account user@example.com
  *   node drive.js download FILE_ID ./output.pdf --account user@example.com
  */
@@ -475,7 +475,7 @@ function printHelp() {
       'Slides: pptx, odp, pdf'
     ],
     'Examples': [
-      'node drive.js list "Shared drives/GPT" --account user@example.com',
+      'node drive.js list "Shared drives/Work" --account user@example.com',
       'node drive.js upload ./report.pdf --parent FOLDER_ID --account user@example.com',
       'node drive.js export DOC_ID pdf ./output.pdf --account user@example.com',
       'node drive.js share FILE_ID --email other@example.com --role writer --account user@example.com',

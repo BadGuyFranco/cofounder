@@ -2,6 +2,8 @@
 
 Complete instructions for setting up the comprehensive Google connector with access to Drive, Workspace, Gmail, YouTube, Calendar, and AI services.
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Before You Begin
 
 **Fair warning:** Google does NOT make this easy. Their developer console is complex, the terminology is confusing, and there are multiple steps that must be done in the right order. This is not your fault; it's just how Google works.

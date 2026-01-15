@@ -9,10 +9,10 @@ https://docs.heygen.com
 ## Quick Start
 
 ```bash
-cd "/cofounder/connectors/heygen"
-npm install
 node scripts/videos.js list
 ```
+
+If you get "Cannot find module", run `npm install` first.
 
 ## Documentation Files
 
@@ -24,6 +24,8 @@ node scripts/videos.js list
 ## Configuration
 
 **Single Account:** `/memory/connectors/heygen/.env`
+
+`/memory/` is a workspace root. Resolve from `user_info.Workspace Paths` before reading or creating this file.
 
 ```
 HEYGEN_API_KEY=your_api_key_here
@@ -61,11 +63,6 @@ node scripts/avatars.js help
 ```
 
 ## Troubleshooting
-
-**"Cannot find module":**
-```bash
-cd "/cofounder/connectors/heygen" && npm install
-```
 
 **"HEYGEN_API_KEY not found":** Create `/memory/connectors/heygen/.env` with your API key.
 

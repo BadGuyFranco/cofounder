@@ -2,6 +2,8 @@
 
 Generate videos using Google's Veo model via the centralized Connector.
 
+**Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
+
 ## Prerequisites
 
 **Credential location:** `/memory/connectors/google/.env`
