@@ -75,6 +75,19 @@ Run any script with `--help` for full command syntax.
 
 **Path detection**: Automatically extracts account from Google Drive paths like `/Users/.../GoogleDrive-user@example.com/Shared drives/...`
 
+## Creating Documents from Source Files
+
+When creating a Google Doc/Sheet/Slide from a source file (markdown, text, etc.):
+
+1. **Check if source is in Google Drive** - Look for `GoogleDrive-` in the file path
+2. **If yes, apply these defaults:**
+   - `--title` = source filename without extension (e.g., `notes.md` → `notes`)
+   - `--folder` = the folder path containing the source file
+   - `--account` = extracted from the path
+3. **If no**, require explicit `--title` and `--account`; place in My Drive root
+
+This keeps the Google Doc alongside its source file with a matching name.
+
 ## Known Limitations
 
 **Cannot create suggestions programmatically.** Google Docs "Suggesting" mode is UI-only. Workaround: inline markers.

@@ -36,14 +36,45 @@ Copy and paste the following prompt into Cursor's chat (Cmd+L or Ctrl+L):
 ```
 I'm doing my first-run setup for CoFounder. Help me complete the full setup process.
 
-## Step 0: System Check
+## Step 0: Install Package Manager (Miniforge)
 
-Before we begin, verify my system is ready:
-1. Check if git is installed (run `git --version`)
-2. Check if Node.js is installed (run `node --version`)
-3. If either fails, STOP and tell me how to install them for my operating system
+First, check if conda is already installed:
+```bash
+conda --version 2>/dev/null && echo "Conda is ready!" || echo "Conda not found - will install"
+```
 
-## Step 1: Create Folder Structure
+If conda is NOT installed, install Miniforge based on my operating system:
+
+**Mac:**
+```bash
+echo "Downloading Miniforge..." && curl -fsSL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-$(uname -m).sh -o /tmp/miniforge.sh 2>/dev/null && echo "Installing Miniforge (this takes about 30 seconds)..." && bash /tmp/miniforge.sh -b -p $HOME/miniforge3 > /dev/null 2>&1 && $HOME/miniforge3/bin/conda init zsh > /dev/null 2>&1 && $HOME/miniforge3/bin/conda init bash > /dev/null 2>&1 && echo "Miniforge installed successfully!"
+```
+
+**Windows (PowerShell):**
+```powershell
+Write-Host "Downloading Miniforge..." -ForegroundColor Cyan; Invoke-WebRequest -Uri https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe -OutFile $env:TEMP\miniforge.exe 2>$null; Write-Host "Installing Miniforge (this takes about 60 seconds)..." -ForegroundColor Cyan; Start-Process $env:TEMP\miniforge.exe -ArgumentList '/S','/D=%USERPROFILE%\miniforge3' -Wait -WindowStyle Hidden; Write-Host "Miniforge installed successfully!" -ForegroundColor Green
+```
+
+After installation, I may need to restart my terminal or open a new one for conda to be available.
+
+Verify conda is working:
+```bash
+conda --version 2>/dev/null && echo "Conda is ready!" || echo "Please restart your terminal and try again"
+```
+
+## Step 1: Install Required Tools
+
+Once conda is available, install Node.js (required for CoFounder sync):
+```bash
+echo "Installing Node.js..." && conda install -y -q nodejs > /dev/null 2>&1 && echo "Node.js installed!" || echo "Installation failed - check conda is working"
+```
+
+Verify Node.js is working:
+```bash
+node --version 2>/dev/null && echo "Node.js is ready!" || echo "Node.js not found"
+```
+
+## Step 2: Create Folder Structure
 
 Create these folders as SIBLINGS to /cofounder/ (not inside it):
 
@@ -61,7 +92,7 @@ Verify all four folders exist before proceeding:
 - /[my name]/ (just created)
 - /workspaces/ (just created)
 
-## Step 2: Initialize Memory Structure
+## Step 3: Initialize Memory Structure
 
 Inside /memory/, create these directories and files:
 - `/memory/tools/Content Author/` (for voice settings)
@@ -77,13 +108,13 @@ Inside /memory/, create these directories and files:
 
 For maintainers with write access to /cofounder/: Also create `/memory/.maintainer` (empty file). This signals you can modify the shared library.
 
-## Step 3: Initialize Personal Workspace
+## Step 4: Initialize Personal Workspace
 
 Inside /[my name]/, create:
 - `/[my name]/content/` (where my generated content goes)
 - `/[my name]/AGENTS.md` - use template from `/cofounder/system/templates/Personal Workspace Template/AGENTS.md`, replacing [Your Name] with my name
 
-## Step 4: Create Workspace File
+## Step 5: Create Workspace File
 
 In /workspaces/, create a file named `[my name].code-workspace` with this structure:
 
@@ -91,33 +122,34 @@ In /workspaces/, create a file named `[my name].code-workspace` with this struct
   "folders": [
     { "path": "../cofounder" },
     { "path": "../memory" },
+    { "path": "../workspaces" },
     { "path": "../[my name]" }
   ]
 }
 
-Replace [my name] with my actual name. Do NOT include the workspaces folder itself as a root.
+Replace [my name] with my actual name. The order matters: cofounder, memory, workspaces, then personal folder.
 
-## Step 5: Voice Discovery
+## Step 6: Voice Discovery
 
 Load /cofounder/tools/Content Author/VoiceSetup.md and follow its complete instructions to create my voice profile.
 
 Take it one step at a time. Explain WHY each step matters before asking me to do it.
 
-## Step 6: Open Your Workspace
+## Step 7: Open Your Workspace
 
 After Voice Discovery is complete:
 1. Tell me to close this Cursor window
 2. Tell me to open /workspaces/[my name].code-workspace (double-click in Finder/Explorer)
 3. This loads all my folders together as one workspace
 
-## Step 7: Verify Setup
+## Step 8: Verify Setup
 
 Once I've reopened in my workspace:
 1. Ask me to request a short paragraph on any topic
 2. Confirm Content Author loads my voice.md and produces output matching my voice
 3. If it fails, troubleshoot before ending setup
 
-## Step 8: What's Next
+## Step 9: What's Next
 
 Show me:
 - The Tool Routing table from .cursor/rules/Always Apply.mdc (what tools are available)
@@ -131,12 +163,14 @@ Show me:
 
 | Folder | Purpose | Updates? |
 |--------|---------|----------|
-| `/cofounder/` | Shared tools and templates. Read-only. | Yes, via git pull |
+| `/cofounder/` | Shared tools and templates. Read-only. | Yes, via sync |
 | `/memory/` | YOUR personal config: voice, API keys, custom tools | Never overwritten |
-| `/[your name]/` | YOUR content workspace | Never overwritten |
 | `/workspaces/` | Workspace files that open folder combinations | Never overwritten |
+| `/[your name]/` | YOUR content workspace | Never overwritten |
 
 **The separation matters:** When CoFounder gets updates, your personal settings and content stay untouched.
+
+**The order matters:** Your workspace roots should appear as: cofounder, memory, workspaces, [your name]. This keeps tools at the top and your work at the bottom.
 
 ## After Setup
 
@@ -171,7 +205,30 @@ Your folder structure will look like:
     └── [your name].code-workspace
 ```
 
+## Installing Additional Tools
+
+CoFounder tools may require additional software. With Miniforge installed, Cursor can install them automatically:
+
+| Tool | Requirement | Install Command |
+|------|-------------|-----------------|
+| **Transcriber** | Whisper | `echo "Installing Whisper..." && pip install -q openai-whisper 2>/dev/null && echo "Done!"` |
+| **Documentor** | Pandoc | `echo "Installing Pandoc..." && conda install -y -q pandoc > /dev/null 2>&1 && echo "Done!"` |
+| **Video Generator** | FFmpeg | `echo "Installing FFmpeg..." && conda install -y -q ffmpeg > /dev/null 2>&1 && echo "Done!"` |
+
+These install on-demand when you first use the tool. Cursor will prompt you if something is missing.
+
 ## Troubleshooting
+
+### "conda: command not found"
+
+Miniforge was installed but the terminal doesn't recognize it yet.
+
+**Mac:**
+```bash
+source ~/miniforge3/bin/activate
+```
+
+**Windows:** Close and reopen your terminal, or open "Miniforge Prompt" from Start menu.
 
 ### "I can't create folders at the right level"
 
@@ -182,7 +239,7 @@ Your folder structure will look like:
 4. At the bottom, click the lock icon and enter your password
 5. Under "Sharing & Permissions," ensure your user has "Read & Write"
 
-**Alternative:** Create the folders manually in Finder, then tell Cursor: "I created the folders manually. Continue from step 2."
+**Alternative:** Create the folders manually in Finder/Explorer, then tell Cursor: "I created the folders manually. Continue from step 3."
 
 ### "The file explorer disappeared"
 
@@ -190,13 +247,12 @@ Press `Cmd+E` (Mac) or `Ctrl+E` (Windows) to toggle the explorer panel.
 
 ## Getting Updates
 
-CoFounder improves over time. To get updates:
+CoFounder improves over time. To get updates, paste this in Cursor chat:
 
-```bash
-cd /path/to/cofounder
-git pull
+```
+Run this command in your terminal: npx wiser-cofounder sync
 ```
 
-After pulling, check `/cofounder/system/migrations/` for any required changes. See `/cofounder/system/migrations/README.md` for details.
+After syncing, check `/cofounder/system/migrations/` for any required changes. See `/cofounder/system/migrations/README.md` for details.
 
 Your `/memory/`, personal folder, and `/workspaces/` are unaffected by updates (though migrations may require you to reorganize `/memory/`).

@@ -33,3 +33,21 @@ alwaysApply: false
 **Credentials location:** `/memory/connectors/[platform]/.env`
 
 **Auth patterns:** API Key (reference: airtable/), OAuth 2.0 (reference: linkedin/), OAuth 1.0a (reference: xcom/)
+
+## Path Portability (CRITICAL)
+
+The `/cofounder/` directory is shared and read-only for most users. **All paths MUST be portable.**
+
+**Rules:**
+- NEVER use absolute paths like `/memory/...`, `/Users/...`, or hardcoded user paths
+- ALWAYS resolve paths relative to `__dirname` using `path.join()`
+- NEVER include user-specific data (emails, usernames) except in example placeholders
+- Use `user@example.com` for example emails, never real addresses
+
+**Correct pattern:**
+```javascript
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const memoryPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', '[platform]', '.env');
+```
+
+**Before committing:** Search for your email/username in changed files to catch accidental leaks.

@@ -96,7 +96,7 @@ Naming format: `output_0.mp4`
 
 **Long generation time:** Video generation typically takes 1-3 minutes. The script waits by default.
 
-**Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
+**Dependencies missing:** Run `npm install` in the connectors/replicate directory.
 
 See `/connectors/replicate/AGENTS.md` for additional troubleshooting.
 

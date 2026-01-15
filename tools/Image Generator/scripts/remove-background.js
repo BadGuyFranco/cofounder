@@ -19,12 +19,14 @@ import sharp from 'sharp';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Primary: Connector credential location
-const connectorEnvPath = resolve(__dirname, '../../../Connectors/replicate/.env');
+// Detect paths dynamically from script location
+// Script is at: .../GPT/cofounder/tools/Image Generator/scripts/remove-background.js
+// Memory is at: .../GPT/memory/connectors/replicate/
+// Cofounder connector is at: .../GPT/cofounder/connectors/replicate/
+const memoryConnectorPath = resolve(__dirname, '../../../../memory/connectors/replicate/.env');
+const connectorEnvPath = resolve(__dirname, '../../../connectors/replicate/.env');
 // Fallback: Legacy Image Generator location (for migration)
 const legacyEnvPath = resolve(__dirname, '../../../../memory/tools/Image Generator/.env');
-// Also check memory Connector location
-const memoryConnectorPath = resolve(__dirname, '../../../../memory/connectors/replicate/.env');
 
 // Load credentials in order of preference
 if (existsSync(memoryConnectorPath)) {
@@ -44,7 +46,7 @@ if (existsSync(memoryConnectorPath)) {
 }
 
 // Load default model from Connector's defaults.json
-const defaultsPath = resolve(__dirname, '../../../Connectors/replicate/defaults.json');
+const defaultsPath = resolve(__dirname, '../../../connectors/replicate/defaults.json');
 let DEFAULT_MODEL = 'cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003';
 
 if (existsSync(defaultsPath)) {

@@ -50,4 +50,5 @@ When making breaking changes to `/cofounder/`:
 
 | Version | Description |
 |---------|-------------|
+| 2025-01-15 | Miniforge setup (replaces Homebrew/Xcode) |
 | 2025-01-14 | Memory directory restructure (mirrors /cofounder/ paths) |

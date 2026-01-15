@@ -10,14 +10,15 @@
  */
 
 import { google } from 'googleapis';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { dirname, basename } from 'path';
+import { writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import { dirname, basename, join } from 'path';
 import { fileURLToPath } from 'url';
+import { platform, homedir } from 'os';
 import { getAuthClient } from './auth.js';
 
 /**
  * Extract Google account email from a local file path
- * Parses paths like: /Users/.../GoogleDrive-anthony@francoinc.com/Shared drives/...
+ * Parses paths like: /Users/.../GoogleDrive-user@example.com/Shared drives/...
  */
 export function detectAccountFromPath(localPath) {
   // Pattern: GoogleDrive-{email}
@@ -280,33 +281,100 @@ async function getFilePath(email, fileId) {
 }
 
 /**
+ * Detect the local Google Drive base path for an account
+ * Cross-platform: supports macOS, Windows, and Linux
+ * @param {string} email - Google account email
+ * @returns {string|null} - Base path or null if not found
+ */
+function detectGoogleDriveBasePath(email) {
+  const home = homedir();
+  const os = platform();
+  
+  if (os === 'darwin') {
+    // macOS: ~/Library/CloudStorage/GoogleDrive-email/
+    const macPath = join(home, 'Library', 'CloudStorage', `GoogleDrive-${email}`);
+    if (existsSync(macPath)) {
+      return macPath;
+    }
+    // Also check for paths without email in name (older installations)
+    const cloudStorage = join(home, 'Library', 'CloudStorage');
+    if (existsSync(cloudStorage)) {
+      try {
+        const dirs = readdirSync(cloudStorage);
+        const match = dirs.find(d => d.startsWith('GoogleDrive-') && d.includes(email.split('@')[0]));
+        if (match) {
+          return join(cloudStorage, match);
+        }
+      } catch (e) {
+        // Ignore read errors
+      }
+    }
+  } else if (os === 'win32') {
+    // Windows: Check common locations
+    // 1. Virtual drive (usually G:\ but can be any letter)
+    const driveLetters = 'GHIJKLMNOPQRSTUVWXYZABCDEF'.split('');
+    for (const letter of driveLetters) {
+      const drivePath = `${letter}:\\`;
+      if (existsSync(join(drivePath, 'My Drive')) || existsSync(join(drivePath, 'Shared drives'))) {
+        return drivePath;
+      }
+    }
+    // 2. Mirror mode: ~/My Drive or ~/Google Drive
+    const mirrorPaths = [
+      join(home, 'My Drive'),
+      join(home, 'Google Drive'),
+      join(home, `Google Drive (${email})`)
+    ];
+    for (const p of mirrorPaths) {
+      if (existsSync(p)) {
+        return p;
+      }
+    }
+  } else {
+    // Linux: Google Drive doesn't have official client, but check common locations
+    const linuxPaths = [
+      join(home, 'Google Drive'),
+      join(home, 'google-drive')
+    ];
+    for (const p of linuxPaths) {
+      if (existsSync(p)) {
+        return p;
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Get the local filesystem path for a Google Drive file
- * Maps Google Drive location to local CloudStorage path
+ * Maps Google Drive location to local sync path (cross-platform)
  */
 export async function getLocalPath(email, fileId) {
   const fileInfo = await getFileInfo(email, fileId);
   const { path: folderPath, isSharedDrive, sharedDriveName } = await getFilePath(email, fileId);
   
-  // Build the CloudStorage base path
-  const cloudStorageBase = `/Users/${process.env.USER || 'user'}/Library/CloudStorage/GoogleDrive-${email}`;
+  // Detect the Google Drive base path for this platform
+  const cloudStorageBase = detectGoogleDriveBasePath(email);
+  
+  if (!cloudStorageBase) {
+    throw new Error(
+      `Could not detect Google Drive sync folder for ${email}. ` +
+      `Ensure Google Drive for Desktop is installed and syncing.`
+    );
+  }
   
   let localDir;
   if (isSharedDrive && sharedDriveName) {
-    localDir = `${cloudStorageBase}/Shared drives/${sharedDriveName}`;
-    if (folderPath.length > 0) {
-      localDir += '/' + folderPath.join('/');
-    }
+    localDir = join(cloudStorageBase, 'Shared drives', sharedDriveName, ...folderPath);
   } else {
-    localDir = `${cloudStorageBase}/My Drive`;
-    if (folderPath.length > 0) {
-      localDir += '/' + folderPath.join('/');
-    }
+    localDir = join(cloudStorageBase, 'My Drive', ...folderPath);
   }
   
   return {
     directory: localDir,
     filename: fileInfo.name,
-    fullPath: `${localDir}/${fileInfo.name}`
+    fullPath: join(localDir, fileInfo.name)
   };
 }
 

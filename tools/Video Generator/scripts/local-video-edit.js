@@ -4,7 +4,7 @@
  * Provides video editing capabilities without API calls
  *
  * Note: Requires FFmpeg to be installed on the system
- * Install: brew install ffmpeg (macOS) or apt install ffmpeg (Linux)
+ * Install: conda install -y ffmpeg (Miniforge) or brew install ffmpeg (macOS) or apt install ffmpeg (Linux)
  */
 
 import { existsSync, mkdirSync, statSync } from 'fs';
@@ -242,6 +242,7 @@ Options:
   --help, -h                    Show this help message
 
 Requires: FFmpeg installed on system
+  Miniforge: conda install -y ffmpeg
   macOS: brew install ffmpeg
   Linux: apt install ffmpeg
 `);
@@ -417,6 +418,7 @@ async function main() {
 
     if (e.message.includes('ENOENT') || e.message.includes('ffmpeg')) {
       console.log('\nFFmpeg may not be installed. Install with:');
+      console.log('  Miniforge: conda install -y ffmpeg');
       console.log('  macOS: brew install ffmpeg');
       console.log('  Linux: apt install ffmpeg');
     }

@@ -1,6 +1,6 @@
-# Web Tech Stack
+# Web Apps
 
-Build full-stack SaaS applications using a proven, AI-first architecture.
+Coding standards and architecture patterns for building full-stack web applications.
 
 ## Documentation
 
@@ -30,4 +30,4 @@ Build full-stack SaaS applications using a proven, AI-first architecture.
 
 ## Common Use Cases
 
-Use this library when starting a new web-based SaaS application. The process guides you through requirements gathering, architecture decisions, and generates a complete project with documentation that enables effective AI collaboration.
+Use these standards when starting a new web application or SaaS. The process guides you through requirements gathering, architecture decisions, and generates a complete project with documentation that enables effective AI collaboration.

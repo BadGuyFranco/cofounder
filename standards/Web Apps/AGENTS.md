@@ -1,6 +1,6 @@
-# Web Tech Stack
+# Web Apps
 
-Build full-stack SaaS applications using a proven, AI-first architecture with React, Express, PostgreSQL, and Prisma.
+Coding standards and architecture patterns for building full-stack web applications. React, Express, PostgreSQL, and Prisma.
 
 ## Objective
 
@@ -29,9 +29,9 @@ Before delivering a generated project:
 - [ ] Multi-tenancy configured if required
 - [ ] AI Assistant infrastructure included
 
-## When to Use This Library
+## When to Use
 
-Use Web Tech Stack when the user requests:
+Use Web Apps standards when the user requests:
 - "Create a new web application"
 - "Build a SaaS platform"
 - "Start a new full-stack project"

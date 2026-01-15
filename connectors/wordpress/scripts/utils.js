@@ -8,8 +8,14 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/wordpress');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/wordpress/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/wordpress/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'wordpress');
 
 let loadedSite = null;
 let siteConfig = null;

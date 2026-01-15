@@ -6,10 +6,15 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-// Load environment from memory directory or local
-const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/make/.env');
-const localEnvPath = path.join(path.dirname(new URL(import.meta.url).pathname), '..', '.env');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/make/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/make/
+const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'make', '.env');
+const localEnvPath = path.join(__dirname, '..', '.env');
 
 if (fs.existsSync(memoryEnvPath)) {
   dotenv.config({ path: memoryEnvPath });

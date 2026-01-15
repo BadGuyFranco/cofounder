@@ -44,73 +44,81 @@ function printHelp() {
 // List groups user organizes
 async function listGroups(args) {
   const token = getToken();
-  const limit = parseInt(args.limit) || 20;
   
-  const query = `
-    query GetMyGroups($first: Int) {
+  // First get Pro Networks the user administers
+  const proQuery = `
+    query GetMyProNetworks {
       self {
         id
         name
-        memberships(input: { first: $first }) {
-          edges {
-            node {
-              id
-              group {
-                id
-                name
-                urlname
-                city
-                state
-                country
-                memberships {
-                  count
-                }
-                isOrganizer
-                link
-              }
-            }
-          }
+        organizedGroupCount
+        isOrganizer
+        adminProNetworks {
+          id
+          name
+          urlname
         }
       }
     }
   `;
   
-  const data = await graphqlRequest(query, { first: limit }, token);
+  const proData = await graphqlRequest(proQuery, {}, token);
   
   if (args.verbose) {
-    console.log(JSON.stringify(data, null, 2));
-    return;
+    console.log(JSON.stringify(proData, null, 2));
   }
   
-  console.log(`\nGroups for ${data.self.name}:\n`);
+  console.log(`\nGroups for ${proData.self.name}:\n`);
+  console.log(`You organize ${proData.self.organizedGroupCount} group(s)\n`);
   
-  const memberships = data.self.memberships.edges;
-  const organized = memberships.filter(m => m.node.group.isOrganizer);
-  const member = memberships.filter(m => !m.node.group.isOrganizer);
+  // Get groups from each Pro Network
+  const networks = proData.self.adminProNetworks || [];
   
-  if (organized.length > 0) {
-    console.log('Groups You Organize:');
-    console.log('-'.repeat(60));
-    for (const { node } of organized) {
-      const g = node.group;
-      console.log(`  ${g.name}`);
-      console.log(`    URL: ${g.urlname}`);
-      console.log(`    Location: ${g.city}, ${g.state || g.country}`);
-      console.log(`    Members: ${g.memberships.count}`);
-      console.log('');
+  if (networks.length > 0) {
+    for (const network of networks) {
+      const networkQuery = `
+        query GetProNetworkGroups($urlname: ID!) {
+          proNetwork(urlname: $urlname) {
+            id
+            name
+            groupsSearch(input: { first: 50 }) {
+              edges {
+                node {
+                  id
+                  name
+                  urlname
+                  city
+                  state
+                  country
+                  link
+                }
+              }
+            }
+          }
+        }
+      `;
+      
+      const networkData = await graphqlRequest(networkQuery, { urlname: network.urlname }, token);
+      
+      if (args.verbose) {
+        console.log(JSON.stringify(networkData, null, 2));
+      }
+      
+      const groups = networkData.proNetwork.groupsSearch.edges;
+      
+      console.log(`Pro Network: ${network.name}`);
+      console.log('-'.repeat(60));
+      
+      for (const { node: g } of groups) {
+        console.log(`  ${g.name}`);
+        console.log(`    URL: ${g.urlname}`);
+        console.log(`    Location: ${g.city}, ${g.state || g.country}`);
+        console.log('');
+      }
     }
+  } else {
+    console.log('No Pro Networks found. You may organize individual groups outside of a Pro Network.');
   }
-  
-  if (member.length > 0) {
-    console.log('\nGroups You Belong To:');
-    console.log('-'.repeat(60));
-    for (const { node } of member) {
-      const g = node.group;
-      console.log(`  ${g.name} (${g.urlname})`);
-    }
-  }
-  
-  console.log(`\nTotal: ${organized.length} organized, ${member.length} member`);
 }
 
 // Get group details
@@ -129,26 +137,20 @@ async function getGroup(urlname, args) {
         country
         timezone
         link
-        isOrganizer
+        isPrimaryOrganizer
+        isMember
         isPrivate
         foundedDate
-        memberships {
-          count
+        stats {
+          memberCounts {
+            all
+          }
         }
         organizer {
           id
           name
         }
-        topics {
-          edges {
-            node {
-              id
-              name
-            }
-          }
-        }
-        upcomingEvents(input: { first: 5 }) {
-          count
+        events {
           edges {
             node {
               id
@@ -156,9 +158,6 @@ async function getGroup(urlname, args) {
               dateTime
             }
           }
-        }
-        pastEvents(input: { first: 5 }) {
-          count
         }
       }
     }
@@ -184,23 +183,20 @@ async function getGroup(urlname, args) {
   console.log(`Location: ${g.city}, ${g.state || g.country}`);
   console.log(`Timezone: ${g.timezone}`);
   console.log(`Founded: ${formatDate(g.foundedDate)}`);
-  console.log(`Members: ${g.memberships.count}`);
+  console.log(`Members: ${g.stats?.memberCounts?.all || 'N/A'}`);
   console.log(`Private: ${g.isPrivate ? 'Yes' : 'No'}`);
-  console.log(`You are organizer: ${g.isOrganizer ? 'Yes' : 'No'}`);
-  console.log(`Organizer: ${g.organizer.name}`);
+  console.log(`You are primary organizer: ${g.isPrimaryOrganizer ? 'Yes' : 'No'}`);
+  console.log(`You are member: ${g.isMember ? 'Yes' : 'No'}`);
+  console.log(`Organizer: ${g.organizer?.name || 'N/A'}`);
   
-  if (g.topics.edges.length > 0) {
-    console.log(`\nTopics: ${g.topics.edges.map(e => e.node.name).join(', ')}`);
-  }
-  
-  console.log(`\nUpcoming Events: ${g.upcomingEvents.count}`);
-  if (g.upcomingEvents.edges.length > 0) {
-    for (const { node } of g.upcomingEvents.edges) {
+  console.log(`\nUpcoming Events:`);
+  if (g.events.edges.length > 0) {
+    for (const { node } of g.events.edges) {
       console.log(`  - ${node.title} (${formatDate(node.dateTime)})`);
     }
+  } else {
+    console.log('  None scheduled');
   }
-  
-  console.log(`\nPast Events: ${g.pastEvents.count}`);
   
   if (g.description) {
     console.log(`\nDescription:\n${g.description.substring(0, 500)}${g.description.length > 500 ? '...' : ''}`);

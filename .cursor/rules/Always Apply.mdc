@@ -14,9 +14,9 @@ alwaysApply: true
 | Create or edit diagrams | `tools/Visualizer/` |
 | Transcribe audio | `tools/Transcriber/` |
 | Create or convert documents (Word, PDF, Google Docs) from other formats | `tools/Documentor/` |
-| Build web apps | `tools/Web Tech Stack/` |
 | Google Workspace (Docs, Sheets, Slides, Drive, Gmail, Calendar, YouTube) | `connectors/google/` |
 | Connect to external platforms | `connectors/` |
+| Build web apps, SaaS, or full-stack projects | `standards/Web Apps/` |
 | Create or edit tools | `.cursor/rules/Development.mdc` |
 | Create or edit connectors | `.cursor/rules/Development.mdc` |
 
@@ -90,6 +90,6 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 # Operational Rules
 
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
-- Run commands directly; for interactive scripts, ask for values first then run non-interactively
+- Run commands yourself; never show terminal commands or ask the user to run them
 - Cursor rules must be concise and follow their own rules
 - Auto-loads: `Prompt Standards.mdc` for AGENTS.md or cursor rules

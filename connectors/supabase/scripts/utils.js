@@ -12,11 +12,10 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Base paths
-const MEMORY_BASE = path.join(
-  process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase'
-);
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/supabase/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/supabase/
+const MEMORY_BASE = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'supabase');
 
 // Load environment from memory directory or local
 const memoryEnvPath = path.join(MEMORY_BASE, '.env');

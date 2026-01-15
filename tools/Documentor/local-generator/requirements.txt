@@ -6,7 +6,7 @@
 
 # pandoc - Universal document converter (required for convert.js)
 # Used for: HTML → markdown, epub, latex, etc.
-# Install: brew install pandoc (macOS) or https://pandoc.org/installing.html
+# Install: conda install -y pandoc (Miniforge) or brew install pandoc (macOS) or https://pandoc.org/installing.html
 pandoc>=3.0
 
 # Node.js

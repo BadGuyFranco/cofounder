@@ -9,8 +9,14 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/hubspot');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/hubspot/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/hubspot/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'hubspot');
 const BASE_URL = 'https://api.hubapi.com';
 
 /**

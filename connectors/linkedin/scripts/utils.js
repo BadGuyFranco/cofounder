@@ -9,8 +9,14 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/linkedin');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/linkedin/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/linkedin/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'linkedin');
 const BASE_URL = 'https://api.linkedin.com/v2';
 const REST_API_URL = 'https://api.linkedin.com/rest';
 

@@ -53,36 +53,27 @@ function printHelp() {
 // List upcoming events
 async function listUpcoming(urlname, args) {
   const token = getToken();
-  const limit = parseInt(args.limit) || 20;
   
   const query = `
-    query GetUpcomingEvents($urlname: String!, $first: Int) {
+    query GetEvents($urlname: String!) {
       groupByUrlname(urlname: $urlname) {
         id
         name
-        upcomingEvents(input: { first: $first }) {
-          count
+        events {
           edges {
             node {
               id
               title
-              description
               dateTime
-              endTime
               duration
               eventUrl
-              going
-              waiting
+              going {
+                totalCount
+              }
               isOnline
               venue {
                 name
-                address
                 city
-                state
-              }
-              host {
-                id
-                name
               }
             }
           }
@@ -91,7 +82,7 @@ async function listUpcoming(urlname, args) {
     }
   `;
   
-  const data = await graphqlRequest(query, { urlname, first: limit }, token);
+  const data = await graphqlRequest(query, { urlname }, token);
   const g = data.groupByUrlname;
   
   if (!g) {
@@ -104,20 +95,24 @@ async function listUpcoming(urlname, args) {
     return;
   }
   
-  console.log(`\nUpcoming Events for ${g.name} (${g.upcomingEvents.count} total)\n`);
+  // Filter for upcoming events (dateTime >= now)
+  const now = new Date();
+  const upcoming = g.events.edges.filter(e => new Date(e.node.dateTime) >= now);
+  
+  console.log(`\nUpcoming Events for ${g.name} (${upcoming.length} total)\n`);
   console.log('-'.repeat(70));
   
-  if (g.upcomingEvents.edges.length === 0) {
+  if (upcoming.length === 0) {
     console.log('No upcoming events.');
     return;
   }
   
-  for (const { node } of g.upcomingEvents.edges) {
+  for (const { node } of upcoming) {
     console.log(`\n${node.title}`);
     console.log(`  ID: ${node.id}`);
     console.log(`  Date: ${formatDate(node.dateTime)}`);
-    console.log(`  Duration: ${node.duration ? Math.round(node.duration / 60000) + ' minutes' : 'N/A'}`);
-    console.log(`  RSVPs: ${node.going} going${node.waiting ? `, ${node.waiting} waiting` : ''}`);
+    console.log(`  Duration: ${node.duration ? node.duration : 'N/A'}`);
+    console.log(`  RSVPs: ${node.going?.totalCount || 0} going`);
     console.log(`  Type: ${node.isOnline ? 'Online' : 'In-person'}`);
     if (node.venue) {
       console.log(`  Venue: ${node.venue.name}${node.venue.city ? `, ${node.venue.city}` : ''}`);
@@ -129,21 +124,21 @@ async function listUpcoming(urlname, args) {
 // List past events
 async function listPast(urlname, args) {
   const token = getToken();
-  const limit = parseInt(args.limit) || 20;
   
   const query = `
-    query GetPastEvents($urlname: String!, $first: Int) {
+    query GetEvents($urlname: String!) {
       groupByUrlname(urlname: $urlname) {
         id
         name
-        pastEvents(input: { first: $first }) {
-          count
+        events {
           edges {
             node {
               id
               title
               dateTime
-              going
+              going {
+                totalCount
+              }
               isOnline
               venue {
                 name
@@ -156,7 +151,7 @@ async function listPast(urlname, args) {
     }
   `;
   
-  const data = await graphqlRequest(query, { urlname, first: limit }, token);
+  const data = await graphqlRequest(query, { urlname }, token);
   const g = data.groupByUrlname;
   
   if (!g) {
@@ -169,19 +164,23 @@ async function listPast(urlname, args) {
     return;
   }
   
-  console.log(`\nPast Events for ${g.name} (${g.pastEvents.count} total)\n`);
+  // Filter for past events (dateTime < now)
+  const now = new Date();
+  const past = g.events.edges.filter(e => new Date(e.node.dateTime) < now);
+  
+  console.log(`\nPast Events for ${g.name} (${past.length} total)\n`);
   console.log('-'.repeat(70));
   
-  if (g.pastEvents.edges.length === 0) {
+  if (past.length === 0) {
     console.log('No past events.');
     return;
   }
   
-  for (const { node } of g.pastEvents.edges) {
+  for (const { node } of past) {
     const venue = node.venue ? ` @ ${node.venue.name}` : '';
     const type = node.isOnline ? ' [Online]' : '';
     console.log(`${formatDate(node.dateTime)} - ${node.title}${type}${venue}`);
-    console.log(`  ID: ${node.id} | Attended: ${node.going}`);
+    console.log(`  ID: ${node.id} | Attended: ${node.going?.totalCount || 0}`);
   }
 }
 
@@ -199,8 +198,9 @@ async function getEvent(eventId, args) {
         endTime
         duration
         eventUrl
-        going
-        waiting
+        going {
+          totalCount
+        }
         maxTickets
         isOnline
         eventType
@@ -213,7 +213,7 @@ async function getEvent(eventId, args) {
           country
           postalCode
           lat
-          lng
+          lon
         }
         host {
           id
@@ -223,9 +223,6 @@ async function getEvent(eventId, args) {
           id
           name
           urlname
-        }
-        rsvps(input: { first: 10 }) {
-          count
         }
       }
     }
@@ -254,13 +251,12 @@ async function getEvent(eventId, args) {
   if (e.endTime) {
     console.log(`End: ${formatDate(e.endTime)}`);
   }
-  console.log(`Duration: ${e.duration ? Math.round(e.duration / 60000) + ' minutes' : 'N/A'}`);
+  console.log(`Duration: ${e.duration || 'N/A'}`);
   
-  console.log(`\nRSVPs: ${e.going} going${e.waiting ? `, ${e.waiting} waiting` : ''}`);
+  console.log(`\nRSVPs: ${e.going?.totalCount || 0} going`);
   if (e.maxTickets) {
     console.log(`Capacity: ${e.maxTickets}`);
   }
-  console.log(`Total RSVPs: ${e.rsvps.count}`);
   
   if (e.venue) {
     console.log(`\nVenue: ${e.venue.name}`);
@@ -270,7 +266,7 @@ async function getEvent(eventId, args) {
     }
   }
   
-  console.log(`\nHost: ${e.host.name}`);
+  console.log(`\nHost: ${e.host?.name || 'N/A'}`);
   console.log(`URL: ${e.eventUrl}`);
   
   if (e.description) {
@@ -281,23 +277,18 @@ async function getEvent(eventId, args) {
 // List RSVPs for an event
 async function listRsvps(eventId, args) {
   const token = getToken();
-  const limit = parseInt(args.limit) || 50;
   
   const query = `
-    query GetEventRsvps($eventId: ID!, $first: Int) {
+    query GetEventRsvps($eventId: ID!) {
       event(id: $eventId) {
         id
         title
         dateTime
-        going
-        waiting
-        rsvps(input: { first: $first }) {
-          count
+        going {
+          totalCount
           edges {
             node {
               id
-              response
-              guestsCount
               member {
                 id
                 name
@@ -311,7 +302,7 @@ async function listRsvps(eventId, args) {
     }
   `;
   
-  const data = await graphqlRequest(query, { eventId, first: limit }, token);
+  const data = await graphqlRequest(query, { eventId }, token);
   const e = data.event;
   
   if (!e) {
@@ -326,26 +317,19 @@ async function listRsvps(eventId, args) {
   
   console.log(`\nRSVPs for: ${e.title}`);
   console.log(`Date: ${formatDate(e.dateTime)}`);
-  console.log(`\nTotal: ${e.rsvps.count} RSVPs (${e.going} going${e.waiting ? `, ${e.waiting} waiting` : ''})\n`);
+  console.log(`\nTotal: ${e.going?.totalCount || 0} going\n`);
   console.log('-'.repeat(60));
   
-  const yes = e.rsvps.edges.filter(r => r.node.response === 'YES');
-  const waitlist = e.rsvps.edges.filter(r => r.node.response === 'WAITLIST');
+  const attendees = e.going?.edges || [];
   
-  if (yes.length > 0) {
+  if (attendees.length > 0) {
     console.log('\nGoing:');
-    for (const { node } of yes) {
-      const guests = node.guestsCount > 0 ? ` (+${node.guestsCount} guests)` : '';
-      const location = node.member.city ? ` - ${node.member.city}` : '';
-      console.log(`  ${node.member.name}${guests}${location}`);
+    for (const { node } of attendees) {
+      const location = node.member?.city ? ` - ${node.member.city}` : '';
+      console.log(`  ${node.member?.name || 'Unknown'}${location}`);
     }
-  }
-  
-  if (waitlist.length > 0) {
-    console.log('\nWaitlist:');
-    for (const { node } of waitlist) {
-      console.log(`  ${node.member.name}`);
-    }
+  } else {
+    console.log('\nNo RSVPs yet.');
   }
 }
 

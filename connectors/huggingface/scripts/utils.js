@@ -10,11 +10,10 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Memory directory for credentials
-const memoryEnvPath = path.join(
-  process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/huggingface/.env'
-);
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/huggingface/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/huggingface/
+const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'huggingface', '.env');
 const localEnvPath = path.join(__dirname, '..', '.env');
 
 // API base URLs

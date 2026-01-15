@@ -11,8 +11,14 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import readline from 'readline';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/xcom');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/xcom/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/xcom/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'xcom');
 const API_BASE = 'https://api.x.com/2';
 const UPLOAD_BASE = 'https://upload.twitter.com/1.1';
 

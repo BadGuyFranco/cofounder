@@ -31,10 +31,10 @@ const MANAGEMENT_API_URL = 'https://api.supabase.com/v1';
 
 // Load account access token
 function loadAccessToken() {
-  const memoryEnvPath = path.join(
-    process.env.HOME || '',
-    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase/.env'
-  );
+  // Detect memory directory dynamically from script location
+  // Script is at: .../GPT/cofounder/connectors/supabase/scripts/management.js
+  // Memory is at: .../GPT/memory/connectors/supabase/
+  const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'supabase', '.env');
   const localEnvPath = path.join(__dirname, '..', '.env');
 
   if (fs.existsSync(memoryEnvPath)) {
@@ -97,12 +97,9 @@ async function managementRequest(endpoint, options = {}) {
   return data;
 }
 
-// Get projects directory path
+// Get projects directory path (uses dynamic path from script location)
 function getProjectsDir() {
-  return path.join(
-    process.env.HOME || '',
-    'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/supabase/projects'
-  );
+  return path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'supabase', 'projects');
 }
 
 // List all projects

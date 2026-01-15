@@ -10,11 +10,10 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment from memory directory or local
-const memoryEnvPath = path.join(
-  process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/airtable/.env'
-);
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/airtable/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/airtable/
+const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'airtable', '.env');
 const localEnvPath = path.join(__dirname, '..', '.env');
 
 export function loadConfig() {

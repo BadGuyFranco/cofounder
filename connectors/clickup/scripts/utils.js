@@ -10,11 +10,10 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Memory directory for credentials
-const memoryEnvPath = path.join(
-  process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/clickup/.env'
-);
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/clickup/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/clickup/
+const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'clickup', '.env');
 const localEnvPath = path.join(__dirname, '..', '.env');
 
 // ClickUp API base URL

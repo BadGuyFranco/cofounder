@@ -48,25 +48,13 @@ async function getSelf(args) {
         state
         country
         lat
-        lng
+        lon
         isOrganizer
-        joinedDate
+        organizedGroupCount
+        startDate
         memberPhoto {
           id
           baseUrl
-        }
-        memberships(input: { first: 100 }) {
-          count
-          edges {
-            node {
-              group {
-                id
-                name
-                urlname
-                isOrganizer
-              }
-            }
-          }
         }
       }
     }
@@ -86,7 +74,8 @@ async function getSelf(args) {
   console.log(`Email: ${m.email || 'N/A'}`);
   console.log(`Location: ${m.city || 'N/A'}${m.state ? `, ${m.state}` : ''}${m.country ? `, ${m.country}` : ''}`);
   console.log(`Is Organizer: ${m.isOrganizer ? 'Yes' : 'No'}`);
-  console.log(`Joined Meetup: ${formatDate(m.joinedDate)}`);
+  console.log(`Groups Organized: ${m.organizedGroupCount}`);
+  console.log(`Joined Meetup: ${formatDate(m.startDate)}`);
   
   if (m.memberPhoto) {
     console.log(`Photo: ${m.memberPhoto.baseUrl}`);
@@ -94,28 +83,6 @@ async function getSelf(args) {
   
   if (m.bio) {
     console.log(`\nBio:\n${m.bio}`);
-  }
-  
-  console.log(`\nMemberships: ${m.memberships.count} groups`);
-  
-  const organized = m.memberships.edges.filter(e => e.node.group.isOrganizer);
-  const member = m.memberships.edges.filter(e => !e.node.group.isOrganizer);
-  
-  if (organized.length > 0) {
-    console.log(`\nGroups You Organize (${organized.length}):`);
-    for (const { node } of organized) {
-      console.log(`  - ${node.group.name} (${node.group.urlname})`);
-    }
-  }
-  
-  if (member.length > 0) {
-    console.log(`\nGroups You Belong To (${member.length}):`);
-    for (const { node } of member.slice(0, 10)) {
-      console.log(`  - ${node.group.name}`);
-    }
-    if (member.length > 10) {
-      console.log(`  ... and ${member.length - 10} more`);
-    }
   }
 }
 
@@ -133,7 +100,7 @@ async function getMember(memberId, args) {
         state
         country
         isOrganizer
-        joinedDate
+        startDate
         memberPhoto {
           id
           baseUrl
@@ -160,7 +127,7 @@ async function getMember(memberId, args) {
   console.log(`\nMember ID: ${m.id}`);
   console.log(`Location: ${m.city || 'N/A'}${m.state ? `, ${m.state}` : ''}${m.country ? `, ${m.country}` : ''}`);
   console.log(`Is Organizer: ${m.isOrganizer ? 'Yes' : 'No'}`);
-  console.log(`Joined Meetup: ${formatDate(m.joinedDate)}`);
+  console.log(`Joined Meetup: ${formatDate(m.startDate)}`);
   
   if (m.memberPhoto) {
     console.log(`Photo: ${m.memberPhoto.baseUrl}`);

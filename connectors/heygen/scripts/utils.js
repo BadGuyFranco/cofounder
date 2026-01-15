@@ -8,11 +8,14 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(
-  process.env.HOME || '',
-  'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/heygen'
-);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/heygen/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/heygen/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'heygen');
 const API_BASE = 'https://api.heygen.com';
 
 // Track which account is loaded

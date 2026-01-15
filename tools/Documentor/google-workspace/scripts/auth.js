@@ -17,7 +17,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Use Google Connector credential location
-const CONNECTOR_BASE = resolve(__dirname, '..', '..', '..', '..', '..', 'memory', 'Connectors', 'google');
+const CONNECTOR_BASE = resolve(__dirname, '..', '..', '..', '..', '..', 'memory', 'connectors', 'google');
 
 // Fallback to legacy Documentor location for migration
 const LEGACY_BASE = resolve(__dirname, '..', '..', '..', '..', '..', 'memory', 'Documentor', 'accounts', 'google');

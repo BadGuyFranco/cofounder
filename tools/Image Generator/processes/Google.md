@@ -65,6 +65,6 @@ If user requests specific dimensions, calculate the closest supported ratio:
 
 **Model overloaded (503):** Wait a moment and retry.
 
-**Dependencies missing:** Run `npm install` in the Connectors/google directory.
+**Dependencies missing:** Run `npm install` in the connectors/google directory.
 
 See `/connectors/google/AGENTS.md` for additional troubleshooting.

@@ -79,7 +79,7 @@ import { convertFile, isPandocInstalled, PANDOC_FORMATS } from './scripts/conver
 
 // Check pandoc is available
 if (!isPandocInstalled()) {
-  console.error('Install pandoc: brew install pandoc');
+  console.error('Install pandoc: conda install -y pandoc');
 }
 
 // Convert HTML to markdown
@@ -104,7 +104,7 @@ convertFile('document.html', 'document.epub', {
 - `textile` - Textile
 - `mediawiki` - MediaWiki
 
-**Requires:** pandoc (`brew install pandoc`)
+**Requires:** pandoc (`conda install -y pandoc` or `brew install pandoc`)
 
 ### Read/Extract Documents
 

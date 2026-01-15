@@ -96,6 +96,6 @@ node scripts/models.js get google/nano-banana-pro
 
 **Rate limit (429):** Wait and retry.
 
-**Dependencies missing:** Run `npm install` in the Connectors/replicate directory.
+**Dependencies missing:** Run `npm install` in the connectors/replicate directory.
 
 See `/connectors/replicate/AGENTS.md` for additional troubleshooting.

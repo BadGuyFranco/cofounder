@@ -2,6 +2,10 @@
 
 AI agent routing for the shared tools library.
 
+## Path Resolution
+
+`/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve to actual paths from `user_info.Workspace Paths` before running terminal commands.
+
 ## First Time Setup
 
 New users: Follow `/cofounder/system/Start Here.md`
@@ -10,7 +14,9 @@ New users: Follow `/cofounder/system/Start Here.md`
 
 | Directory | Purpose |
 |-----------|---------|
-| `/tools/` | AI-powered libraries (Content Author, Image Generator, etc.) |
+| `/tools/` | AI agents that do things (Content Author, Image Generator, etc.) |
+| `/connectors/` | API integrations to external platforms (Google, LinkedIn, etc.) |
+| `/standards/` | Coding standards and patterns to follow (Web Apps, etc.) |
 | `/system/` | Setup guides and maintenance documentation |
 | `/memory/` | User configuration (voice, API keys) - gitignored |
 

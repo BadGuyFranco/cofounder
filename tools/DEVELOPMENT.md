@@ -100,6 +100,33 @@ User configuration goes in `/memory/tools/[Tool Name]/`:
 
 Scripts load from `/memory/` using relative paths. Persists across `/cofounder/` updates.
 
+## Path Portability (CRITICAL)
+
+The `/cofounder/` directory is shared and read-only for most users. **All paths MUST be portable.**
+
+**Rules:**
+- NEVER use absolute paths like `/memory/...`, `/Users/...`, or hardcoded user paths
+- ALWAYS resolve paths relative to `__dirname` using `path.join()` or `resolve()`
+- NEVER include user-specific data (emails, usernames) except in example placeholders
+- Use `user@example.com` for example emails, never real addresses
+
+**Correct pattern (see template for full example):**
+```javascript
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const memoryEnvPath = resolve(__dirname, '../../../../memory/tools/[Tool Name]/.env');
+```
+
+**Wrong pattern (DO NOT USE):**
+```javascript
+// WRONG: Absolute path that won't exist on other machines
+const memoryEnvPath = '/memory/tools/[Tool Name]/.env';
+
+// WRONG: Hardcoded user path  
+const configPath = '/Users/someone/Library/CloudStorage/...';
+```
+
+**Before committing:** Search for your email/username in changed files to catch accidental leaks.
+
 ## Technology Stack
 
 **JavaScript/Node.js is the preferred language for all tools and scripts.**

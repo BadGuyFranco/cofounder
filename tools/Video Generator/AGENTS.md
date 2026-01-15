@@ -225,7 +225,7 @@ Duration varies by model:
 cd "/cofounder/connectors/replicate" && npm install
 ```
 
-**FFmpeg not found (for local editing):** Install with `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux).
+**FFmpeg not found (for local editing):** Install with `conda install -y ffmpeg` (requires Miniforge). Alternatively: `brew install ffmpeg` (macOS with Homebrew) or `apt install ffmpeg` (Linux).
 
 **Long generation time:** Video generation typically takes 1-3 minutes. This is normal.
 

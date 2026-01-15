@@ -9,17 +9,23 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Memory directory for credentials
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/google/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/google/
+const MEMORY_DIR_RELATIVE = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'google');
+
+// Memory directory for credentials (for documentation purposes only, use getMemoryDir())
 export const MEMORY_DIR = '/memory/connectors/google';
 
-// Fallback for development (relative to script location)
+// Get the actual memory directory path
 function getMemoryDir() {
-  if (existsSync(MEMORY_DIR)) {
-    return MEMORY_DIR;
+  // Primary: Use relative path from script location
+  if (existsSync(MEMORY_DIR_RELATIVE)) {
+    return MEMORY_DIR_RELATIVE;
   }
-  // Fallback: look relative to cofounder root
-  const fallback = join(__dirname, '..', '..', '..', '..', '..', 'memory', 'Connectors', 'google');
-  return fallback;
+  
+  // Fallback: Return relative path anyway (will fail gracefully with helpful error)
+  return MEMORY_DIR_RELATIVE;
 }
 
 /**

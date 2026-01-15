@@ -115,7 +115,8 @@ cd local-generator && npm install
 
 **Pandoc not found (for format conversion):**
 ```bash
-brew install pandoc  # macOS
+conda install -y pandoc  # Miniforge (recommended)
+# or: brew install pandoc  # macOS with Homebrew
 ```
 
 ### Google Workspace

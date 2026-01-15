@@ -18,9 +18,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-// Load environment from memory directory
-const memoryEnvPath = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/notion/.env');
-const localEnvPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '.env');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/notion/scripts/pages.js
+// Memory is at: .../GPT/memory/connectors/notion/
+const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'notion', '.env');
+const localEnvPath = path.join(__dirname, '..', '.env');
 
 if (fs.existsSync(memoryEnvPath)) {
   dotenv.config({ path: memoryEnvPath });

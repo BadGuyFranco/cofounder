@@ -309,63 +309,78 @@ See `AGENTS.md` for AI agent instructions.
 
 ### scripts/utils.js
 
-Shared utilities every connector needs. Core functions:
+Shared utilities every connector needs.
+
+**CRITICAL: Path Portability Rules**
+
+The cofounder directory is shared/read-only for most users. All paths MUST be portable:
+
+1. **NEVER use absolute paths** like `/memory/...` or `/Users/...`
+2. **ALWAYS resolve paths relative to `__dirname`** (the script's location)
+3. **Use `path.join()` or `join()`** for cross-platform path construction
+4. **Use `os.homedir()` and `os.platform()`** for platform-specific paths
+
+**Correct pattern:**
 
 ```javascript
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-// Memory directory for credentials
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Script is at: .../GPT/cofounder/connectors/[platform]/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/[platform]/
+const MEMORY_DIR = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', '[platform]');
+```
+
+**Wrong pattern (DO NOT USE):**
+
+```javascript
+// WRONG: Absolute path that won't exist on other machines
 const MEMORY_DIR = '/memory/connectors/[platform]';
 
-/**
- * Load environment variables from .env file
- * @param {string} [accountName] - Optional account subdirectory
- * @returns {object} Parsed environment variables
- */
-function loadEnv(accountName = null) {
-  // Determine .env path
-  let envPath;
-  if (accountName) {
-    envPath = path.join(MEMORY_DIR, accountName, '.env');
-  } else {
-    envPath = path.join(MEMORY_DIR, '.env');
-  }
-  
-  if (!fs.existsSync(envPath)) {
-    throw new Error(`No .env file found at ${envPath}. See SETUP.md for configuration.`);
-  }
-  
-  // Parse .env file
-  const content = fs.readFileSync(envPath, 'utf-8');
-  const env = {};
-  for (const line of content.split('\n')) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#')) {
-      const [key, ...valueParts] = trimmed.split('=');
-      env[key.trim()] = valueParts.join('=').trim();
-    }
-  }
-  return env;
-}
+// WRONG: Hardcoded user path
+const configPath = '/Users/someone/Library/CloudStorage/...';
+```
+
+**Full utils.js template:**
+
+```javascript
+import dotenv from 'dotenv';
+import { join, dirname } from 'path';
+import { existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/[platform]/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/[platform]/
+const memoryEnvPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', '[platform]', '.env');
+const localEnvPath = join(__dirname, '..', '.env');
 
 /**
- * Get credentials from loaded environment
- * @param {object} env - Parsed environment object
- * @returns {object} Credentials object
+ * Load configuration from .env file
+ * Checks memory location first, then local fallback
  */
-function getCredentials(env) {
-  const required = ['API_KEY']; // Adjust per connector
-  for (const key of required) {
-    if (!env[key]) {
-      throw new Error(`Missing required credential: ${key}`);
-    }
+export function loadConfig() {
+  if (existsSync(memoryEnvPath)) {
+    dotenv.config({ path: memoryEnvPath });
+  } else if (existsSync(localEnvPath)) {
+    dotenv.config({ path: localEnvPath });
+  } else {
+    console.error('Error: No .env file found.');
+    console.error('Create /memory/connectors/[platform]/.env with your credentials');
+    console.error('See SETUP.md for instructions.');
+    process.exit(1);
   }
-  return {
-    apiKey: env.API_KEY,
-    // Add other credentials as needed
-  };
+  
+  if (!process.env.API_KEY) {
+    console.error('Error: API_KEY not found in environment.');
+    process.exit(1);
+  }
+  
+  return { apiKey: process.env.API_KEY };
 }
 
 /**
@@ -750,7 +765,7 @@ Before marking a connector Active:
 - [ ] Rate limits documented in CAPABILITIES.md
 - [ ] Multi-account works (if applicable)
 - [ ] TOS Guardrails section included (social media connectors only)
-- [ ] Added to main Connectors/AGENTS.md table
+- [ ] Added to main connectors/AGENTS.md table
 
 ## Adding a New Connector
 
@@ -761,7 +776,7 @@ Before marking a connector Active:
 4. **Test SETUP.md** with fresh credentials
 5. **Write CAPABILITIES.md** based on what you built
 6. **Run testing checklist**
-7. **Add to Connectors/AGENTS.md** table
+7. **Add to connectors/AGENTS.md** table
 
 **Do not skip the planning phase.** A thoughtful plan prevents scope creep, ensures the connector is robust, and keeps AGENTS.md elegant.
 

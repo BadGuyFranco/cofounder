@@ -10,9 +10,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
+import { fileURLToPath } from 'url';
 
-const MEMORY_DIR = path.join(process.env.HOME || '', 'Library/CloudStorage/GoogleDrive-anthony@francoinc.com/Shared drives/GPT/memory/connectors/meetup');
-const GRAPHQL_URL = 'https://api.meetup.com/gql';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Detect memory directory dynamically from script location
+// Script is at: .../GPT/cofounder/connectors/meetup/scripts/utils.js
+// Memory is at: .../GPT/memory/connectors/meetup/
+const MEMORY_DIR = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'meetup');
+const GRAPHQL_URL = 'https://www.meetup.com/gql2';
 const AUTH_URL = 'https://secure.meetup.com/oauth2/authorize';
 const TOKEN_URL = 'https://secure.meetup.com/oauth2/access';
 
