@@ -1,6 +1,10 @@
 # Start Here
 
-Welcome! This guide sets up your AI content creation workspace. By the end, you'll have:
+Welcome! This guide sets up your AI content creation workspace.
+
+**Already ran the install command?** Great! The installer already set up Miniforge for you. This guide will create your personal folders and voice profile.
+
+By the end, you'll have:
 
 - A `/memory/` folder with your personal configuration (voice, API keys, custom tools)
 - A `/[your name]/` folder for your content projects
@@ -62,19 +66,7 @@ Verify conda is working:
 conda --version 2>/dev/null && echo "Conda is ready!" || echo "Please restart your terminal and try again"
 ```
 
-## Step 1: Install Required Tools
-
-Once conda is available, install Node.js (required for CoFounder sync):
-```bash
-echo "Installing Node.js..." && conda install -y -q nodejs > /dev/null 2>&1 && echo "Node.js installed!" || echo "Installation failed - check conda is working"
-```
-
-Verify Node.js is working:
-```bash
-node --version 2>/dev/null && echo "Node.js is ready!" || echo "Node.js not found"
-```
-
-## Step 2: Create Folder Structure
+## Step 1: Create Folder Structure
 
 Create these folders as SIBLINGS to /cofounder/ (not inside it):
 
@@ -92,7 +84,7 @@ Verify all four folders exist before proceeding:
 - /[my name]/ (just created)
 - /workspaces/ (just created)
 
-## Step 3: Initialize Memory Structure
+## Step 2: Initialize Memory Structure
 
 Inside /memory/, create these directories and files:
 - `/memory/tools/Content Author/` (for voice settings)
@@ -108,13 +100,13 @@ Inside /memory/, create these directories and files:
 
 For maintainers with write access to /cofounder/: Also create `/memory/.maintainer` (empty file). This signals you can modify the shared library.
 
-## Step 4: Initialize Personal Workspace
+## Step 3: Initialize Personal Workspace
 
 Inside /[my name]/, create:
 - `/[my name]/content/` (where my generated content goes)
 - `/[my name]/AGENTS.md` - use template from `/cofounder/system/templates/Personal Workspace Template/AGENTS.md`, replacing [Your Name] with my name
 
-## Step 5: Create Workspace File
+## Step 4: Create Workspace File
 
 In /workspaces/, create a file named `[my name].code-workspace` with this structure:
 
@@ -129,27 +121,27 @@ In /workspaces/, create a file named `[my name].code-workspace` with this struct
 
 Replace [my name] with my actual name. The order matters: cofounder, memory, workspaces, then personal folder.
 
-## Step 6: Voice Discovery
+## Step 5: Voice Discovery
 
 Load /cofounder/tools/Content Author/VoiceSetup.md and follow its complete instructions to create my voice profile.
 
 Take it one step at a time. Explain WHY each step matters before asking me to do it.
 
-## Step 7: Open Your Workspace
+## Step 6: Open Your Workspace
 
 After Voice Discovery is complete:
 1. Tell me to close this Cursor window
 2. Tell me to open /workspaces/[my name].code-workspace (double-click in Finder/Explorer)
 3. This loads all my folders together as one workspace
 
-## Step 8: Verify Setup
+## Step 7: Verify Setup
 
 Once I've reopened in my workspace:
 1. Ask me to request a short paragraph on any topic
 2. Confirm Content Author loads my voice.md and produces output matching my voice
 3. If it fails, troubleshoot before ending setup
 
-## Step 9: What's Next
+## Step 8: What's Next
 
 Show me:
 - The Tool Routing table from .cursor/rules/Always Apply.mdc (what tools are available)
@@ -247,12 +239,20 @@ Press `Cmd+E` (Mac) or `Ctrl+E` (Windows) to toggle the explorer panel.
 
 ## Getting Updates
 
-CoFounder improves over time. To get updates, paste this in Cursor chat:
+CoFounder improves over time. To get updates, run the same install command you used initially:
 
-```
-Run this command in your terminal: npx wiser-cofounder sync
+**Mac/Linux:**
+```bash
+curl -fsSL "https://cofounder.wisermethod.com/install?key=YOUR_KEY" | sh
 ```
 
-After syncing, check `/cofounder/system/migrations/` for any required changes. See `/cofounder/system/migrations/README.md` for details.
+**Windows:**
+```powershell
+irm "https://cofounder.wisermethod.com/install?key=YOUR_KEY&os=windows" | iex
+```
+
+Your API key is saved in `~/.cofounder/config.json` (view it to find your key).
+
+After updating, check `/cofounder/system/migrations/` for any required changes. See `/cofounder/system/migrations/README.md` for details.
 
 Your `/memory/`, personal folder, and `/workspaces/` are unaffected by updates (though migrations may require you to reorganize `/memory/`).
