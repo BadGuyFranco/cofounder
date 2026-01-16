@@ -5,6 +5,4 @@ alwaysApply: false
 
 # Windows
 
-Use Git Bash for all terminal commands. Not PowerShell. Not cmd.exe.
-
 If Git Bash is not installed, stop and direct the user to https://gitforwindows.org
