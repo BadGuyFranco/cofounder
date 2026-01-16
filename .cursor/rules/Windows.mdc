@@ -5,6 +5,10 @@ alwaysApply: false
 
 # Windows
 
-Git Bash for all terminal commands. Never PowerShell or cmd.exe.
+Run ALL terminal commands through Git Bash using the full path:
 
-No Git Bash: stop and direct the user to https://gitforwindows.org
+"C:\Program Files\Git\bin\bash.exe" -c 'your command here'
+
+NEVER use PowerShell or cmd.exe directly. They will fail.
+
+No Git Bash installed: stop and direct the user to https://gitforwindows.org
