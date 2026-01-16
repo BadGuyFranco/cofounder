@@ -1,0 +1,14 @@
+---
+description: Windows-specific requirements and workarounds
+alwaysApply: false
+---
+
+# Windows Platform Requirements
+
+## Terminal
+
+Use Git Bash for all terminal commands. Do NOT use PowerShell or cmd.exe.
+
+Git Bash is installed with Git for Windows: https://gitforwindows.org
+
+If Git Bash is not installed, stop and tell the user to install it before proceeding with any terminal operations.

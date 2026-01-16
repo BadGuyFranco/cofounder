@@ -87,6 +87,10 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - No horizontal rules (---) in markdown
 - Trailing spaces for hard line breaks
 
+# Windows
+
+If running on Windows, see `.cursor/rules/Windows.mdc` for platform-specific requirements.
+
 # Operational Rules
 
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
