@@ -45,6 +45,8 @@ HUGGINGFACE_API_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"HUGGINGFACE_API_TOKEN not found":** Create `.env` with your token.
 
 **"401 Unauthorized":** Token invalid. Generate new one at https://huggingface.co/settings/tokens

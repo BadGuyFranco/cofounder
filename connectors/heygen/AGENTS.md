@@ -64,6 +64,8 @@ node scripts/avatars.js help
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"HEYGEN_API_KEY not found":** Create `/memory/connectors/heygen/.env` with your API key.
 
 **"401 Unauthorized":** API key is invalid or expired. Generate a new one in HeyGen settings.

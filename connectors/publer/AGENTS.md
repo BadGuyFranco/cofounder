@@ -109,6 +109,8 @@ node scripts/analytics.js post post123 --verbose
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 ### "401 Unauthorized"
 
 - API key invalid or expired

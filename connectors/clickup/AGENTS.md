@@ -61,6 +61,8 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"CLICKUP_API_KEY not found":** Create `/memory/connectors/clickup/.env` with your token.
 
 **"OAUTH_017":** Token is invalid or expired. Generate a new API token in ClickUp.

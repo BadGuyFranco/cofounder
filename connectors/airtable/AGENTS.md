@@ -37,6 +37,8 @@ AIRTABLE_PAT=patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"AIRTABLE_PAT not found":** Create `/memory/connectors/airtable/.env` with your token.
 
 **"AUTHENTICATION_REQUIRED":** Token is invalid or expired. Generate a new PAT.

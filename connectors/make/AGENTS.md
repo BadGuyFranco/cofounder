@@ -38,6 +38,8 @@ MAKE_REGION=us2
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"MAKE_API_TOKEN not found":** Create `/memory/connectors/make/.env` with your token.
 
 **"401 Unauthorized":** Check your API token is valid and has required scopes.

@@ -74,6 +74,8 @@ When multiple accounts are configured and no `--account` flag is specified, ask 
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"X_API_KEY not found":** Create `/memory/connectors/xcom/.env` with your credentials.
 
 **"401 Unauthorized":** Check all OAuth 1.0a credentials are correct.

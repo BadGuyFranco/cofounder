@@ -60,6 +60,8 @@ All project-level scripts accept `--project <name>` where `<name>` is the human-
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"SUPABASE_ACCESS_TOKEN not found":**
 Create a Personal Access Token at https://supabase.com/dashboard/account/tokens
 Add to `/memory/connectors/supabase/.env`

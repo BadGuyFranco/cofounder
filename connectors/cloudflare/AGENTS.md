@@ -84,6 +84,8 @@ CLOUDFLARE_API_TOKEN=your_api_token_here
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"CLOUDFLARE_API_TOKEN not found":** Create `/memory/connectors/cloudflare/.env` with your token.
 
 **"Authentication error" (10000):** Token is invalid or expired. Generate a new token.

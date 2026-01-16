@@ -258,6 +258,8 @@ The Node.js Whisper implementation cannot access GPU acceleration, making it 5-1
 
 ## Troubleshooting
 
+**"python: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory.
+
 ### Setup
 
 **Requirements:** Python 3.8+, 2-3GB disk space, 4GB+ RAM

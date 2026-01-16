@@ -222,6 +222,8 @@ Duration varies by model:
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory.
+
 **No services configured:** Run the onboarding flow above.
 
 **Dependencies not installed:**
@@ -229,7 +231,7 @@ Duration varies by model:
 cd "/cofounder/connectors/replicate" && npm install
 ```
 
-**FFmpeg not found (for local editing):** Install with `conda install -y ffmpeg` (requires Miniforge). Alternatively: `brew install ffmpeg` (macOS with Homebrew) or `apt install ffmpeg` (Linux).
+**FFmpeg not found (for local editing):** Install with `conda install -y ffmpeg` (requires Miniforge). If conda not available, follow `/cofounder/system/installer/dependencies/miniforge.md` first.
 
 **Long generation time:** Video generation typically takes 1-3 minutes. This is normal.
 

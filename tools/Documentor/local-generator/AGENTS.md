@@ -104,7 +104,7 @@ convertFile('document.html', 'document.epub', {
 - `textile` - Textile
 - `mediawiki` - MediaWiki
 
-**Requires:** pandoc (`conda install -y pandoc` or `brew install pandoc`)
+**Requires:** pandoc (`conda install -y pandoc`, requires Miniforge)
 
 ### Read/Extract Documents
 

@@ -73,3 +73,9 @@ See `DEVELOPMENT.md` for patterns, templates, and testing checklist.
 - Browser automation (connectors use APIs only; never open browsers)
 - OAuth flows requiring user interaction (provide manual instructions)
 - Real-time webhook servers
+
+## Troubleshooting
+
+**"node: command not found":** Follow `/cofounder/system/installer/dependencies/nodejs.md`
+
+**"Cannot find module":** Run `npm install` in the connector directory first.

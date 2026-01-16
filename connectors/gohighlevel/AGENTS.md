@@ -53,6 +53,8 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"No .env file found":** Create the `.env` file in `/memory/connectors/gohighlevel/` (resolve `/memory/` from `user_info.Workspace Paths`).
 
 **"No location specified":** Use `--location "Name"` or set `GHL_DEFAULT` in .env.

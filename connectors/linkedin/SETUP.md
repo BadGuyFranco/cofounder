@@ -4,8 +4,20 @@ Complete guide to setting up LinkedIn API access for the connector.
 
 **Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
 
+**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+
 ## Prerequisites
 
+First, verify Node.js is installed:
+
+```bash
+node --version
+```
+
+- If you see "command not found": Follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If you see a version number (e.g., `v20.x.x`): Continue below.
+
+**Account requirements:**
 - LinkedIn account
 - LinkedIn Company Page (if posting to company pages)
 

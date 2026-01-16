@@ -46,6 +46,8 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"HUBSPOT_ACCESS_TOKEN not found":** Create `/memory/connectors/hubspot/.env` with your token.
 
 **"401 Unauthorized":** Token may be expired or missing required scopes. Regenerate in HubSpot.

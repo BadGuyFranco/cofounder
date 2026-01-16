@@ -113,6 +113,8 @@ node scripts/[script].js "input" --option2
 
 ## Troubleshooting
 
+**Setup or dependency issues:** Follow `SETUP.md` in this tool's directory for guided installation.
+
 ### Configuration Issues
 
 **API key not found:** Verify your API key is set in `/memory/tools/[Tool Name]/.env`

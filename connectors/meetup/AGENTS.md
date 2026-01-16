@@ -64,6 +64,8 @@ node scripts/auth.js flow      # Full re-authentication
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"MEETUP_ACCESS_TOKEN not found":** Create `/memory/connectors/meetup/.env`. Run `node scripts/auth.js flow` to get a token.
 
 **"401 Unauthorized":** Token expired (1-hour limit). Run `node scripts/auth.js refresh` to get a new token.

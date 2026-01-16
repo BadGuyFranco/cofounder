@@ -58,6 +58,8 @@ When asked to upgrade models: review `defaults.json`, research alternatives via 
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"REPLICATE_API_TOKEN not found":** Create `.env` with your token.
 
 **"401 Unauthorized":** Token invalid. Generate new one at https://replicate.com/account/api-tokens

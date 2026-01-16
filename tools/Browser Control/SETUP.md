@@ -1,5 +1,7 @@
 # Browser Control Setup
 
+**Windows users:** Terminal commands in the Playwright section below must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+
 ## MCP Browser Tools (Built into Cursor)
 
 MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
@@ -30,11 +32,19 @@ Try running `browser_navigate` to any URL. If it works, setup is complete.
 
 For Playwright scripts that run outside Cursor, install Node.js and Playwright.
 
+### Prerequisites
+
+First, verify Node.js is installed:
+
+```bash
+node --version
+```
+
+If you see "command not found", follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+
 ### Setup Steps
 
-1. Install Node.js (if not installed): Download from https://nodejs.org or use your package manager
-
-2. Create automation directory and install Playwright:
+1. Create automation directory and install Playwright:
    ```bash
    mkdir -p ~/playwright-automation
    cd ~/playwright-automation
@@ -64,5 +74,4 @@ npx playwright install chromium
 ```
 
 **"node: command not found":**
-- Install Node.js from https://nodejs.org
-- Or add to PATH: `export PATH="$HOME/nodejs/bin:$PATH"`
+Follow `/cofounder/system/installer/dependencies/nodejs.md`

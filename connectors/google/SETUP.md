@@ -4,6 +4,8 @@ Complete instructions for setting up the comprehensive Google connector with acc
 
 **Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
 
+**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+
 ## Before You Begin
 
 **Fair warning:** Google does NOT make this easy. Their developer console is complex, the terminology is confusing, and there are multiple steps that must be done in the right order. This is not your fault; it's just how Google works.
@@ -25,6 +27,16 @@ Complete instructions for setting up the comprehensive Google connector with acc
 
 ## Prerequisites
 
+First, verify Node.js is installed:
+
+```bash
+node --version
+```
+
+- If you see "command not found": Follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If you see a version number (e.g., `v20.x.x`): Continue below.
+
+**Account requirements:**
 - A Google account (free Gmail or Google Workspace)
 - Access to [Google Cloud Console](https://console.cloud.google.com/)
 - Access to [Google AI Studio](https://aistudio.google.com/) (for AI features)

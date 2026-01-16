@@ -422,9 +422,10 @@ const data = await page.evaluate(() => {
 
 ## Troubleshooting Playwright
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory (Playwright Scripts section).
+
 **Install dependencies:**
 ```bash
-export PATH="$HOME/nodejs/bin:$PATH"
 cd ~/playwright-automation
 npm install playwright
 npx playwright install chromium

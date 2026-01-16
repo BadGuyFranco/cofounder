@@ -37,6 +37,8 @@ NOTION_API_KEY=secret_xxxxxxxxxxxxx
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"NOTION_API_KEY not found":** Create `/memory/connectors/notion/.env` with your key.
 
 **"Could not find page/database":** The integration must be explicitly connected to the page. In Notion: "..." menu > "Add connections" > Select your integration.

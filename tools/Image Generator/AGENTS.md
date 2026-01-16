@@ -200,6 +200,8 @@ Uses Replicate Connector credentials and curated default model.
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory.
+
 **No services configured:** Run the onboarding flow above.
 
 **Dependencies not installed:**

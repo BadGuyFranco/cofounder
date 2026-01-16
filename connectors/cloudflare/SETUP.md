@@ -4,8 +4,20 @@ Step-by-step guide. The AI will walk you through each step one at a time.
 
 **Path Resolution:** `/cofounder/` and `/memory/` are workspace roots. Resolve from `user_info.Workspace Paths` before running commands.
 
+**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+
 ## Prerequisites
 
+First, verify Node.js is installed:
+
+```bash
+node --version
+```
+
+- If you see "command not found": Follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If you see a version number (e.g., `v20.x.x`): Continue below.
+
+**Account requirements:**
 - Cloudflare account (free tier works)
 - At least one domain added to Cloudflare
 

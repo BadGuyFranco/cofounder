@@ -46,6 +46,8 @@ Scripts will prompt for confirmation. Use `--force` only when the user has alrea
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"MONDAY_API_KEY not found":** Create `/memory/connectors/monday/.env` with your token.
 
 **"Not Authenticated":** Token may be invalid or expired. Generate a new one in Monday.com.

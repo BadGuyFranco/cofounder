@@ -2,7 +2,7 @@
  * Format conversion utilities using pandoc.
  * Converts HTML exports to Markdown, ePub, and other formats.
  * 
- * Requires pandoc to be installed: conda install -y pandoc (or brew install pandoc)
+ * Requires pandoc to be installed: conda install -y pandoc (requires Miniforge)
  */
 
 import { execSync, spawnSync } from 'child_process';
@@ -49,7 +49,7 @@ export function getPandocVersion() {
 export function convertFile(inputPath, outputPath, options = {}) {
   if (!isPandocInstalled()) {
     throw new Error(
-      'pandoc is not installed. Install it with: conda install -y pandoc (Miniforge) or brew install pandoc (macOS) or see https://pandoc.org/installing.html'
+      'pandoc is not installed. Install it with: conda install -y pandoc (requires Miniforge)'
     );
   }
   

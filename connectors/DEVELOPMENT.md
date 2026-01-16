@@ -7,6 +7,8 @@ How to build new connectors for the cofounder library.
 
 **Note:** `.cursor/rules/Development.mdc` auto-loads when working on connectors. See it for quick reference.
 
+**Windows compatibility:** All SETUP.md files and bash commands must include a note that Windows users need Git Bash. Add this line near the top: `**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.`
+
 ## Step 0: Planning Phase (Required)
 
 Before writing any code, create a thoughtful plan. This step is mandatory.
@@ -177,6 +179,16 @@ Step-by-step guide. The AI will walk you through each step one at a time.
 
 ## Prerequisites
 
+First, verify Node.js is installed:
+
+\`\`\`bash
+node --version
+\`\`\`
+
+- If you see "command not found": Follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If you see a version number (e.g., `v20.x.x`): Continue to Step 1.
+
+**Account requirements:**
 - [Account requirements]
 - [Access level needed]
 

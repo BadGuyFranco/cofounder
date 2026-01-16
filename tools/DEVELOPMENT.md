@@ -7,6 +7,8 @@ How to build new tools for the cofounder library.
 
 **Note:** `.cursor/rules/Development.mdc` auto-loads when working on tools. See it for quick reference.
 
+**Windows compatibility:** All SETUP.md files and bash commands must include a note that Windows users need Git Bash. Add this line near the top: `**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.`
+
 ## Pre-Modification Checklist
 
 Before modifying any tool:
@@ -61,6 +63,28 @@ Every tool must have:
 - Usage (commands, options table)
 - Output (location, naming)
 - Troubleshooting
+
+### Script Tool SETUP.md
+
+Script Tools with external dependencies (Node.js, Python, API keys) must also have a `SETUP.md` file.
+
+**Required sections:**
+
+- Detection checks (what's installed vs missing)
+- Missing dependencies table (ONLY show what's missing)
+- User consent prompt ("Would you like me to walk you through installing what's needed?")
+- Step-by-step installation for each dependency
+- Verification commands
+
+**Pattern:** Detection-first. Check before installing. Skip what's already there.
+
+**Reference:** `/cofounder/tools/Image Generator/SETUP.md`
+
+**Troubleshooting link:** AGENTS.md troubleshooting should include:
+
+```
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory.
+```
 
 ### Composite Tool AGENTS.md
 

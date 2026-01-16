@@ -54,6 +54,8 @@ LinkedIn actively monitors API usage and will revoke access for violations.
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"LINKEDIN_ACCESS_TOKEN not found":** Create `/memory/connectors/linkedin/.env`. Run `node scripts/auth.js flow` to get a token.
 
 **"401 Unauthorized":** Token expired (60-day limit). Run `node scripts/auth.js flow` to get a new token.

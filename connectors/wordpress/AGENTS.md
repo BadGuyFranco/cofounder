@@ -63,6 +63,8 @@ When multiple sites are configured and no `--site` flag is specified, ask which 
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"WP_SITE_URL not found":** Create `.env` with your site URL and credentials.
 
 **"401 Unauthorized":** Check username and application password. Password format: `xxxx xxxx xxxx xxxx xxxx xxxx` (spaces included).

@@ -104,6 +104,8 @@ Configure APIs: `node scripts/auth.js configure-apis --account EMAIL --rounds "1
 
 ## Troubleshooting
 
+**"node: command not found" or setup issues:** Follow `SETUP.md` in this connector's directory.
+
 **"No credentials found":**
 ```bash
 node scripts/auth.js setup --account your@email.com
