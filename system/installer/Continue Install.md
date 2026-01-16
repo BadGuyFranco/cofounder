@@ -26,6 +26,7 @@ cp cofounder/system/templates/Memory\ Templates/README.md memory/README.md
 cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md
 cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md
 cp cofounder/system/version.txt memory/system/version.txt
+cp -r cofounder/.vscode memory/.vscode
 ```
 
 ## Step 2: Create Personal Workspace
