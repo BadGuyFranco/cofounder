@@ -129,7 +129,7 @@ Replace `[name]` with the user's actual name in both the filename and the path.
 
 Tell the user:
 
-"Congratulations! You just completed the hardest part. You're now officially a computer nerd who can tell your friends you're using Cursor and Miniforge to write AI content. Welcome to the club."
+"Congratulations! You just completed the hardest part. You're now officially a 'computer nerd' who can tell your friends you're using Cursor and installed Miniforge to write AI content with CoFounder. Welcome to the club."
 
 Then ask:
 
