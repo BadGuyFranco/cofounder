@@ -89,7 +89,7 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 
 # Windows
 
-On Windows: Use Git Bash for all terminal commands. Do NOT use PowerShell or cmd.exe.
+On Windows: See `.cursor/rules/Windows.mdc`
 
 # Operational Rules
 
