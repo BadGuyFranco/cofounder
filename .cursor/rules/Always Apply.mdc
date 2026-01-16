@@ -89,7 +89,7 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 
 # Windows
 
-On Windows: Use Git Bash for all terminal commands. Do NOT use PowerShell or cmd.exe. If Git Bash is not installed, tell the user to install it from https://gitforwindows.org before proceeding.
+On Windows: Use Git Bash for all terminal commands. Do NOT use PowerShell or cmd.exe.
 
 # Operational Rules
 
