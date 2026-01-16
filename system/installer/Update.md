@@ -45,17 +45,7 @@ For Windows paths, convert backslashes to forward slashes. Example: `C:/Users/Na
 Replace `INSTALL_DIR` with the actual path from Step 2.
 Replace `API_KEY` with the key from Step 1.
 
-## Step 4: Copy Settings to Memory
-
-After the update completes, copy the terminal settings to memory:
-
-```bash
-cp -r cofounder/.vscode memory/.vscode
-```
-
-This ensures Windows users continue to use Git Bash for terminal commands.
-
-## Step 5: Confirm
+## Step 4: Confirm
 
 Tell the user: "CoFounder updated to the latest version."
 

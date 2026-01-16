@@ -26,7 +26,6 @@ cp cofounder/system/templates/Memory\ Templates/README.md memory/README.md
 cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md
 cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md
 cp cofounder/system/version.txt memory/system/version.txt
-cp -r cofounder/.vscode memory/.vscode
 ```
 
 ## Step 2: Create Personal Workspace
@@ -56,11 +55,22 @@ In the workspaces/ folder, create `[name].code-workspace`:
     { "path": "../memory" },
     { "path": "../workspaces" },
     { "path": "../[name]" }
-  ]
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.profiles.windows": {
+      "Git Bash": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "icon": "terminal-bash"
+      }
+    }
+  }
 }
 ```
 
 Replace `[name]` with the user's actual name in both the filename and the path.
+
+The `settings` block ensures Windows users always use Git Bash for terminal commands. This setting is harmless on Mac/Linux.
 
 ## Step 4: Installation Complete
 

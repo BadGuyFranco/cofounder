@@ -5,10 +5,18 @@ alwaysApply: false
 
 # Windows
 
-Run ALL terminal commands through Git Bash using the full path:
+Before running terminal commands, check if the active `.code-workspace` file has this settings block:
 
-"C:\Program Files\Git\bin\bash.exe" -c 'your command here'
+```json
+"settings": {
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.profiles.windows": {
+    "Git Bash": {
+      "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "icon": "terminal-bash"
+    }
+  }
+}
+```
 
-NEVER use PowerShell or cmd.exe directly. They will fail.
-
-No Git Bash installed: stop and direct the user to https://gitforwindows.org
+If missing, add it. If no Git Bash installed, direct user to https://gitforwindows.org (free).
