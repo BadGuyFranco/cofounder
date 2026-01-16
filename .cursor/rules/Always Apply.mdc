@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Windows
 
-BEFORE running any terminal command on Windows, read `.cursor/rules/Windows.mdc` and follow it exactly.
+On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 
 # Tool Routing
 
