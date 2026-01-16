@@ -40,6 +40,10 @@ Ask before invoking:
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
 
+# Update CoFounder
+
+"Update cofounder" → `/cofounder/system/installer/Update.md`
+
 # Version Check
 
 `/memory/system/version.txt` must match `/cofounder/system/version.txt`. Mismatch or missing → `/cofounder/system/migrations/AGENTS.md`
@@ -50,6 +54,7 @@ Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` fo
 - If my request is ambiguous, ask clarifying questions
 - If uncertain about my intent, state your interpretation and confirm
 - If I'm asking for conflicting things, point out the tension
+- Questions ("how would you", "thoughts?", "show me") → Answer only; don't execute
 
 # Depth Check (Anti-Laziness)
 
