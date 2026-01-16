@@ -9,7 +9,7 @@ AI workflows for professionals. The fast track to get there.
 
 1. Clone this repository
 2. Open in Cursor
-3. Follow `system/Start Here.md` to set up your workspace
+3. Follow `system/installer/Continue Install.md` to set up your workspace
 
 ## What's Included
 

@@ -12,7 +12,7 @@ Templates for files created in `/memory/` during first-run setup.
 
 ## Usage
 
-During setup (Start Here.md), copy these templates to `/memory/`:
+During setup (Continue Install.md), copy these templates to `/memory/`:
 
 ```
 /memory/

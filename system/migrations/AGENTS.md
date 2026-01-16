@@ -35,5 +35,5 @@ Then set `/memory/system/version.txt` to `2025-01-14`.
 ## New Users
 
 If `/memory/system/version.txt` doesn't exist, user either:
-1. Never completed setup (direct to `/cofounder/system/Start Here.md`)
+1. Never completed setup (direct to `/cofounder/system/installer/Continue Install.md`)
 2. Setup predates versioning (apply all migrations, then create `system/version.txt`)

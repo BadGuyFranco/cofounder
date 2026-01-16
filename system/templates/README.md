@@ -36,7 +36,7 @@ Scaffolding for creating new tools and workspaces in CoFounder.
 - Complex workspace with clients, marketing, internal docs
 - References `/cofounder/` for tool access
 
-**Personal Workspace** (from Start Here setup)
+**Personal Workspace** (from Continue Install setup)
 - Simple content creation workspace
 - Just `/content/` directory
 - Created during first-run setup

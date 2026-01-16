@@ -4,7 +4,7 @@ Simple content creation workspace created during first-run setup.
 
 ## When to Use
 
-Use this template when running `/cofounder/system/Start Here.md` setup. Creates a minimal personal workspace for content creation.
+Use this template when running `/cofounder/system/installer/Continue Install.md` setup. Creates a minimal personal workspace for content creation.
 
 ## What's Included
 

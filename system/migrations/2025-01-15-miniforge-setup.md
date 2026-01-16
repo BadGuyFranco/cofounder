@@ -27,7 +27,7 @@ All tool documentation updated to show `conda install` as primary option.
 
 ## Who Must Migrate
 
-- **New users:** Start Here.md handles this automatically
+- **New users:** Continue Install.md handles this automatically
 - **Existing users with Homebrew:** Follow migration steps below
 - **Existing users without Homebrew:** Follow migration steps below
 
@@ -178,7 +178,7 @@ All tool and connector documentation now shows `conda install` as primary:
 - `tools/Video Generator/AGENTS.md` - FFmpeg via conda
 - `tools/Documentor/AGENTS.md` - Pandoc via conda
 - `tools/Transcriber/AGENTS.md` - Whisper via pip (after conda Python)
-- `system/Start Here.md` - Complete Miniforge setup flow
+- `system/installer/Continue Install.md` - Complete Miniforge setup flow
 
 ## Questions?
 

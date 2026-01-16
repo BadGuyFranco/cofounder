@@ -5,6 +5,6 @@ alwaysApply: false
 
 # Windows
 
-Use Git Bash for all terminal commands. Do NOT use PowerShell or cmd.exe.
+Git Bash for all terminal commands. Never PowerShell or cmd.exe.
 
-If Git Bash is not installed, stop and direct the user to https://gitforwindows.org
+No Git Bash: stop and direct the user to https://gitforwindows.org
