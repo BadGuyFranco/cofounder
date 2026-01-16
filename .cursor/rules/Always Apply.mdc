@@ -3,6 +3,10 @@ description: Core collaboration principles and standards that apply to all work
 alwaysApply: true
 ---
 
+# Windows
+
+BEFORE running any terminal command on Windows, read `.cursor/rules/Windows.mdc` and follow it exactly.
+
 # Tool Routing
 
 | Need | Tool |
@@ -86,10 +90,6 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - No emojis
 - No horizontal rules (---) in markdown
 - Trailing spaces for hard line breaks
-
-# Windows
-
-On Windows: See `.cursor/rules/Windows.mdc`
 
 # Operational Rules
 
