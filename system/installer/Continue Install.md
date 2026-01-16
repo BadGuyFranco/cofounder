@@ -125,11 +125,21 @@ In the workspaces/ folder, create `[name].code-workspace`:
 
 Replace `[name]` with the user's actual name in both the filename and the path.
 
-## Step 6: Voice Setup
+## Step 6: Installation Complete
 
-Now run the voice discovery process. Load and follow:
+Tell the user:
+
+"Congratulations! You just completed the hardest part. You're now officially a computer nerd who can tell your friends you're using Cursor and Miniforge to write AI content. Welcome to the club."
+
+Then ask:
+
+"Ready to set up your digital twin content author? You'll need a couple of writing samples and about 15 more minutes. If you'd rather come back later, just type 'Start Here' in any new chat and we'll pick up where we left off."
+
+If the user is ready, load and follow:
 
 `/cofounder/system/installer/Start Here.md`
+
+If the user wants to come back later, end the session.
 
 ## Maintainer Access
 
