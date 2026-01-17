@@ -8,7 +8,7 @@ alwaysApply: true
 **BEFORE modifying ANY file in `/cofounder/`:** Check if `/memory/.maintainer` exists.
 
 - **File exists:** Proceed with modifications.
-- **File missing:** STOP. Do not modify `/cofounder/`. Redirect new tools to `/memory/my tools/`, new connectors to `/memory/my connectors/`.
+- **File missing:** STOP. Do not modify `/cofounder/`. Do not suggest modifications. Do not offer to create `.maintainer`. Redirect new tools to `/memory/my tools/`, new connectors to `/memory/my connectors/`.
 
 # Windows
 
