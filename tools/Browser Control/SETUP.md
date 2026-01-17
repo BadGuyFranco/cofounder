@@ -28,9 +28,9 @@ Run `browser_navigate` to `https://wisermethod.com`. If the page opens, setup is
 - Some Cursor versions may require updating to support MCP browser tools
 - Check for Cursor updates
 
-## Playwright Scripts (Optional)
+## Playwright Scripts (External Automation)
 
-For advanced automation that runs outside Cursor. Most users don't need this.
+For automation scripts that run outside Cursor. Requires Node.js and Playwright.
 
 ### Prerequisites
 
