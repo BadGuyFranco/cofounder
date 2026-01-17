@@ -8,9 +8,9 @@ MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
 
 ### Setup Steps
 
-1. Open Cursor Settings (Cmd+, on Mac, Ctrl+, on Windows)
-2. Search for "MCP" or navigate to Features > MCP Servers
-3. Enable the `cursor-ide-browser` server
+1. Open Cursor Settings ("CMD J" on Mac, "CTRL J" on Windows)
+2. Go to **Tools & MCP**
+3. Find **Browser Automation** and enable **Browser Tab**
 4. Restart Cursor if prompted
 
 ### Verify Setup
@@ -28,9 +28,9 @@ Run `browser_navigate` to `https://wisermethod.com`. If the page opens, setup is
 - Some Cursor versions may require updating to support MCP browser tools
 - Check for Cursor updates
 
-## Playwright Scripts (External Automation)
+## Playwright Scripts (Optional)
 
-For Playwright scripts that run outside Cursor, install Node.js and Playwright.
+For advanced automation that runs outside Cursor. Most users don't need this.
 
 ### Prerequisites
 
