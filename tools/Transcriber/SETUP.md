@@ -45,13 +45,17 @@ Only proceed if user confirms.
 
 Follow `/cofounder/system/installer/dependencies/miniforge.md`
 
-### Step 2: Transcriber packages (if missing)
+### Step 2: Visual C++ Build Tools (Windows only)
+
+If the user is on Windows, follow `/cofounder/system/installer/dependencies/visual-cpp.md` BEFORE installing packages. This is required for PyTorch and torchaudio to install correctly.
+
+### Step 3: Transcriber packages (if missing)
 
 ```bash
 cd "/cofounder/tools/Transcriber" && pip install -r requirements.txt
 ```
 
-### Step 3: HuggingFace token (optional, for speaker diarization)
+### Step 4: HuggingFace token (optional, for speaker diarization)
 
 1. Create account at https://huggingface.co (free)
 2. Go to https://huggingface.co/settings/tokens
