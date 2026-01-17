@@ -2,7 +2,9 @@
 
 This is an advanced tool that requires Python and optionally HuggingFace access.
 
-**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+**Windows users:** 
+- All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+- If your path has spaces (e.g., `OneDrive/Desktop/My Folder`), use Git Bash format: `/c/Users/name/OneDrive/Desktop/My\ Folder` or wrap in quotes.
 
 ## Check What's Installed
 
@@ -55,17 +57,42 @@ Follow `/cofounder/system/installer/dependencies/miniforge.md`
 cd "/cofounder/tools/Transcriber" && pip install -r requirements.txt
 ```
 
+**Note:** This downloads large packages (PyTorch is ~2GB). On slow connections, pip may appear to hang or timeout. Be patient; if it times out, run the command again and pip will resume from cached downloads.
+
 Setup is complete for basic transcription. Stop here unless the user specifically requests speaker identification.
 
-### Step 4: HuggingFace token (ONLY if user requests speaker identification)
+### Step 4: HuggingFace + FFmpeg (ONLY if user requests speaker identification)
 
 Do NOT install this automatically. Only proceed if the user explicitly wants to identify different speakers.
 
 Tell the user:
 
-"Identifying different speakers requires a free HuggingFace account. It only takes a couple minutes to set up. Want me to walk you through it?"
+"Identifying different speakers requires a free HuggingFace account and FFmpeg installed on your system. It takes about 5 minutes to set up. Want me to walk you through it?"
 
-If user confirms, guide them through:
+If user confirms:
+
+**4a. Install FFmpeg (system package, not pip)**
+
+**Mac:**
+```bash
+brew install ffmpeg
+```
+
+**Windows:**
+1. Go to https://www.gyan.dev/ffmpeg/builds/
+2. Download "ffmpeg-release-essentials.zip"
+3. Extract to `C:\ffmpeg`
+4. Add `C:\ffmpeg\bin` to your system PATH
+5. Restart Git Bash
+
+**Linux:**
+```bash
+sudo apt install ffmpeg
+```
+
+Verify with: `ffmpeg -version`
+
+**4b. Set up HuggingFace account**
 
 1. Create account at https://huggingface.co (free)
 2. Go to https://huggingface.co/settings/tokens
