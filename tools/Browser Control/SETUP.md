@@ -8,7 +8,7 @@ MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
 
 ### Setup Steps
 
-1. Open Cursor Settings ("CMD SHIFT J" on Mac, "CTRL SHIFT J" on Windows)
+1. Open Cursor Settings ("CMD SHIFT J" on Mac, "CTRL SHIFT J" on Windows), or click the gear icon at top right and choose "Cursor Settings"
 2. Go to **Tools & MCP**
 3. Find **Browser Automation** and enable **Browser Tab**
 4. Restart Cursor if prompted
