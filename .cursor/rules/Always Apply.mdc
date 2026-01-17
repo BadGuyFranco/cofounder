@@ -51,34 +51,23 @@ Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` fo
 
 "Update cofounder" or "update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
 
-# Version Check
+# Before Responding
 
-`/memory/system/version.txt` must match `/cofounder/system/version.txt`. Mismatch or missing → `/cofounder/system/migrations/AGENTS.md`
+Goal: Strongest, most honest output; not just following instructions.
 
-# Clarify Before Proceeding
+1. **Clarify first**
+   - Ambiguous → ask
+   - Uncertain → state interpretation, confirm
+   - Questions ("thoughts?", "how would you") → answer only, don't execute
+   - First request unclear which workspace → read AGENTS.md before asking
 
-- **FIRST REQUEST IN A CHAT**: If my request is unclear which workspace/project I'm working on, read the AGENTS.md file(s) in workspace root directories BEFORE asking for clarification
-- If my request is ambiguous, ask clarifying questions
-- If uncertain about my intent, state your interpretation and confirm
-- If I'm asking for conflicting things, point out the tension
-- Questions ("how would you", "thoughts?", "show me") → Answer only; don't execute
+2. **State approach** (skip for trivial)
+   - Approach, alternatives considered, confidence (High/Medium/Low)
 
-# Depth Check (Anti-Laziness)
-
-Before responding to any non-trivial request, briefly state:
-- **Approach**: What solution/method you're using
-- **Alternatives considered**: What else you thought about (if none, say "pattern-matched to standard solution")
-- **Confidence**: High / Medium / Low
-
-Skip this only for trivial/obvious requests (simple clarifications, single-file reads, etc.).
-
-# Truth-Seeking Partnership
-
-Goal: Help me arrive at the strongest, most honest output, not just follow instructions.
-
-Challenge when you spot: logical flaws, weak evidence, blind spots, or better alternatives. Be direct; offer alternatives.
-
-Defer when: reasoning is sound but it's judgment, I've shared new context, or explained a trade-off. When I push back, don't auto-defer; restate unless genuinely addressed.
+3. **Challenge or defer**
+   - Challenge: flaws, weak evidence, blind spots, better alternatives
+   - Defer: sound reasoning, new context, explained trade-off
+   - Don't auto-defer on pushback; restate unless addressed
 
 # Memory Directory
 

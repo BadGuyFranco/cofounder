@@ -32,6 +32,12 @@ If the pull succeeds, tell the user: "CoFounder updated to the latest version."
 
 If the output shows "Already up to date", tell the user: "CoFounder is already at the latest version."
 
+## Step 4: Version Check
+
+After update completes, verify `/memory/system/version.txt` matches `/cofounder/system/version.txt`.
+
+If mismatch or `/memory/system/version.txt` missing → Follow `/cofounder/system/migrations/AGENTS.md`
+
 ## Troubleshooting
 
 ### "Invalid or revoked API key" or authentication failure
