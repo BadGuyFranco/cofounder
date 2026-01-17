@@ -4,9 +4,11 @@ The installer cloned CoFounder. Now let's set up your workspace.
 
 **Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
 
-## Step 1: Create Supporting Folders
+## Step 1: Clean Up and Create Folders
 
-First, create the memory and workspaces folders as siblings to cofounder/:
+If `.vscode/settings.json` exists in the workspace root (created during install), delete it. The workspace file created in Step 4 will handle terminal settings.
+
+Create the memory and workspaces folders as siblings to cofounder/:
 
 ```bash
 mkdir -p memory
