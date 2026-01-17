@@ -10,7 +10,7 @@ Run these checks:
 
 **Python:**
 ```bash
-python --version || python3 --version
+python --version 2>/dev/null || python3 --version 2>/dev/null || (test -d ~/miniforge3 && echo "Miniforge installed but not initialized - run: ~/miniforge3/condabin/conda init bash") || echo "Not installed"
 ```
 
 **Transcriber packages:**
