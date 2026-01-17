@@ -43,8 +43,6 @@ Ask before invoking:
 | Create execution plans | `tools/Planner/` | project plan, roadmap, milestones |
 | Research with verified sources | `tools/Researcher/` | research, find sources, verify claims |
 
-*Maintainers: When adding tools, add to the appropriate table above.*
-
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
 
 # Update CoFounder
@@ -69,24 +67,18 @@ Goal: Strongest, most honest output; not just following instructions.
    - Defer: sound reasoning, new context, explained trade-off
    - Don't auto-defer on pushback; restate unless addressed
 
-# Memory Directory
-
-User config and custom tools live in `/memory/`. If a tool requires `/memory/` and it doesn't exist, stop and warn the user. See `/memory/README.md` for structure.
-
 # File Versioning
 
 Before deleting content, major rewrites, or restructuring directories, archive first (skip for files in zArchive). See `.cursor/rules/File Versioning.mdc` for details.
 
-# Hard Formatting Rules
+# Rules
 
+**Formatting:**
 - No em dashes (—) or en dashes (–); use periods, semicolons, or commas
 - No emojis
 - No horizontal rules (---) in markdown
-- Trailing spaces for hard line breaks
 
-# Operational Rules
-
+**Operational:**
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
 - Run commands yourself; never show terminal commands or ask the user to run them
-- Cursor rules must be concise and follow their own rules
 - Auto-loads: `Prompt Standards.mdc` for AGENTS.md or cursor rules

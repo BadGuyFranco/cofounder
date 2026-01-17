@@ -34,6 +34,12 @@ alwaysApply: false
 
 **Auth patterns:** API Key (reference: airtable/), OAuth 2.0 (reference: linkedin/), OAuth 1.0a (reference: xcom/)
 
+## Routing Registration
+
+**Shared tools** (`/cofounder/tools/`): Add to `.cursor/rules/Always Apply.mdc` Tool Routing table.
+
+**Personal tools** (`/memory/my tools/`): Add to `/memory/my tools/AGENTS.md`.
+
 ## Path Portability (CRITICAL)
 
 The `/cofounder/` directory is shared and read-only for most users. **All paths MUST be portable.**
