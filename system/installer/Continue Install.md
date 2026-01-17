@@ -1,12 +1,21 @@
 # Continue Install
 
-The CoFounder Installer downloaded the toolkit. Now let's set up your workspace.
+The installer cloned CoFounder. Now let's set up your workspace.
 
 **Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
 
-## Step 1: Initialize Memory Structure
+## Step 1: Create Supporting Folders
 
-The installer created an empty `/memory/` folder. Now populate it with the required structure.
+First, create the memory and workspaces folders as siblings to cofounder/:
+
+```bash
+mkdir -p memory
+mkdir -p workspaces
+```
+
+## Step 2: Initialize Memory Structure
+
+Now populate memory with the required structure.
 
 Create these directories:
 
@@ -28,7 +37,7 @@ cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/m
 cp cofounder/system/version.txt memory/system/version.txt
 ```
 
-## Step 2: Create Personal Workspace
+## Step 3: Create Personal Workspace
 
 Ask the user for their name, then create their personal workspace folder as a sibling to cofounder/:
 
@@ -44,7 +53,7 @@ cp cofounder/system/templates/Personal\ Workspace\ Template/AGENTS.md [name]/AGE
 
 Update the AGENTS.md file, replacing `[Your Name]` with their actual name.
 
-## Step 3: Create Workspace File
+## Step 4: Create Workspace File
 
 In the workspaces/ folder, create `[name].code-workspace`:
 
@@ -72,7 +81,7 @@ Replace `[name]` with the user's actual name in both the filename and the path.
 
 The `settings` block ensures Windows users always use Git Bash for terminal commands. This setting is harmless on Mac/Linux.
 
-## Step 4: Installation Complete
+## Step 5: Installation Complete
 
 Tell the user:
 

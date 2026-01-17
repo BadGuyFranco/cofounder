@@ -2,63 +2,57 @@
 
 Pull the latest CoFounder toolkit from the repository.
 
-## Step 1: Read API Key
+## Step 1: Find CoFounder Directory
 
-Read the user's API key from `~/.cofounder/config.json`. The file contains:
+Locate the `/cofounder/` directory in the current workspace. This is where the update command will run.
 
-```json
-{
-  "apiKey": "cf_...",
-  "machineId": "...",
-  "installedAt": "..."
-}
-```
+## Step 2: Run Update Command
 
-Extract the `apiKey` value. If the file doesn't exist or has no key, stop and tell the user:
-
-"I can't find your CoFounder API key. Check your email for the key that starts with `cf_` and paste it here."
-
-## Step 2: Determine Install Directory
-
-The install directory is the parent folder of `/cofounder/`. This is where the update command must run.
-
-For example, if `/cofounder/` is at `/Users/name/Documents/CoFounder/cofounder/`, the install directory is `/Users/name/Documents/CoFounder/`.
-
-## Step 3: Run Update Command
-
-Detect the operating system and run the appropriate command from the install directory.
+Detect the operating system and run git pull from the cofounder directory.
 
 **Mac/Linux:**
 
 ```bash
-cd "INSTALL_DIR" && curl -fsSL "https://cofounder.wisermethod.com/install?key=API_KEY" | sh
+cd "COFOUNDER_PATH" && git pull
 ```
 
 **Windows (must use Git Bash):**
 
 ```bash
-"C:\Program Files\Git\bin\bash.exe" -c 'cd "INSTALL_DIR" && curl -fsSL "https://cofounder.wisermethod.com/install?key=API_KEY" | sh'
+& "C:\Program Files\Git\bin\bash.exe" -c "cd 'COFOUNDER_PATH' && git pull"
 ```
 
-For Windows paths, convert backslashes to forward slashes. Example: `C:/Users/Name/Documents/CoFounder`
+Replace `COFOUNDER_PATH` with the actual path to the cofounder directory.
 
-Replace `INSTALL_DIR` with the actual path from Step 2.
-Replace `API_KEY` with the key from Step 1.
+For Windows, convert the path to Git Bash format. Example: `/c/Users/Name/Documents/CoFounder/cofounder`
 
-## Step 4: Confirm
+## Step 3: Confirm
 
-Tell the user: "CoFounder updated to the latest version."
+If the pull succeeds, tell the user: "CoFounder updated to the latest version."
+
+If the output shows "Already up to date", tell the user: "CoFounder is already at the latest version."
 
 ## Troubleshooting
 
-### "API key invalid"
+### "Invalid or revoked API key" or authentication failure
 
-The key may have been revoked. Contact support or check for a new key in email.
+The user's subscription may have lapsed. Tell them to check their email for a new API key or contact support.
+
+If they have a new key, they'll need to update the git remote:
+
+```bash
+cd "COFOUNDER_PATH" && git remote set-url origin "https://x:NEW_API_KEY@cofounder.wisermethod.com/git/cofounder.git"
+```
 
 ### "Permission denied" on Windows
 
 Ensure the command runs in Git Bash, not PowerShell or cmd.
 
-### Update didn't change anything
+### "fatal: not a git repository"
 
-The installer downloads from R2. If a new release hasn't been pushed yet, the files will be the same. This is normal.
+The cofounder directory was installed with the old zip method. The user needs to reinstall using the new git-based installer. Have them:
+
+1. Delete the existing cofounder/ folder
+2. Re-run the install prompt from their welcome email
+
+Their memory/, workspaces/, and personal workspace folders will be preserved.
