@@ -41,13 +41,13 @@ Based on the checks above, report only what's missing:
 
 Only proceed if user confirms.
 
-### Step 1: Python via Miniforge (if missing)
+### Step 1: Visual C++ Build Tools (Windows only)
+
+If the user is on Windows, follow `/cofounder/system/installer/dependencies/visual-cpp.md` FIRST. This is required for PyTorch and torchaudio to install correctly. Requires PC restart before continuing.
+
+### Step 2: Python via Miniforge (if missing)
 
 Follow `/cofounder/system/installer/dependencies/miniforge.md`
-
-### Step 2: Visual C++ Build Tools (Windows only)
-
-If the user is on Windows, follow `/cofounder/system/installer/dependencies/visual-cpp.md` BEFORE installing packages. This is required for PyTorch and torchaudio to install correctly.
 
 ### Step 3: Transcriber packages (if missing)
 
@@ -55,7 +55,11 @@ If the user is on Windows, follow `/cofounder/system/installer/dependencies/visu
 cd "/cofounder/tools/Transcriber" && pip install -r requirements.txt
 ```
 
-### Step 4: HuggingFace token (optional, for speaker diarization)
+Setup is complete for basic transcription. Stop here unless the user specifically requests speaker diarization.
+
+### Step 4: HuggingFace token (ONLY if user requests speaker diarization)
+
+Do NOT install this automatically. Only proceed if the user explicitly wants speaker identification.
 
 1. Create account at https://huggingface.co (free)
 2. Go to https://huggingface.co/settings/tokens
