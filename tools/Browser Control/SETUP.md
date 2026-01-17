@@ -15,7 +15,7 @@ MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
 
 ### Verify Setup
 
-Try running `browser_navigate` to any URL. If it works, setup is complete.
+Run `browser_navigate` to `https://wisermethod.com`. If the page opens, setup is complete.
 
 ### Troubleshooting
 
