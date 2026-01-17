@@ -19,7 +19,7 @@ cd "COFOUNDER_PATH" && git pull
 **Windows (must use Git Bash):**
 
 ```bash
-& "C:\Program Files\Git\bin\bash.exe" -c "cd 'COFOUNDER_PATH' && git pull"
+"C:\Program Files\Git\bin\bash.exe" -c "cd 'COFOUNDER_PATH' && git pull"
 ```
 
 Replace `COFOUNDER_PATH` with the actual path to the cofounder directory.
