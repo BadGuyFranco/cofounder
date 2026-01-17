@@ -13,10 +13,6 @@ MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
 3. Find **Browser Automation** and enable **Browser Tab**
 4. Restart Cursor if prompted
 
-### Verify Setup
-
-Run `browser_navigate` to `https://wisermethod.com`. If the page opens, setup is complete.
-
 ### Troubleshooting
 
 **"MCP server not found" or similar error:**
@@ -75,3 +71,7 @@ npx playwright install chromium
 
 **"node: command not found":**
 Follow `/cofounder/system/installer/dependencies/nodejs.md`
+
+## Verify Setup
+
+After completing both MCP and Playwright setup, run `browser_navigate` to `https://wisermethod.com`. If the page opens, Browser Control is ready to use.

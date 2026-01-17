@@ -28,11 +28,7 @@ Automate browser interactions reliably: navigate pages, read content, interact w
 
 ## Setup Detection
 
-**Before using browser tools, verify setup is complete.**
-
-**MCP Browser Tools:** Try `browser_navigate` to `https://wisermethod.com`. If it fails with "MCP server not found" or similar, walk user through `SETUP.md` (MCP Browser Tools section).
-
-**Playwright Scripts:** If user needs external automation, check `~/playwright-automation/` exists. If not, walk user through `SETUP.md` (Playwright Scripts section).
+**Before using browser tools, verify setup is complete.** Walk user through `SETUP.md` if any component is missing.
 
 ## Quality Checks
 
