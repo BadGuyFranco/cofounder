@@ -18,7 +18,7 @@ python --version 2>/dev/null || python3 --version 2>/dev/null || (test -d ~/mini
 cd "/cofounder/tools/Transcriber" && python -c "import whisper; print('Whisper installed')" 2>/dev/null || echo "Not installed"
 ```
 
-**HuggingFace credentials (for speaker diarization):**
+**HuggingFace credentials (for identifying different speakers):**
 ```bash
 test -f "/memory/connectors/huggingface/.env" && grep -q "HUGGINGFACE_API_TOKEN" "/memory/connectors/huggingface/.env" && echo "Configured" || echo "Not configured"
 ```
@@ -31,7 +31,7 @@ Based on the checks above, report only what's missing:
 |------------|--------------|
 | Python | Runtime for Whisper transcription |
 | Transcriber packages | Whisper and audio processing libraries |
-| HuggingFace token | Speaker diarization (optional) |
+| HuggingFace token | Identify different speakers (optional) |
 
 **If everything shows as installed/configured:** Skip to AGENTS.md Usage section.
 
@@ -55,15 +55,15 @@ Follow `/cofounder/system/installer/dependencies/miniforge.md`
 cd "/cofounder/tools/Transcriber" && pip install -r requirements.txt
 ```
 
-Setup is complete for basic transcription. Stop here unless the user specifically requests speaker diarization.
+Setup is complete for basic transcription. Stop here unless the user specifically requests speaker identification.
 
-### Step 4: HuggingFace token (ONLY if user requests speaker diarization)
+### Step 4: HuggingFace token (ONLY if user requests speaker identification)
 
-Do NOT install this automatically. Only proceed if the user explicitly wants speaker identification.
+Do NOT install this automatically. Only proceed if the user explicitly wants to identify different speakers.
 
 Tell the user:
 
-"Speaker diarization requires a free HuggingFace account. It only takes a couple minutes to set up. Want me to walk you through it?"
+"Identifying different speakers requires a free HuggingFace account. It only takes a couple minutes to set up. Want me to walk you through it?"
 
 If user confirms, guide them through:
 
@@ -88,7 +88,7 @@ echo "HUGGINGFACE_API_TOKEN=hf_your_token_here" > "/memory/connectors/huggingfac
 cd "/cofounder/tools/Transcriber" && python transcribe_audio.py --help
 ```
 
-**With diarization (if HuggingFace configured):**
+**With speaker identification (if HuggingFace configured):**
 ```bash
 python transcribe_audio.py test.mp3 --diarize
 ```
