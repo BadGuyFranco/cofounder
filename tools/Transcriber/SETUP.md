@@ -61,6 +61,12 @@ Setup is complete for basic transcription. Stop here unless the user specificall
 
 Do NOT install this automatically. Only proceed if the user explicitly wants speaker identification.
 
+Tell the user:
+
+"Speaker diarization requires a free HuggingFace account. It only takes a couple minutes to set up. Want me to walk you through it?"
+
+If user confirms, guide them through:
+
 1. Create account at https://huggingface.co (free)
 2. Go to https://huggingface.co/settings/tokens
 3. Create a token with Read permission
@@ -68,7 +74,7 @@ Do NOT install this automatically. Only proceed if the user explicitly wants spe
    - https://huggingface.co/pyannote/speaker-diarization-3.1
    - https://huggingface.co/pyannote/segmentation-3.0
 
-Create credentials:
+Once they have their token, create credentials:
 
 ```bash
 mkdir -p "/memory/connectors/huggingface"
