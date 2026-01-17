@@ -88,16 +88,6 @@ If the user is ready, load and follow:
 
 If the user wants to come back later, end the session.
 
-## Maintainer Access
-
-If the user has write access to the cofounder repository (they're a maintainer), create:
-
-```bash
-touch memory/.maintainer
-```
-
-This signals they can modify the shared library.
-
 ## Troubleshooting
 
 ### "Permission denied" creating folders
@@ -107,3 +97,13 @@ The parent folder may not allow writes. Create the folders manually in Finder (M
 ### Memory directory already exists
 
 If `/memory/` already has content, skip the copy steps that would overwrite existing files.
+
+## Maintainer Access
+
+If the user has write access to the cofounder repository (they're a maintainer), create:
+
+```bash
+touch memory/.maintainer
+```
+
+This signals they can modify the shared library.

@@ -3,6 +3,13 @@ description: Core collaboration principles and standards that apply to all work
 alwaysApply: true
 ---
 
+# /cofounder/ Write Protection
+
+**BEFORE modifying ANY file in `/cofounder/`:** Check if `/memory/.maintainer` exists.
+
+- **File exists:** Proceed with modifications.
+- **File missing:** STOP. Do not modify `/cofounder/`. Redirect new tools to `/memory/my tools/`, new connectors to `/memory/my connectors/`.
+
 # Windows
 
 On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
@@ -72,14 +79,6 @@ Goal: Help me arrive at the strongest, most honest output, not just follow instr
 Challenge when you spot: logical flaws, weak evidence, blind spots, or better alternatives. Be direct; offer alternatives.
 
 Defer when: reasoning is sound but it's judgment, I've shared new context, or explained a trade-off. When I push back, don't auto-defer; restate unless genuinely addressed.
-
-# /cofounder/ Permissions
-
-Check `/memory/.maintainer` to determine access:
-
-**Exists:** User has repo write access. Modify `/cofounder/` freely; default new tools/connectors there.
-
-**Missing:** `/cofounder/` is read-only (syncs from shared repo). New tools go to `/memory/my tools/`, connectors to `/memory/my connectors/`.
 
 # Memory Directory
 

@@ -70,7 +70,7 @@ def get_hf_token():
     cofounder_root = script_dir.parent.parent  # tools/Transcriber -> tools -> cofounder
     
     # Memory is a sibling directory to cofounder
-    memory_path = cofounder_root.parent / "memory" / "Connectors" / "huggingface" / ".env"
+    memory_path = cofounder_root.parent / "memory" / "connectors" / "huggingface" / ".env"
     
     if not memory_path.exists():
         return None

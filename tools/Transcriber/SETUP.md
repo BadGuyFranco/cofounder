@@ -20,7 +20,7 @@ cd "/cofounder/tools/Transcriber" && python -c "import whisper; print('Whisper i
 
 **HuggingFace credentials (for speaker diarization):**
 ```bash
-test -f "/memory/connectors/huggingface/.env" && grep -q "HF_TOKEN" "/memory/connectors/huggingface/.env" && echo "Configured" || echo "Not configured"
+test -f "/memory/connectors/huggingface/.env" && grep -q "HUGGINGFACE_API_TOKEN" "/memory/connectors/huggingface/.env" && echo "Configured" || echo "Not configured"
 ```
 
 ## What's Missing?
@@ -64,7 +64,7 @@ Create credentials:
 
 ```bash
 mkdir -p "/memory/connectors/huggingface"
-echo "HF_TOKEN=hf_your_token_here" > "/memory/connectors/huggingface/.env"
+echo "HUGGINGFACE_API_TOKEN=hf_your_token_here" > "/memory/connectors/huggingface/.env"
 ```
 
 ## Verify Setup
