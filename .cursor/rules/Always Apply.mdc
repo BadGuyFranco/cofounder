@@ -3,10 +3,6 @@ description: Core collaboration principles and standards that apply to all work
 alwaysApply: true
 ---
 
-# Update CoFounder
-
-"Update cofounder" or "update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
-
 # /cofounder/ Write Protection
 
 **BEFORE modifying ANY file in `/cofounder/`:** Check if `/memory/.maintainer` exists.
@@ -50,6 +46,10 @@ Ask before invoking:
 *Maintainers: When adding tools, add to the appropriate table above.*
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
+
+# Update CoFounder
+
+"Update cofounder" or "update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
 
 # Version Check
 
