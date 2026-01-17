@@ -6,7 +6,7 @@ The installer cloned CoFounder. Now let's set up your workspace.
 
 ## Step 1: Clean Up and Create Folders
 
-If `.vscode/settings.json` exists in the workspace root (created during install), delete it. The workspace file created in Step 4 will handle terminal settings.
+Delete the `.vscode` folder in the workspace root if it exists (this was a temporary file created during install; the workspace file in Step 4 handles terminal settings permanently).
 
 Create the memory and workspaces folders as siblings to cofounder/:
 
@@ -82,6 +82,17 @@ In the workspaces/ folder, create `[name].code-workspace`:
 Replace `[name]` with the user's actual name in both the filename and the path.
 
 The `settings` block ensures Windows users always use Git Bash for terminal commands. This setting is harmless on Mac/Linux.
+
+After creating the workspace file, tell the user:
+
+"I've created your workspace file. Please open it now:
+
+1. Go to File > Open Workspace from File...
+2. Navigate to the workspaces folder (it's next to the cofounder folder)
+3. Select [name].code-workspace
+4. Click Open"
+
+Replace `[name]` with their actual name. Wait for them to confirm they've opened the workspace before continuing.
 
 ## Step 5: Installation Complete
 
