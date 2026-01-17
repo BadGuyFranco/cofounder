@@ -8,10 +8,15 @@ MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
 
 ### Setup Steps
 
+**Tell the user to do these steps manually:**
+
 1. Open Cursor Settings ("CMD SHIFT J" on Mac, "CTRL SHIFT J" on Windows), or click the gear icon at top right and choose "Cursor Settings"
 2. Go to **Tools & MCP**
 3. Find **Browser Automation** and enable **Browser Tab**
 4. Restart Cursor if prompted
+5. Type "done" in the chat when complete
+
+**Wait for the user to confirm before proceeding to Playwright setup.**
 
 ### Troubleshooting
 
@@ -74,4 +79,12 @@ Follow `/cofounder/system/installer/dependencies/nodejs.md`
 
 ## Verify Setup
 
-After completing both MCP and Playwright setup, run `browser_navigate` to `https://wisermethod.com`. If the page opens, Browser Control is ready to use.
+**After completing both MCP and Playwright setup, run this command:**
+
+```
+browser_navigate to https://wisermethod.com
+```
+
+If the page opens, tell the user: "Browser Control is ready to use."
+
+If it fails, check the Troubleshooting sections above.
