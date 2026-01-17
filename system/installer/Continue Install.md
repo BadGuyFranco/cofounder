@@ -85,24 +85,11 @@ The `settings` block ensures Windows users always use Git Bash for terminal comm
 
 After creating the workspace file, tell the user:
 
-"I've created your workspace file. Please open it now:
-
-1. Go to File > Open Workspace from File...
-2. Navigate to the workspaces folder (it's next to the cofounder folder)
-3. Select [name].code-workspace
-4. Click Open"
-
-Replace `[name]` with their actual name. Wait for them to confirm they've opened the workspace before continuing.
-
-## Step 5: Installation Complete
-
-Tell the user:
-
 "Congratulations! You just completed the hardest part. You're now officially a 'computer nerd' who can tell your friends you're using Cursor and installed CoFounder to write AI content. Welcome to the club."
 
 Then ask:
 
-"Ready to set up your digital twin content author? You'll need a couple of writing samples and about 15 more minutes. If you'd rather come back later, just type 'Start Here' in any new chat and we'll pick up where we left off."
+"Ready to set up your digital twin content author? You'll need 2 or 3 writing samples and about 15 more minutes. If you'd rather come back later, just type 'Start Here' in any new chat and we'll pick up where we left off."
 
 If the user is ready, load and follow:
 
