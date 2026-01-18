@@ -2,19 +2,19 @@
 
 Site-specific patterns for automating PodMatch interactions.
 
-**Base URL patterns:** `podmatch.com/member/*`, `podmatch.com/podcast/*`
+**Base URL patterns:** `podmatch.com/guestdetailpreview/*`, `podmatch.com/hostdetailpreview/*`, `podmatch.com/member/*`, `podmatch.com/podcast/*`
 
-## Limitations on PodMatch
+**Script options:** Run `node scripts/<name>.js help` for detailed options.
 
-| Task | MCP Capability |
-|------|----------------|
+## Capabilities
+
+| Task | Capability |
+|------|------------|
 | Navigate to profiles | Yes |
-| Read visible profile text | Yes (from snapshot) |
-| Extract image URLs | **No** (requires JavaScript) |
-| Click profile elements | Yes |
-
-**For image URL extraction:** Use Playwright scripts.
-
+| Read visible profile text | Yes (snapshot) |
+| Extract profile photo URLs | Yes (execute.js) |
+| Download high-res profile photos | Yes (click modal + download.js) |
+| Extract structured data | Yes (execute.js) |
 
 ## Authentication
 
@@ -22,147 +22,164 @@ PodMatch may require login for some content.
 
 **If you see a login prompt:**
 1. STOP automation
-2. Inform user: "PodMatch requires login. Please log in manually in the browser."
-3. Wait for user confirmation before continuing
-
+2. Tell user: "PodMatch requires login. Please log in manually."
+3. Wait for confirmation before continuing
 
 ## Profile Navigation
 
-### Navigate to a member profile
+### Guest profile (public preview)
 
-```
-1. browser_navigate: https://podmatch.com/member/username
-2. browser_wait_for time=2
-3. browser_snapshot
-4. CHECKPOINT: "Profile loaded, found [name/content indicator]"
-```
-
-### Navigate to a podcast profile
-
-```
-1. browser_navigate: https://podmatch.com/podcast/podcastname
-2. browser_wait_for time=2
-3. browser_snapshot
-4. CHECKPOINT: "Podcast profile loaded"
+```bash
+node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
+node scripts/wait.js --time 2000
+node scripts/snapshot.js
 ```
 
+### Host/podcast profile (public preview)
+
+```bash
+node scripts/navigate.js https://podmatch.com/hostdetailpreview/[slug]
+node scripts/wait.js --time 2000
+node scripts/snapshot.js
+```
 
 ## What's Visible in Snapshots
 
-PodMatch profile snapshots typically contain:
-- Member/podcast name (heading elements)
-- Bio or description text
-- Categories or topics
-- Social media links (if displayed as text)
-- "Connect" or action button refs
+PodMatch guest profile snapshots typically contain:
+- Guest name (h1 heading)
+- Professional badge indicators
+- One-page title/tagline
+- Badges (Pro Member, Episode count, Review count)
+- Guest tags (topic categories)
+- Introduction text
+- Call to action with URL
+- About section
+- Social media links
+- Episode title ideas
+- Ready-to-answer questions
+- Noteworthy podcast appearances
+- Reviews with ratings
 
-### What's NOT reliably visible:
-- Profile image URLs (require JavaScript to extract from `img.src` or CSS background)
-- Detailed statistics
-- Private contact information
+## Extracting Profile Photo (Best Method)
 
+PodMatch shows 400x400 thumbnails on the page. The full-resolution image is in a modal.
 
-## Extracting Visible Profile Data
+```bash
+# 1. Click on a photo in "Guest's Approved Images" section
+node scripts/click.js --selector "img[alt='Guest HD Photo 2']"
 
-From snapshots, report what's visible:
+# 2. Wait for modal, extract full-res image URL
+node scripts/wait.js --time 1500
+node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
 
+# 3. Download the full-res image
+node scripts/download.js --url "<url-from-step-2>" --output ~/profile-photo.png
 ```
-CHECKPOINT: "Profile data from snapshot:
-- Name: [visible name]
-- Bio: [visible bio text, may be truncated]
-- Topics: [any visible categories]
-- Action buttons: [Connect, Message, etc. with refs]"
+
+**URL pattern insight:** Thumbnails use `sm_...sm_...jpg` pattern. Full-res images drop the `sm_` prefixes and are typically PNG.
+
+**Why click the HD photo:** The main profile pic and HD photos on the page are both thumbnails. Only by clicking to open the modal do you get the full resolution.
+
+## Quick Thumbnail URL (Lower Resolution)
+
+For a quick 400x400 thumbnail without opening the modal:
+
+```bash
+node scripts/execute.js --code "document.querySelector('img[alt=\"Guest\\'s Main Profile Pic\"]')?.src"
 ```
 
+## Extracting Profile Data
 
-## Profile Photo Limitations
+```bash
+# Get name
+node scripts/execute.js --code "document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim()"
 
-**Unlike LinkedIn, PodMatch typically displays photos directly (no modal).** However:
+# Get tagline
+node scripts/execute.js --code "document.querySelector('h1 + p')?.innerText"
 
-- Image URLs still require JavaScript to extract
-- Profile photos may be CSS background images (not `img` tags)
-- Lazy loading may show placeholder URLs
+# Get introduction
+node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText === 'Introduction')?.nextElementSibling?.innerText"
 
-**What you CAN do:**
-1. Navigate to profile
-2. Confirm image is visually present (via screenshot)
-3. Report that manual download is needed
+# Get about text
+node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText.includes('About'))?.nextElementSibling?.innerText"
 
-**What you CANNOT do:**
-- Extract the image URL programmatically
-- Download the image automatically
-
-**User instructions for manual download:**
-"I can navigate to the profile, but extracting the image URL requires JavaScript. To save the image manually:
-1. Right-click the profile image
-2. Select 'Save image as' or 'Copy image address'
-Or I can write a Playwright script for automated extraction."
-
+# Get guest tags
+node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText === 'Guest Tags')?.parentElement?.querySelectorAll('p').forEach(p => console.log(p.innerText))"
+```
 
 ## Interacting with Profile Elements
 
-### Send connection request
+### Message guest (requires login)
 
-```
-1. browser_snapshot
-2. Find "Connect" or "Request Match" button ref
-3. browser_click ref=[button ref]
-4. browser_wait_for time=1
-5. browser_snapshot
-6. CHECKPOINT: "Connection request sent" or "Follow-up action required"
+```bash
+node scripts/click.js --text "Send This Guest A Message"
+node scripts/wait.js --time 1000
+node scripts/snapshot.js
 ```
 
+### View all reviews
+
+```bash
+node scripts/click.js --text "See All Reviews"
+node scripts/wait.js --time 1000
+node scripts/snapshot.js
+```
 
 ## Known Quirks
 
-### Images may be lazy-loaded
-If the snapshot or screenshot shows a placeholder, the actual image may not have loaded yet. Try:
-1. `browser_wait_for time=3`
-2. Re-snapshot
+**Thumbnails on page:** Profile images visible on the page are 400x400 thumbnails with `sm_` prefix in URL. Click to open modal for full resolution.
 
-### Background images
-Some profile photos are CSS background images rather than `img` tags. These won't appear in accessibility snapshots at all.
+**Modal structure:** When image modal opens, use `[role="dialog"]` to query modal-specific selectors.
 
-### Dynamic content
-Profile sections may load asynchronously. Use `browser_wait_for` with expected text.
+**Dynamic content:** Profile sections load asynchronously. Wait 2+ seconds after navigation.
 
+**Guest vs Host profiles:** URL patterns differ. Guest profiles use `guestdetailpreview`, host profiles use `hostdetailpreview`.
 
-## Common Failures and Fixes
+## Common Failures
 
 | Failure | Cause | Fix |
 |---------|-------|-----|
-| Profile not found | Wrong URL format | Check URL structure |
-| Content missing | Page still loading | Wait longer, re-snapshot |
-| No image visible | Lazy loading | Wait, re-snapshot |
+| Profile not found | Wrong URL pattern | Use `guestdetailpreview` or `hostdetailpreview` |
+| Content missing | Still loading | Use `wait.js --time 2000` after navigation |
+| No modal image | Modal didn't open | Click on HD photo in approved images section |
+| Low-res image | Used thumbnail | Open modal, extract from `[role="dialog"] img` |
 | Login required | Session expired | User must log in |
 
+## Example: Full Profile Extraction
 
-## Example: Profile Inspection Workflow
+```bash
+# 1. Navigate
+node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
 
+# 2. Wait for content
+node scripts/wait.js --time 2000
+
+# 3. Extract basic data via JavaScript
+node scripts/execute.js --code "({
+  name: document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim(),
+  tagline: document.querySelector('h1 + p')?.innerText
+})"
+
+# 4. Screenshot for reference
+node scripts/screenshot.js --output ./podmatch-profile.png
 ```
-1. browser_navigate: https://podmatch.com/member/username
-2. browser_wait_for time=2
-3. browser_snapshot
-   CHECKPOINT: "Page loaded. Found:
-   - Name: Alex Johnson
-   - Bio: 'Podcast host covering tech and startups...'
-   - Connect button at ref e156"
 
-4. browser_take_screenshot  # For visual reference
-   CHECKPOINT: "Screenshot captured showing profile layout and photo"
+## Example: Download High-Res Profile Photo
 
-5. Report to user: "Profile found for Alex Johnson. I can see their bio
-   and profile photo in the browser. To extract the image URL for download,
-   I would need to use a Playwright script with JavaScript execution."
+```bash
+# 1. Navigate to profile
+node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
+node scripts/wait.js --time 2000
+
+# 2. Open photo modal (click HD photo in approved images)
+node scripts/click.js --selector "img[alt='Guest HD Photo 2']"
+node scripts/wait.js --time 1500
+
+# 3. Extract full-res URL from modal
+node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
+
+# 4. Download the file (use URL from step 3)
+node scripts/download.js --url "<url-from-step-3>" --output ./profile-photo.png
 ```
 
-
-## When to Use What
-
-| Need | Tool |
-|------|------|
-| View profile content | MCP browser (snapshot) |
-| Visual reference | MCP browser (screenshot) |
-| Extract image URLs | Playwright scripts |
-| Automated data collection | Playwright scripts |
-| Send connection request | MCP browser (click) |
+This downloads the full-resolution PNG, not the 400x400 thumbnail.

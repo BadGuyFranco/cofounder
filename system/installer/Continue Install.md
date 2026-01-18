@@ -6,7 +6,7 @@ The installer cloned CoFounder. Now let's set up your workspace.
 
 ## Step 1: Clean Up and Create Folders
 
-Delete the `.vscode` folder in the workspace root if it exists (this was a temporary file created during install; the workspace file in Step 4 handles terminal settings permanently).
+Delete the `.vscode` folder in the workspace root if it exists (this was a temporary file created during install; the workspace file in Step 5 handles terminal settings permanently).
 
 Create the memory and workspaces folders as siblings to cofounder/:
 
@@ -15,7 +15,20 @@ mkdir -p memory
 mkdir -p workspaces
 ```
 
-## Step 2: Initialize Memory Structure
+## Step 2: Configure Windsurf (Windsurf IDE Only)
+
+**This instruction is only for the Windsurf IDE. If any other IDE, please skip this step.**
+
+Windsurf doesn't use `.cursor/rules` like Cursor does. Create a global rule memory to ensure CoFounder's core rules are always active.
+
+**Create a global rule memory with:**
+- **Title:** Always Apply System Rules
+- **Content:** Always load and follow `/cofounder/.cursor/rules/Always Apply.mdc` before any task execution. This file contains core collaboration principles, tool routing, and operational standards that never break. The `alwaysApply: true` flag in YAML frontmatter makes these rules absolute across all workspaces.
+- **Tags:** `["global_rule", "hard_rule", "cofounder"]`
+
+This ensures CoFounder's core rules are always active in Windsurf, just like they are in Cursor.
+
+## Step 3: Initialize Memory Structure
 
 Now populate memory with the required structure.
 
@@ -39,7 +52,7 @@ cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/m
 cp cofounder/system/version.txt memory/system/version.txt
 ```
 
-## Step 3: Create Personal Workspace
+## Step 4: Create Personal Workspace
 
 Ask the user for their name, then create their personal workspace folder as a sibling to cofounder/:
 
@@ -55,7 +68,7 @@ cp cofounder/system/templates/Personal\ Workspace\ Template/AGENTS.md [name]/AGE
 
 Update the AGENTS.md file, replacing `[Your Name]` with their actual name.
 
-## Step 4: Create Workspace File
+## Step 5: Create Workspace File
 
 In the workspaces/ folder, create `[name].code-workspace`:
 

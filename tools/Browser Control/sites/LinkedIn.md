@@ -4,182 +4,165 @@ Site-specific patterns for automating LinkedIn interactions.
 
 **Base URL patterns:** `linkedin.com/in/*`, `linkedin.com/company/*`, `linkedin.com/feed/*`
 
-## Limitations on LinkedIn
+**Script options:** Run `node scripts/<name>.js help` for detailed options.
 
-LinkedIn automation has specific constraints:
+## Capabilities
 
-| Task | MCP Capability |
-|------|----------------|
+| Task | Capability |
+|------|------------|
 | Navigate to profiles | Yes |
-| Read visible profile data | Yes (from snapshot) |
+| Read visible profile data | Yes (snapshot) |
 | Click to open modals | Yes |
-| Extract high-res photo URLs | **No** (requires JavaScript) |
-| Extract structured data | **Partial** (visible text only) |
-
-**For high-resolution profile photos:** Use Playwright scripts instead of MCP browser tools.
-
+| Extract profile photo URLs | Yes (execute.js) |
+| Extract structured data | Yes (execute.js) |
 
 ## Authentication
 
-LinkedIn requires login for most content. The browser extension maintains session state.
+LinkedIn requires login for most content. Profile data persists between sessions.
 
 **If you see a login wall:**
 1. STOP automation
-2. Inform user: "LinkedIn requires login. Please log in manually in the browser."
-3. Wait for user confirmation before continuing
-
+2. Tell user: "LinkedIn requires login. Please log in manually in the browser."
+3. Wait for confirmation before continuing
 
 ## Profile Navigation
 
-### Navigate to a profile
+```bash
+# Navigate to profile
+node scripts/navigate.js https://www.linkedin.com/in/username/
 
-```
-1. browser_navigate: https://www.linkedin.com/in/username/
-2. browser_wait_for: text containing the person's name
-3. browser_snapshot
-4. CHECKPOINT: "Profile loaded, found [name] in snapshot"
+# Wait for content to load
+node scripts/wait.js --time 2000
+
+# Read profile
+node scripts/snapshot.js
 ```
 
-### What's visible in snapshots
+**Checkpoint:** Verify name and headline appear in snapshot.
+
+**Tip:** Use `/in/me/` to navigate to your own profile.
+
+## What's Visible in Snapshots
 
 LinkedIn profile snapshots typically contain:
-- Person's name (usually in heading elements)
+- Person's name (heading elements)
 - Headline/title
 - Current company
 - Location
 - Connection count
-- "Connect" or "Message" button refs
+- Connect/Message button info
 - Navigation tabs (Posts, Activity, etc.)
 
-### What's NOT visible in snapshots
-- High-resolution image URLs (require JavaScript to extract)
-- Detailed experience entries (may need to click "Show more")
-- Email addresses (hidden until connected)
-- Full "About" section (often truncated)
+## Extracting Profile Photo (Best Method)
 
+The highest resolution photo is in the profile photo modal. This method works for both your own profile and other people's profiles.
 
-## Opening Profile Photo Modal
+```bash
+# 1. Click the profile photo button to open modal
+node scripts/click.js --selector "button[aria-label='open profile picture']"
 
-You can navigate to the profile photo modal, but extracting the high-res URL requires JavaScript.
+# 2. Wait for modal, extract 800x800 image URL
+node scripts/wait.js --time 1500
+node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
 
-**What you CAN do:**
-
-```
-1. browser_snapshot
-2. Find profile photo button (look for "profile photo" or image near top)
-3. CHECKPOINT: "Found profile photo element at ref [X]"
-4. browser_click ref=[X]
-5. browser_wait_for time=2
-6. browser_snapshot
-7. CHECKPOINT: "Modal opened" or "Modal did not open"
+# 3. Download actual file (not screenshot) using browser auth
+node scripts/download.js --url "<url-from-step-2>" --output ~/profile-photo.jpg
 ```
 
-**What you CANNOT do:**
-- Extract the actual image URL from the modal (requires `document.querySelector`)
-- Download the image programmatically
+This gets the actual JPEG file at full resolution, not a re-encoded screenshot.
 
-**Alternative:** If user needs the profile photo, instruct them to:
-1. Right-click the image in the modal
-2. Select "Copy image address" or "Save image as"
+**Why this selector:** The `aria-label` selector is reliable across profile types (your own vs. others). Class-based selectors like `button.profile-photo-edit__edit-btn` only appear on your own profile's edit mode.
 
+**Confirmation:** When the modal opens, the URL changes to include `/overlay/photo/`.
 
-## Extracting Visible Profile Data
+## Extracting Structured Data
 
-From snapshots, you can extract:
+```bash
+# Get name
+node scripts/execute.js --code "document.querySelector('h1')?.innerText"
 
-**Name and headline:**
-- Look for heading text at top of snapshot
-- Headline usually follows name
+# Get headline
+node scripts/execute.js --code "document.querySelector('.text-body-medium')?.innerText"
 
-**Current position:**
-- Look for company name near headline
-- May include job title
-
-**Connection status:**
-- Look for "Connect", "Message", "Follow", or "Pending" buttons
-
-**Example checkpoint:**
+# Get all experience entries
+node scripts/execute.js --code "Array.from(document.querySelectorAll('.experience-item')).map(e => e.innerText)"
 ```
-CHECKPOINT: "Profile data from snapshot:
-- Name: John Smith
-- Headline: VP of Engineering at TechCorp
-- Has 'Message' button (already connected)"
-```
-
 
 ## Interacting with Profile Elements
 
 ### Send connection request
 
-```
-1. browser_snapshot
-2. Find "Connect" button ref
-3. browser_click ref=[connect button]
-4. browser_wait_for time=1
-5. browser_snapshot
-6. Look for "Add a note" or "Send" button
-7. browser_click to send (or click "Add a note" first)
+```bash
+node scripts/click.js --text "Connect"
+node scripts/wait.js --time 1000
+node scripts/snapshot.js
+# Look for "Send" or "Add a note" in snapshot
+node scripts/click.js --text "Send"
 ```
 
 ### View full experience
 
+```bash
+node scripts/click.js --text "Show all"
+node scripts/wait.js --time 1000
+node scripts/snapshot.js
 ```
-1. browser_snapshot
-2. Look for "Show all experiences" or similar link
-3. browser_click ref=[show more link]
-4. browser_wait_for time=1
-5. browser_snapshot
-6. CHECKPOINT: "Expanded experience section visible"
-```
-
 
 ## Known Quirks
 
-### Profile photo button varies
-Sometimes it's a `button`, sometimes an `img` wrapped in a clickable container. Look for:
-- Elements near the top-left of the profile
-- Elements with "photo" or "image" in their accessible name
+**Content loads dynamically:** Always wait after navigation before taking snapshot.
 
-### Content loads dynamically
-After initial page load, some sections load asynchronously. Always use `browser_wait_for` with expected text before snapshotting.
+**Modal structure:** When modal opens, use `[role="dialog"]` to query modal-specific selectors.
 
-### Modal structure
-When a modal opens, the snapshot will show the modal content overlaying the page. Look for dialog or modal elements in the accessibility tree.
+**Rate limiting:** If you see blank pages or errors, STOP and wait. Tell user about rate limiting.
 
-### Rate limiting
-LinkedIn may throttle or block if you make too many requests. If you encounter:
-- Blank pages
-- "Something went wrong" errors
-- Repeated login prompts
+**Photo modal URL:** When the profile photo modal opens, the URL changes to include `/overlay/photo/`. Use this to confirm the modal opened.
 
-STOP and wait before continuing. Inform user of rate limiting.
-
-
-## Common Failures and Fixes
+## Common Failures
 
 | Failure | Cause | Fix |
 |---------|-------|-----|
-| Profile not found | Wrong URL format | Ensure URL starts with `linkedin.com/in/` |
-| Content missing | Page still loading | Use `browser_wait_for` with expected text |
-| Click does nothing | Wrong element ref | Re-snapshot, find correct ref |
-| Modal won't open | Element obscured | Look for cookie banner, dismiss first |
-| Logged out unexpectedly | Session expired | User must log in again |
+| Profile not found | Wrong URL | Ensure URL starts with `linkedin.com/in/` |
+| Content missing | Still loading | Use `wait.js --time 2000` after navigation |
+| Click does nothing | Wrong selector | Use snapshot to find correct element |
+| Photo button timeout | Class-based selector | Use `button[aria-label='open profile picture']` |
+| Logged out | Session expired | User must log in again |
 
+## Example: Full Profile Extraction
 
-## Example: Profile Data Extraction Workflow
+```bash
+# 1. Navigate
+node scripts/navigate.js https://www.linkedin.com/in/username/
 
+# 2. Wait for load
+node scripts/wait.js --time 2000
+
+# 3. Extract basic data via JavaScript
+node scripts/execute.js --code "({
+  name: document.querySelector('h1')?.innerText,
+  headline: document.querySelector('.text-body-medium')?.innerText
+})"
+
+# 4. Screenshot for reference
+node scripts/screenshot.js --output ./linkedin-profile.png
 ```
-1. browser_navigate: https://www.linkedin.com/in/username/
-2. browser_wait_for: text="Experience" (indicates profile loaded)
-3. browser_snapshot
-   CHECKPOINT: "Page loaded. Found:
-   - Name: Jane Doe
-   - Headline: Product Manager at StartupCo
-   - Location: San Francisco Bay Area
-   - Connect button at ref e423"
 
-4. Report extracted data to user
+## Example: Download High-Res Profile Photo
+
+```bash
+# 1. Navigate to profile
+node scripts/navigate.js https://www.linkedin.com/in/username/
+node scripts/wait.js --time 2000
+
+# 2. Open photo modal
+node scripts/click.js --selector "button[aria-label='open profile picture']"
+node scripts/wait.js --time 1500
+
+# 3. Extract high-res URL
+node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
+
+# 4. Download the file (use URL from step 3)
+node scripts/download.js --url "<url-from-step-3>" --output ./profile-photo.jpg
 ```
 
-**For photo extraction, inform user:**
-"I can navigate to the profile and open the photo modal, but extracting the image URL requires JavaScript which isn't available in MCP browser tools. You can right-click the image to save it, or I can write a Playwright script for automated extraction."
+This downloads the actual 800x800 JPEG, not a screenshot.

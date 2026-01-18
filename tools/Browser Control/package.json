@@ -1,0 +1,13 @@
+{
+  "name": "browser-control",
+  "version": "1.0.0",
+  "description": "Browser automation via Playwright",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/session.js start",
+    "stop": "node scripts/session.js stop"
+  },
+  "dependencies": {
+    "playwright": "^1.50.0"
+  }
+}

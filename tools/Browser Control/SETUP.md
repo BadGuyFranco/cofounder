@@ -1,90 +1,111 @@
 # Browser Control Setup
 
-**Windows users:** Terminal commands in the Playwright section below must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
 
-## MCP Browser Tools (Built into Cursor)
+## Prerequisites
 
-MCP browser tools require the **Browser MCP server** to be enabled in Cursor.
-
-### Setup Steps
-
-**Tell the user to do these steps manually:**
-
-1. Open Cursor Settings ("CMD SHIFT J" on Mac, "CTRL SHIFT J" on Windows), or click the gear icon at top right and choose "Cursor Settings"
-2. Go to **Tools & MCP**
-3. Find **Browser Automation** and enable **Browser Tab**
-4. Restart Cursor if prompted
-5. Type "done" in the chat when complete
-
-**Wait for the user to confirm before proceeding to Playwright setup.**
-
-### Troubleshooting
-
-**"MCP server not found" or similar error:**
-- Verify cursor-ide-browser is enabled in settings
-- Restart Cursor
-- Check Cursor's MCP server logs for errors
-
-**Browser tools still don't work:**
-- Some Cursor versions may require updating to support MCP browser tools
-- Check for Cursor updates
-
-## Playwright Scripts (External Automation)
-
-For automation scripts that run outside Cursor. Requires Node.js and Playwright.
-
-### Prerequisites
-
-First, verify Node.js is installed:
+Verify Node.js is installed:
 
 ```bash
 node --version
 ```
 
-If you see "command not found", follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If "command not found": Follow `/cofounder/system/installer/dependencies/nodejs.md` first, then return here.
+- If you see a version (e.g., `v20.x.x`): Continue to Step 1.
 
-### Setup Steps
+## Step 1: Install Dependencies
 
-1. Create automation directory and install Playwright:
-   ```bash
-   mkdir -p ~/playwright-automation
-   cd ~/playwright-automation
-   npm init -y
-   npm install playwright
-   npx playwright install chromium
-   ```
-
-### Verify Setup
+Navigate to the Browser Control directory and install:
 
 ```bash
-cd ~/playwright-automation
-node -e "const { chromium } = require('playwright'); console.log('Playwright installed successfully');"
+cd "$(dirname "$(find ~ -path '*/cofounder/tools/Browser Control' -type d 2>/dev/null | head -1)")/cofounder/tools/Browser Control"
+npm install
 ```
 
-### Troubleshooting
+Or if you know your cofounder path:
 
-**"Cannot find module 'playwright'":**
 ```bash
-cd ~/playwright-automation
-npm install playwright
+cd /path/to/cofounder/tools/Browser\ Control
+npm install
 ```
 
-**"Executable doesn't exist" or browser not found:**
+**Tell the AI when done.**
+
+## Step 2: Install Chromium
+
+Playwright needs its own Chromium browser:
+
 ```bash
 npx playwright install chromium
 ```
 
-**"node: command not found":**
-Follow `/cofounder/system/installer/dependencies/nodejs.md`
+This downloads Chromium to `~/.cache/ms-playwright/`. It's separate from any Chrome you have installed.
+
+**Tell the AI when done.**
 
 ## Verify Setup
 
-**After completing both MCP and Playwright setup, run this command:**
+Start a browser session:
 
+```bash
+node scripts/session.js start
 ```
-browser_navigate to https://wisermethod.com
+
+You should see Chromium open. Navigate to a test page:
+
+```bash
+node scripts/navigate.js https://wisermethod.com
 ```
 
-If the page opens, tell the user: "Browser Control is ready to use."
+The browser should navigate to wisermethod.com. Take a snapshot to verify reading works:
 
-If it fails, check the Troubleshooting sections above.
+```bash
+node scripts/snapshot.js
+```
+
+You should see structured page content in the terminal.
+
+Stop the session:
+
+```bash
+node scripts/session.js stop
+```
+
+The browser should close.
+
+**Setup complete.** Browser Control is ready to use.
+
+## Troubleshooting
+
+### "Cannot find module 'playwright'"
+
+Run `npm install` in the Browser Control directory.
+
+### "Executable doesn't exist" or browser not found
+
+Run `npx playwright install chromium` to download the browser.
+
+### "Browser session not running"
+
+Start a session first with `node scripts/session.js start`.
+
+### "ECONNREFUSED" errors
+
+The session server isn't running. Start it with `node scripts/session.js start`.
+
+### Browser opens but scripts timeout
+
+The page may be slow to load. Try increasing timeout:
+
+```bash
+node scripts/navigate.js https://example.com --timeout 60000
+```
+
+### Port already in use
+
+Another process is using port 9222. Either stop it or use a different port:
+
+```bash
+node scripts/session.js start --port 9223
+node scripts/navigate.js https://example.com --port 9223
+```

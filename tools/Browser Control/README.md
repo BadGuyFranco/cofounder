@@ -1,48 +1,41 @@
 # Browser Control
 
-Automate web browser interactions for data extraction, form filling, and site monitoring.
+Automate web browsers programmatically using Playwright.
 
-## When to Use
+## What It Does
 
-**Use Browser Control when:**
-- Extracting data from JavaScript-rendered pages
-- Interacting with authenticated sessions (login persists)
-- Automating multi-step web workflows
-- Scraping dynamic content
+- Navigate pages, click, type, scroll
+- Read page content (structured for AI)
+- Handle iframes, tabs, dialogs
+- Download/upload files
+- Manage cookies and storage
+- Screenshot and video recording
+- Device emulation (mobile viewports)
+- Persistent login sessions
 
-**Skip Browser Control when:**
-- Simple HTTP requests work (use curl)
-- User needs to interact manually (just provide URL)
-- API is available (use API directly)
+## How It Works
 
-## Quick Start
-
-Navigate to a page and take a snapshot:
+Browser Control runs a local server managing a Chromium instance. Scripts send commands to the server. The browser stays open between commands so you can watch automation in real-time.
 
 ```
-browser_navigate: https://example.com
-browser_snapshot
+session.js start  →  Launches browser + server
+navigate.js       →  Browser navigates
+click.js          →  Browser clicks
+session.js stop   →  Closes browser + server
 ```
 
-Then interact using element refs from the snapshot.
+## Limitations
+
+- Cannot solve CAPTCHAs (user must intervene)
+- Cannot bypass login walls (user must authenticate)
+- Chromium only (Firefox/WebKit not supported)
 
 ## Documentation
 
-- **AGENTS.md** - Complete AI agent instructions (MCP tools, patterns, strategies)
-- **SETUP.md** - Installation and configuration for MCP browser tools and Playwright
-- **sites/** - Site-specific guides with domain quirks
-
-## Site Guides
-
-| Site | Guide | Key Patterns |
-|------|-------|--------------|
-| LinkedIn | `sites/LinkedIn.md` | Modal clicks, high-res photos, rate limits |
-| Google Sheets | `sites/Google Sheets.md` | Iframe handling, table extraction |
-| PodMatch | `sites/PodMatch.md` | Direct image extraction |
-
-## Key Concepts
-
-**Checkpoint Pattern**: Always verify actions succeeded before proceeding.  
-**Snapshot First**: Take accessibility snapshot before any interaction.  
-**Verify After**: Re-snapshot after clicks that should change page state.  
-**Retry Logic**: Maximum 2 attempts, then hard stop and report failure.
+| File | Purpose |
+|------|---------|
+| SETUP.md | Installation |
+| AGENTS.md | AI agent instructions |
+| DEVELOPMENT.md | Extension and customization |
+| scripts/*.js help | Per-script usage details |
+| sites/*.md | Site-specific patterns |
