@@ -7,7 +7,7 @@ How to build new connectors for the cofounder library.
 
 **Note:** `.cursor/rules/Development.mdc` auto-loads when working on connectors. See it for quick reference.
 
-**Windows compatibility:** All SETUP.md files and bash commands must include a note that Windows users need Git Bash. Add this line near the top: `**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.`
+**Windows compatibility:** All commands use bash syntax. The workspace file automatically routes terminal commands through Git Bash on Windows (see `Continue Install.md` Step 5). SETUP.md files may include a Git Bash note for users troubleshooting outside the IDE.
 
 ## Step 0: Planning Phase (Required)
 
