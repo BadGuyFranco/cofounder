@@ -2,17 +2,14 @@
 
 The installer cloned CoFounder. Now let's set up your workspace.
 
-**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
-
 ## Step 1: Clean Up and Create Folders
 
-Delete the `.vscode` folder in the workspace root if it exists (this was a temporary file created during install; the workspace file in Step 5 handles terminal settings permanently).
+Delete the `.vscode` folder in the workspace root if it exists (use the IDE's file explorer or delete tool, not terminal).
 
-Create the memory and workspaces folders as siblings to cofounder/:
+Then create the memory and workspaces folders as siblings to cofounder/:
 
 ```bash
-mkdir -p memory
-mkdir -p workspaces
+mkdir -p memory && mkdir -p workspaces
 ```
 
 ## Step 2: Configure Windsurf (If Applicable)
@@ -35,26 +32,10 @@ Create a global rule memory with these exact values:
 
 ## Step 3: Initialize Memory Structure
 
-Now populate memory with the required structure.
-
-Create these directories:
+Create directories and copy template files:
 
 ```bash
-mkdir -p memory/tools/Content\ Author/Writing\ Samples
-mkdir -p memory/connectors
-mkdir -p memory/my\ tools
-mkdir -p memory/my\ connectors
-mkdir -p memory/plans
-mkdir -p memory/system
-```
-
-Copy template files:
-
-```bash
-cp cofounder/system/templates/Memory\ Templates/README.md memory/README.md
-cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md
-cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md
-cp cofounder/system/version.txt memory/system/version.txt
+mkdir -p memory/tools/Content\ Author/Writing\ Samples && mkdir -p memory/connectors && mkdir -p memory/my\ tools && mkdir -p memory/my\ connectors && mkdir -p memory/plans && mkdir -p memory/system && cp cofounder/system/templates/Memory\ Templates/README.md memory/README.md && cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md && cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md && cp cofounder/system/version.txt memory/system/version.txt
 ```
 
 ## Step 4: Create Personal Workspace
@@ -75,9 +56,10 @@ Update the AGENTS.md file, replacing `[Your Name]` with their actual name.
 
 ## Step 5: Create Workspace File
 
-In the workspaces/ folder, create `[name].code-workspace`:
+Create the workspace file using this command (replace `[name]` with the user's actual name):
 
-```json
+```bash
+cat > workspaces/[name].code-workspace <<'EOF'
 {
   "folders": [
     { "path": "../cofounder" },
@@ -95,11 +77,10 @@ In the workspaces/ folder, create `[name].code-workspace`:
     }
   }
 }
+EOF
 ```
 
-Replace `[name]` with the user's actual name in both the filename and the path.
-
-The `settings` block ensures Windows users always use Git Bash for terminal commands. This setting is harmless on Mac/Linux.
+Replace `[name]` with the user's actual name in both the filename and the path inside the JSON.
 
 After creating the workspace file, tell the user:
 
