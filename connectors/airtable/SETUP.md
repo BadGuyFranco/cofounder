@@ -100,6 +100,8 @@ If your token is compromised:
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"Token starts with 'key'":** You're using a deprecated API key. Create a Personal Access Token instead.
 
 **"Cannot see my base":** Token wasn't granted access to that base. Edit token and add the base.

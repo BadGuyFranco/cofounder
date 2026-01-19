@@ -77,6 +77,8 @@ Your token inherits your Monday.com permissions:
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"Not Authenticated":**
 - Token may be expired or invalid
 - Regenerate your token in Monday.com

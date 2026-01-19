@@ -63,6 +63,10 @@ cd "/cofounder/tools/[Tool Name]" && npm install
 
 Expected output: [What success looks like]
 
+## Troubleshooting
+
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 <!-- 
 TEMPLATE INSTRUCTIONS:
 1. Replace all [Tool Name] with your tool's name

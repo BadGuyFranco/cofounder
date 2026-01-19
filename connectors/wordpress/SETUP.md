@@ -117,6 +117,8 @@ node scripts/posts.js list --site myshop
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **Application Passwords not showing:**
 - Ensure WordPress 5.6+
 - Ensure site uses HTTPS

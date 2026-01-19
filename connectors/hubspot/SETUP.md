@@ -69,6 +69,8 @@ The AI will install dependencies and run the verification. You should see a list
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"Invalid API key":** Double-check the token was copied correctly. It should start with `pat-`.
 
 **"Insufficient permissions":** Go back to your Private App settings and add the required scopes.

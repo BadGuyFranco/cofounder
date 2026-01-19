@@ -95,6 +95,8 @@ If you see "Forbidden to use token authorization for this organization", that en
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"401 Unauthorized" errors:**
 - Verify your API token in the `.env` file
 - Check the token hasn't been revoked in Make.com

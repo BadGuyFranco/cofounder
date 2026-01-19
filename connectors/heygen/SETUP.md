@@ -108,6 +108,8 @@ If your token is compromised or lost:
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"API not enabled":** API access requires a paid plan. Upgrade your HeyGen subscription.
 
 **"Token not working":** Token may have been regenerated. Create a new one and update the config.

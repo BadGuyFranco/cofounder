@@ -109,6 +109,12 @@ Publer allows 100 API requests per 2 minutes per user. The connector handles rat
 
 ## Troubleshooting
 
+### "node: command not found" or "npm: command not found"
+
+Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section.
+
+Quick fix: Run `conda activate` first, then retry the command.
+
 ### "401 Unauthorized"
 - API key is invalid or expired
 - Solution: Generate a new key in Publer Settings

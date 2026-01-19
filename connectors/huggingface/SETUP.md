@@ -82,3 +82,7 @@ If your token is compromised:
 2. Delete the compromised token
 3. Create a new token
 4. Provide the new token to the AI
+
+## Troubleshooting
+
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.

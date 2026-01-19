@@ -426,6 +426,12 @@ https://www.googleapis.com/auth/calendar.readonly
 
 ## Troubleshooting
 
+### "node: command not found" or "npm: command not found"
+
+Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section.
+
+Quick fix: Run `conda activate` first, then retry the command.
+
 ### OAuth Issues
 
 **"Access blocked: This app's request is invalid"**

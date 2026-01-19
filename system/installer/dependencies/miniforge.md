@@ -59,7 +59,11 @@ fi
 If the above says "Please restart Git Bash", do that. Otherwise, download and run the installer:
 
 ```bash
-curl -fsSL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe -o /tmp/miniforge.exe && cmd.exe //c "$(cygpath -w /tmp/miniforge.exe) /InstallationType=JustMe /RegisterPython=0 /S /D=%USERPROFILE%\\miniforge3"
+curl -fsSL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe -o /tmp/miniforge.exe
+```
+
+```bash
+cmd.exe //c "$(cygpath -w /tmp/miniforge.exe)" /InstallationType=JustMe /RegisterPython=0 /S /D=%USERPROFILE%\\miniforge3
 ```
 
 After installation, close and reopen Git Bash.

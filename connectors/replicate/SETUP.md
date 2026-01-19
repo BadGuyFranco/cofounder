@@ -100,6 +100,8 @@ If your token is compromised:
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"Invalid API token":** Token was copied incorrectly or has been deleted. Generate a new one.
 
 **"Payment required":** Some models require a credit card on file. Add payment at https://replicate.com/account/billing

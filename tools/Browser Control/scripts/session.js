@@ -75,8 +75,8 @@ async function startSession(flags) {
   const serverArgs = ['--port', String(port), '--profile', profileName];
   if (flags.headless) serverArgs.push('--headless');
 
-  // Start server as detached process
-  const child = spawn('node', [serverPath, ...serverArgs], {
+  // Start server as detached process (use process.execPath for cross-platform compatibility)
+  const child = spawn(process.execPath, [serverPath, ...serverArgs], {
     detached: true,
     stdio: 'ignore'
   });

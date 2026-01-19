@@ -98,6 +98,8 @@ For full connector functionality, enable contacts and opportunities scopes.
 
 ## Troubleshooting
 
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
+
 **"Unauthorized" errors:**
 - Verify the API key in your `.env` file
 - Check that required scopes are enabled on the key

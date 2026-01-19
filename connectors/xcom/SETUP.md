@@ -184,6 +184,12 @@ The Free tier still has monthly limits, but now requires credit purchases for ac
 
 ## Troubleshooting
 
+### "node: command not found" or "npm: command not found"
+
+Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section.
+
+Quick fix: Run `conda activate` first, then retry the command.
+
 ### "Generate" button not visible for Access Token
 You haven't completed User Authentication setup (Step 3). Go to App Settings > User authentication settings > Set up.
 

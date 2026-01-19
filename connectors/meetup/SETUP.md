@@ -128,3 +128,7 @@ Done when you see: `[OK] Token is valid`
 ## Token Management
 
 Tokens expire after 1 hour. Refresh with: `node scripts/auth.js refresh`
+
+## Troubleshooting
+
+**"node: command not found" or "npm: command not found":** Node.js is not in your PATH. See `/cofounder/system/installer/dependencies/nodejs.md` troubleshooting section. Quick fix: Run `conda activate` first, then retry.
