@@ -8,23 +8,13 @@ Locate the `/cofounder/` directory in the current workspace. This is where the u
 
 ## Step 2: Run Update Command
 
-Detect the operating system and run git pull from the cofounder directory.
-
-**Mac/Linux:**
+Run git pull from the cofounder directory:
 
 ```bash
 cd "COFOUNDER_PATH" && git pull
 ```
 
-**Windows (must use Git Bash):**
-
-```bash
-"C:\Program Files\Git\bin\bash.exe" -c "cd 'COFOUNDER_PATH' && git pull"
-```
-
 Replace `COFOUNDER_PATH` with the actual path to the cofounder directory.
-
-For Windows, convert the path to Git Bash format. Example: `/c/Users/Name/Documents/CoFounder/cofounder`
 
 ## Step 3: Confirm
 
@@ -52,7 +42,7 @@ cd "COFOUNDER_PATH" && git remote set-url origin "https://x:NEW_API_KEY@cofounde
 
 ### "Permission denied" on Windows
 
-Ensure the command runs in Git Bash, not PowerShell or cmd.
+Verify the workspace file has the Git Bash terminal settings configured (see Continue Install.md Step 5).
 
 ### "fatal: not a git repository"
 
