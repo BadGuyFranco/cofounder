@@ -12,7 +12,7 @@ CoFounder uses AI tools that operate with **minimal safety guardrails**. This me
 
 2. **AI outputs require verification.** AI systems generate content that may be inaccurate or fabricated. Never blindly trust AI outputs.
 
-3. **You must review every action.** Cursor shows you what the AI wants to do. Read carefully. Approve only what you understand.
+3. **You must review every action.** This app shows you what the AI intends to do. Read carefully.
 
 4. **You are responsible for the results.** First Strategy LLC provides these tools "as is" with no warranty.
 
@@ -37,7 +37,7 @@ Take your time. This is the most important part of setup.
 
 ### Open Your Workspace
 
-1. Close this Cursor window
+1. Quit this app
 2. Open `/workspaces/[your name].code-workspace` (double-click in Finder/Explorer)
 3. This loads all your folders together
 

@@ -12,7 +12,7 @@ Before running terminal commands, check if the active `.code-workspace` file has
   "terminal.integrated.defaultProfile.windows": "Git Bash",
   "terminal.integrated.profiles.windows": {
     "Git Bash": {
-      "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "path": "C:\\Progra~1\\Git\\bin\\bash.exe",
       "icon": "terminal-bash"
     }
   }

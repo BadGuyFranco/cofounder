@@ -15,18 +15,23 @@ mkdir -p memory
 mkdir -p workspaces
 ```
 
-## Step 2: Configure Windsurf (Windsurf IDE Only)
+## Step 2: Configure Windsurf (If Applicable)
 
-**This instruction is only for the Windsurf IDE. If any other IDE, please skip this step.**
+First, detect the IDE by running:
 
-Windsurf doesn't use `.cursor/rules` like Cursor does. Create a global rule memory to ensure CoFounder's core rules are always active.
+```bash
+env | grep -iE "(cursor|windsurf)" | head -5
+```
 
-**Create a global rule memory with:**
+- If result contains "cursor" or CURSOR_* env vars: **Skip this step.** Continue to Step 3.
+- If no matches (VS Code or other): **Skip this step.** Continue to Step 3.
+- If result contains "windsurf" or WINDSURF_* env vars: **Continue below.**
+
+Create a global rule memory with these exact values:
+
 - **Title:** Always Apply System Rules
 - **Content:** Always load and follow `/cofounder/.cursor/rules/Always Apply.mdc` before any task execution. This file contains core collaboration principles, tool routing, and operational standards that never break. The `alwaysApply: true` flag in YAML frontmatter makes these rules absolute across all workspaces.
 - **Tags:** `["global_rule", "hard_rule", "cofounder"]`
-
-This ensures CoFounder's core rules are always active in Windsurf, just like they are in Cursor.
 
 ## Step 3: Initialize Memory Structure
 
@@ -84,7 +89,7 @@ In the workspaces/ folder, create `[name].code-workspace`:
     "terminal.integrated.defaultProfile.windows": "Git Bash",
     "terminal.integrated.profiles.windows": {
       "Git Bash": {
-        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "path": "C:\\Progra~1\\Git\\bin\\bash.exe",
         "icon": "terminal-bash"
       }
     }
@@ -98,7 +103,7 @@ The `settings` block ensures Windows users always use Git Bash for terminal comm
 
 After creating the workspace file, tell the user:
 
-"Congratulations! You just completed the hardest part. You're now officially a 'computer nerd' who can tell your friends you're using Cursor and installed CoFounder to write AI content. Welcome to the club."
+"Congratulations! You just completed the hardest part. You're now officially a 'computer nerd' who can tell your friends you're using an AI IDE and installed CoFounder to write AI content. Welcome to the club."
 
 Then ask:
 
@@ -114,7 +119,7 @@ If the user wants to come back later, end the session.
 
 ### "Permission denied" creating folders
 
-The parent folder may not allow writes. Create the folders manually in Finder (Mac) or Explorer (Windows), then tell Cursor to continue.
+The parent folder may not allow writes. Create the folders manually in Finder (Mac) or Explorer (Windows), then tell the AI to continue.
 
 ### Memory directory already exists
 
