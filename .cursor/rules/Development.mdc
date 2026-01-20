@@ -57,3 +57,9 @@ const memoryPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors
 ```
 
 **Before committing:** Search for your email/username in changed files to catch accidental leaks.
+
+## Versioning
+
+When committing changes to `/cofounder/`, update `/cofounder/system/version.txt` to today's date (YYYY-MM-DD format).
+
+If the change requires users to update their `/memory/` folder, also create a migration file in `/cofounder/system/migrations/` following the naming convention `YYYY-MM-DD-description.md`.
