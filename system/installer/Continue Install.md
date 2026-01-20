@@ -12,23 +12,35 @@ Then create the memory and workspaces folders as siblings to cofounder/:
 mkdir -p memory && mkdir -p workspaces
 ```
 
-## Step 2: Configure Windsurf (If Applicable)
+## Step 2: Configure IDE
 
 First, detect the IDE by running:
 
 ```bash
-env | grep -iE "(cursor|windsurf)" | head -5
+env | grep -iE "(cursor|windsurf|antigravity)" | head -5
 ```
 
 - If result contains "cursor" or CURSOR_* env vars: **Skip this step.** Continue to Step 3.
 - If no matches (VS Code or other): **Skip this step.** Continue to Step 3.
-- If result contains "windsurf" or WINDSURF_* env vars: **Continue below.**
+- If result contains "windsurf" or WINDSURF_* env vars: **Follow Windsurf instructions below.**
+- If result contains "antigravity" or ANTIGRAVITY_* env vars: **Follow Antigravity instructions below.**
+
+### Windsurf instructions
 
 Create a global rule memory with these exact values:
 
 - **Title:** Always Apply System Rules
 - **Content:** Always load and follow `/cofounder/.cursor/rules/Always Apply.mdc` before any task execution. This file contains core collaboration principles, tool routing, and operational standards that never break. The `alwaysApply: true` flag in YAML frontmatter makes these rules absolute across all workspaces.
 - **Tags:** `["global_rule", "hard_rule", "cofounder"]`
+
+### Antigravity instructions
+
+Open (or create) the file:
+~/.gemini/GEMINI.md
+and write this instruction in it
+Always Apply System Rules
+- **Content:** Always load and follow `/cofounder/.cursor/rules/Always Apply.md` before any task execution. This file contains core collaboration principles, tool routing, and operational standards that never break. The `alwaysApply: true` flag in YAML frontmatter makes these rules absolute across all workspaces.
+
 
 ## Step 3: Initialize Memory Structure
 
