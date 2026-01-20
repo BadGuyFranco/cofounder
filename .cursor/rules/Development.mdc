@@ -12,6 +12,8 @@ alwaysApply: false
 
 **Routing:** Check path. If `tools/` → see `tools/DEVELOPMENT.md`. If `connectors/` → see `connectors/DEVELOPMENT.md`.
 
+**Versioning:** Before committing changes to `/cofounder/`, follow `/cofounder/system/migrations/README.md` "Creating Migrations" section.
+
 ## Tool Quick Reference
 
 **Required files:** AGENTS.md, README.md
@@ -57,7 +59,3 @@ const memoryPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors
 ```
 
 **Before committing:** Search for your email/username in changed files to catch accidental leaks.
-
-## Versioning
-
-Before committing changes to `/cofounder/`, follow `/cofounder/system/migrations/README.md` "Creating Migrations" section.
