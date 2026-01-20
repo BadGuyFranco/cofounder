@@ -8,7 +8,7 @@ Locate the `/cofounder/` directory in the current workspace. This is where the u
 
 ## Step 2: Run Update Command
 
-Run git pull from the cofounder directory:
+Run git pull from the cofounder directory. Always run this command; do not skip based on `git status` output.
 
 ```bash
 cd "COFOUNDER_PATH" && git pull
