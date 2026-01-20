@@ -1,5 +1,17 @@
 # Browser Control Setup
 
+## Before Starting
+
+**STOP.** Tell the user the following and do not proceed until they confirm:
+
+> This setup installs a dedicated browser that the AI can control to navigate websites, take screenshots, and interact with web pages on your behalf. It will not affect your regular browser.
+>
+> **Estimated time:** 5 minutes
+>
+> Are you ready?
+
+Do not continue past this point until the user responds.
+
 **Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
 
 ## Prerequisites
@@ -65,15 +77,7 @@ node scripts/snapshot.js
 
 You should see structured page content in the terminal.
 
-Stop the session:
-
-```bash
-node scripts/session.js stop
-```
-
-The browser should close.
-
-**Setup complete.** Browser Control is ready to use.
+**Setup complete.** Browser Control is ready to use. The browser window will remain open for your use.
 
 ## Troubleshooting
 
