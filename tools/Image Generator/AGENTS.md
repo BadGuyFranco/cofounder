@@ -2,6 +2,10 @@
 
 Route image generation and editing requests to the appropriate service.
 
+## Output Location
+
+There is no default save location. Ask the user where to save generated images before proceeding.
+
 ## Path Resolution
 
 `/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
@@ -142,18 +146,18 @@ User can override by specifying service in their request.
 
 **Aspect ratio handling:** If user specifies dimensions (e.g., 1920x1080), calculate the closest supported aspect ratio.
 
-**Replicate command:**
+**Replicate:**
 ```bash
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/nano-banana-pro \
   --input '{"prompt": "YOUR_PROMPT", "aspect_ratio": "16:9"}' \
-  --download ./images
+  --download /user/specified/path
 ```
 
-**Google AI command:**
+**Google AI:**
 ```bash
 cd "/cofounder/connectors/google"
-node scripts/ai.js image "YOUR_PROMPT" --aspect-ratio 16:9 --output ./image.png
+node scripts/ai.js image "YOUR_PROMPT" --aspect-ratio 16:9 --output /user/specified/image.png
 ```
 
 See `processes/Replicate.md` and `processes/Google.md` for detailed instructions.

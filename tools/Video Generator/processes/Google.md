@@ -24,7 +24,7 @@ GOOGLE_AI_API_KEY=your_gemini_api_key
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "your prompt"}' \
-  --download ./videos
+  --download /path/to/output
 ```
 
 This provides access to the same Veo models with better reliability.
@@ -33,7 +33,7 @@ This provides access to the same Veo models with better reliability.
 
 ```bash
 cd "/cofounder/connectors/google"
-node scripts/ai.js video "your prompt here" --output ./video.mp4
+node scripts/ai.js video "your prompt here" --output /path/to/video.mp4
 ```
 
 **Note:** This may return an error about limited preview availability.
@@ -44,9 +44,9 @@ Replicate hosts Google's Veo models with full API access:
 
 | Model | Command |
 |-------|---------|
-| Veo 3.1 | `node scripts/predictions.js run google/veo-3.1 --input '{"prompt": "..."}' --download ./` |
-| Veo 3 | `node scripts/predictions.js run google/veo-3 --input '{"prompt": "..."}' --download ./` |
-| Veo 2 | `node scripts/predictions.js run google/veo-2 --input '{"prompt": "..."}' --download ./` |
+| Veo 3.1 | `node scripts/predictions.js run google/veo-3.1 --input '{"prompt": "..."}' --download /path` |
+| Veo 3 | `node scripts/predictions.js run google/veo-3 --input '{"prompt": "..."}' --download /path` |
+| Veo 2 | `node scripts/predictions.js run google/veo-2 --input '{"prompt": "..."}' --download /path` |
 
 ## When to Use Direct Google AI
 

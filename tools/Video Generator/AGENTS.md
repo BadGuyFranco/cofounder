@@ -2,6 +2,10 @@
 
 Route video generation and editing requests to the appropriate service.
 
+## Output Location
+
+There is no default save location. Ask the user where to save generated videos before proceeding.
+
 ## Path Resolution
 
 `/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
@@ -139,12 +143,11 @@ User can override by specifying service in their request.
 
 **Best practice:** For highest quality, first generate an image using Image Generator, then animate it.
 
-**Command:**
 ```bash
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "YOUR_PROMPT"}' \
-  --download ./videos
+  --download /user/specified/path
 ```
 
 See `processes/Replicate.md` for detailed instructions.
@@ -155,11 +158,10 @@ See `processes/Replicate.md` for detailed instructions.
 
 **When:** User provides an image and wants to animate it into a video.
 
-**Command:**
 ```bash
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "subtle motion description", "first_frame_image": "https://..."}' \
-  --download ./videos
+  --download /user/specified/path
 ```
 
 ### Edit an Existing Video
@@ -168,7 +170,6 @@ node scripts/predictions.js run google/veo-3.1 \
 
 **When:** User wants to trim, crop, resize, concatenate, add text overlays, adjust speed, or convert format of an existing video.
 
-**Command:**
 ```bash
 cd "/cofounder/tools/Video Generator"
 node scripts/local-video-edit.js [options]
@@ -196,14 +197,14 @@ When user requests a video without providing an image:
    cd "/cofounder/connectors/replicate"
    node scripts/predictions.js run google/nano-banana-pro \
      --input '{"prompt": "detailed scene description", "aspect_ratio": "16:9"}' \
-     --download ./images
+     --download /user/specified/image/path
    ```
 
 2. **Use that image for video generation:**
    ```bash
    node scripts/predictions.js run google/veo-3.1 \
      --input '{"prompt": "motion description", "first_frame_image": "https://...or-local-path"}' \
-     --download ./videos
+     --download /user/specified/video/path
    ```
 
 This two-step approach provides better quality and more control than direct text-to-video.

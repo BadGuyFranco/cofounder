@@ -19,12 +19,12 @@ GOOGLE_AI_API_KEY=your_gemini_api_key
 
 ```bash
 cd "/cofounder/connectors/google"
-node scripts/ai.js image "your prompt here" --output ./image.png
+node scripts/ai.js image "your prompt here" --output /path/to/image.png
 ```
 
 **With aspect ratio:**
 ```bash
-node scripts/ai.js image "your prompt here" --aspect-ratio 16:9 --output ./landscape.png
+node scripts/ai.js image "your prompt here" --aspect-ratio 16:9 --output /path/to/landscape.png
 ```
 
 **With custom output directory:**
@@ -58,8 +58,9 @@ If user requests specific dimensions, calculate the closest supported ratio:
 
 ## Output
 
-- **Default location:** `./generated_images/`
-- **Naming format:** `gemini_[timestamp]_[prompt-excerpt].png`
+Images are saved to the path specified with `--output`.
+
+**Naming format:** `gemini_[timestamp]_[prompt-excerpt].png`
 
 ## Troubleshooting
 

@@ -17,25 +17,17 @@ REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Generate an Image
 
-**Basic generation (uses curated default model):**
 ```bash
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/nano-banana-pro \
   --input '{"prompt": "your prompt here"}' \
-  --download ./images
+  --download /path/to/output
 ```
 
 **With aspect ratio:**
 ```bash
 node scripts/predictions.js run google/nano-banana-pro \
   --input '{"prompt": "your prompt here", "aspect_ratio": "16:9"}' \
-  --download ./images
-```
-
-**With specific output directory:**
-```bash
-node scripts/predictions.js run google/nano-banana-pro \
-  --input '{"prompt": "a professional podcast studio with modern design", "aspect_ratio": "16:9"}' \
   --download /path/to/output
 ```
 
@@ -54,7 +46,7 @@ To use an alternative:
 ```bash
 node scripts/predictions.js run black-forest-labs/flux-1.1-pro \
   --input '{"prompt": "..."}' \
-  --download ./images
+  --download /path/to/output
 ```
 
 ## Supported Aspect Ratios

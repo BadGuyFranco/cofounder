@@ -17,19 +17,18 @@ REPLICATE_API_TOKEN=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Generate a Video (Text-to-Video)
 
-**Using default model:**
 ```bash
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "your prompt here"}' \
-  --download ./videos
+  --download /path/to/output
 ```
 
 **With specific duration:**
 ```bash
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "sunset over the ocean", "duration": 8}' \
-  --download ./videos
+  --download /path/to/output
 ```
 
 ## Generate Video from Image (Image-to-Video)
@@ -39,7 +38,7 @@ Animate a still image:
 ```bash
 node scripts/predictions.js run google/veo-3.1 \
   --input '{"prompt": "subtle breathing motion", "first_frame_image": "https://..."}' \
-  --download ./videos
+  --download /path/to/output
 ```
 
 **Note:** For local images, first upload to a URL or use base64 data URI.
@@ -59,7 +58,7 @@ To use an alternative:
 ```bash
 node scripts/predictions.js run google/veo-3 \
   --input '{"prompt": "..."}' \
-  --download ./videos
+  --download /path/to/output
 ```
 
 ## Check Model Parameters
@@ -80,9 +79,9 @@ Duration varies by model. Check model documentation for specifics:
 
 | Model | Audio | Duration | Reference Images |
 |-------|-------|----------|------------------|
-| `google/veo-3.1` | ✅ | Variable | ✅ Last-frame control |
-| `google/veo-3` | ✅ | ~8s | ✅ |
-| `google/veo-2` | ❌ | ~5s | Limited |
+| `google/veo-3.1` | Yes | Variable | Yes, last-frame control |
+| `google/veo-3` | Yes | ~8s | Yes |
+| `google/veo-2` | No | ~5s | Limited |
 
 ## Output
 
