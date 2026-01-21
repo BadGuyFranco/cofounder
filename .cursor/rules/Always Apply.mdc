@@ -40,7 +40,7 @@ Ask before invoking:
 | Browser automation | `tools/Browser Control/` | navigate, screenshot, click through, open URL, browse to |
 | Complex problem solving | `tools/Problem Solver/` | root cause, diagnose, analyze problem |
 | Marketing frameworks | `tools/Marketing System/` | funnel, offer stack, webinar script, sales page |
-| Create execution plans | `tools/Planner/` | project plan, roadmap, milestones |
+| Create execution plans | `tools/Planner/` | make a plan, plan how to, project plan, roadmap |
 | Research with verified sources | `tools/Researcher/` | research, find sources, verify claims |
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.

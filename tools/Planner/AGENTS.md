@@ -1,6 +1,6 @@
 # Planner
 
-Create persistent execution plans that survive context switches and guide work to completion.
+Create persistent execution plans using the W-I-S-E-R framework for user+AI collaborative work.
 
 ## Activation
 
@@ -12,105 +12,106 @@ Only activate when the user explicitly requests a plan:
 
 When invoked, follow the methodology below.
 
-## Objective
+## The WISER Framework for Planning
 
-Produce plans that are actionable, appropriately detailed for their scope, and resumable in new contexts. Every plan has clear success criteria and a path to completion.
+Every plan follows the W-I-S-E-R structure, making the planning methodology visible to the user:
 
-## Impact Measurement
+| Canon | Purpose | Plan Output |
+|-------|---------|-------------|
+| **Witness** | Ground ourselves in what exists and what we're building | Objective, Scope, Current State, Deliverable |
+| **Interrogate** | Surface unknowns and challenge assumptions | Research needed, assumptions to validate |
+| **Solve** | Build the riskiest piece first to prove feasibility | Highest-risk task, validation criteria |
+| **Expand** | Build out the full task to meet the objective | Remaining tasks organized by dependency |
+| **Refine** | User stress-tests; AI iterates | Feedback loop, iteration tasks |
 
-Planner outputs should:
-- Be executable without additional clarification
-- Match complexity to the work (not over-plan simple tasks)
-- Enable resumption in new context windows without loss of direction
-- Track progress visibly
+**Preconditions** come before W-I-S-E-R. These are prerequisites that must be true before the work begins. Examples: archive before refactoring, ensure API access before integration, backup before migration.
+
+## Plan Storage
+
+**Choose a logical location based on context:**
+- If the plan is for a specific project, store it in that project's directory (e.g., `/project/plans/` or `/project/docs/`)
+- If the plan is for workspace-level work, store it in the relevant workspace
+- If no logical location exists, default to `/memory/plans/`
+
+**Confirm with an assumptive suggestion:**
+> "I'll save this plan to `[logical-location]`. Want a different location?"
+
+**Naming convention:** `YYYY-MM-DD-[descriptive-slug].plan.md`
+
+## Mode Selection
+
+**For technical projects:** Investigate the codebase before generating a plan.
+
+If the user's request is vague, ask clarifying questions. Don't plan from incomplete information.
+
+**Select mode after completing Witness.** Once objective, scope, and current state are established, use these questions:
+
+### Decision Questions
+
+**Question 1: Are there unknowns to surface or risks to prove?**
+- **No** → Sprint (task is well-understood, just execute)
+- **Yes** → Continue to Question 2
+
+**Question 2: Will this finish in one chat session?**
+- **Yes** → Session (full WISER, checkpoints between Canons)
+- **No** → Campaign (full WISER + resume capability)
+
+### Signals to Look For
+
+**Sprint signals:**
+- User can describe all steps upfront
+- No research or exploration needed
+- No architectural decisions to make
+
+**Session signals:**
+- Approach isn't certain
+- Need to investigate before committing
+- Has decision points requiring user input
+
+**Campaign signals:**
+- User mentions "over time" or "multiple sessions"
+- Large scope (multiple features/systems)
+- Work has been interrupted before and lost context
+
+**Default:** Session (most common case)
 
 ## Live Progress Tracking
 
-**During plan execution, use `todo_write` to show progress in Cursor's UI.**
+**During execution, use `todo_write` to show progress in Cursor's UI.**
 
-When executing a plan:
-1. Create todos for major steps (phases for Session, milestones for Campaign)
-2. Mark todos `in_progress` as you work on them
-3. Mark todos `completed` when done
-4. Keep only one todo `in_progress` at a time
+**For Sprint mode:**
+- Create todos for major task groups
+- Keep it simple; Sprint is lightweight
 
-This gives the user a visible progress indicator without needing to check the plan file.
+**For Session and Campaign modes:**
+- Create one todo per Canon as you enter it
+- Mark `in_progress` when working on a Canon
+- Mark `completed` when moving to the next
 
-**Example for Session mode:**
+Example:
 ```
-Phase 1: Setup infrastructure     [completed]
-Phase 2: Implement core logic     [in_progress]
-Phase 3: Add tests and docs       [pending]
+Witness: Establish objective and scope     [completed]
+Interrogate: Surface unknowns              [completed]
+Solve: Build riskiest piece                [in_progress]
+Expand: Build remaining tasks              [pending]
+Refine: User testing and iteration         [pending]
 ```
-
-**Keep todos high-level.** Individual tasks within a phase don't need separate todos; the plan file tracks those.
 
 ## Quality Checks
 
 Before delivering a plan:
+- [ ] Preconditions identified (or explicitly "None")
+- [ ] Witness section complete (objective, scope, current state)
 - [ ] Mode matches task complexity
-- [ ] Every step is actionable (starts with a verb)
+- [ ] Every task is actionable (starts with a verb)
+- [ ] Solve section identifies the riskiest piece
 - [ ] Success criteria are evaluable
 - [ ] File saved with proper naming convention
 - [ ] For Campaign mode: resume instructions included
 
-## XML Boundaries
-
-<task>
-{What the user wants to accomplish}
-</task>
-
-<constraints>
-{Timeline, resources, dependencies, blockers}
-</constraints>
-
-<current_state>
-{What exists now; relevant for Campaign mode}
-</current_state>
-
-## Before Planning
-
-Gather information before selecting a mode or generating a plan:
-
-1. **Task:** What specifically needs to be accomplished? What does done look like?
-2. **Constraints:** Timeline? Resources available? Dependencies or blockers?
-3. **Current state:** What exists now? (Essential for Campaign; helpful for Session)
-
-**For technical projects:** Investigate the codebase before generating a plan. Identify relevant files, dependencies, and existing patterns. Plans based on actual code structure are more actionable than plans based on descriptions alone.
-
-If the user's request is vague, ask clarifying questions. Don't generate a plan from incomplete information.
-
-## Plan Storage
-
-**Default location:** `/memory/plans/`
-
-**Before creating a plan, ask:**
-> "I'll save this plan to `/memory/plans/`. Want a different location?"
-
-**Naming convention:** `YYYY-MM-DD-[descriptive-slug].plan.md`
-
-Examples:
-- `2026-01-09-api-migration.plan.md`
-- `2026-01-09-homepage-redesign.plan.md`
-
-## Mode Selection
-
-Three modes based on execution scope:
-
-| Mode | Use When | Execution |
-|------|----------|-----------|
-| **Sprint** | Task completes in one go after review | User reviews, then full execution |
-| **Session** | Work fits one sitting but needs collaboration | Execute in phases, checkpoint between |
-| **Campaign** | Multi-day/multi-session effort | Comprehensive context for resumption |
-
-**If unclear, ask:**
-> "This could be a [Sprint/Session] depending on [factor]. Which fits better?"
-
-**Default:** Session (most common case)
-
 ## Sprint Mode
 
-For tasks you trust to execute fully after one review.
+For tasks you trust to execute fully after one review. Uses compressed WISER.
 
 ### Structure
 
@@ -121,32 +122,42 @@ For tasks you trust to execute fully after one review.
 **Mode:** Sprint
 **Status:** Draft | Approved | Complete
 
-## Objective
-[One sentence: what does done look like?]
+## Preconditions
+
+[Prerequisites that must be met, or "None"]
+
+## Witness
+
+**Objective:** [One sentence: what does done look like?]
+
+**Scope:**
+- In: [What's included]
+- Out: [What's excluded]
+
+**Current State:** [Brief snapshot of starting point]
+
+**Deliverable:** [What this plan produces: markdown file, web page, tool, feature, etc.]
 
 ## Tasks
-1. [ ] [Actionable step]
-2. [ ] [Actionable step]
-3. [ ] [Actionable step]
 
-## Execution
-Execute all tasks after user approves the plan.
+1. [ ] [Actionable task - highest risk first]
+2. [ ] [Actionable task]
+3. [ ] [Actionable task]
 
 ## Success Criteria
+
 - [How to verify completion]
 ```
 
 ### Process
 
-1. Gather task requirements
-2. Generate plan
-3. Present for review
-4. On approval, execute all tasks
-5. Mark complete
+1. Complete Witness; identify highest-risk task
+2. Present plan for review
+3. On approval, execute all tasks and mark complete
 
 ## Session Mode
 
-For work that fits one sitting but benefits from checkpoints.
+For work that fits one sitting but benefits from structured collaboration. Uses full W-I-S-E-R.
 
 ### Structure
 
@@ -155,51 +166,94 @@ For work that fits one sitting but benefits from checkpoints.
 
 **Created:** YYYY-MM-DD
 **Mode:** Session
-**Status:** Draft | In Progress | Complete
+**Status:** Draft | In Progress (Canon) | Complete
 
-## Objective
-[What we're accomplishing and why]
+## Preconditions
 
-## Scope
-**In:** [What's included]
-**Out:** [What's explicitly excluded]
+[Prerequisites that must be met, or "None"]
 
-## Phase 1: [Name]
-- [ ] [Task]
-- [ ] [Task]
+---
 
-**Checkpoint:** [What to verify before proceeding]
+## Witness
 
-## Phase 2: [Name]
-- [ ] [Task]
-- [ ] [Task]
+*Ground ourselves in what exists and what we're trying to accomplish.*
 
-**Checkpoint:** [What to verify before proceeding]
+**Objective:** [What we're accomplishing and why]
 
-## Phase 3: [Name]
-- [ ] [Task]
-- [ ] [Task]
+**Scope:**
+- In: [What's included]
+- Out: [What's explicitly excluded]
 
-## Execution
-Execute phases sequentially. After each phase, summarize what was completed and confirm before proceeding.
+**Current State:** [What exists now; starting point]
+
+**Deliverable:** [What this plan produces: markdown file, web page, tool, feature, etc.]
+
+**Checkpoint:** Do we have shared understanding of what exists and what we're building?
+
+---
+
+## Interrogate
+
+*Surface unknowns and challenge assumptions before committing.*
+
+- [ ] [Question or research item]
+- [ ] [Assumption to validate]
+- [ ] [Unknown to surface]
+
+**Checkpoint:** Have we surfaced the unknowns? Is riskiest piece identified?
+
+---
+
+## Solve
+
+*Build the riskiest piece first. Prove it works before expanding.*
+
+**Riskiest piece:** [What carries the most uncertainty or risk?]
+
+- [ ] [Task to prove feasibility]
+- [ ] [Validation step]
+
+**Checkpoint:** Does the solution work? Confirmed before expanding.
+
+---
+
+## Expand
+
+*Build out the full task to meet the objective.*
+
+- [ ] [Remaining task]
+- [ ] [Remaining task]
+- [ ] [Remaining task]
+
+**Checkpoint:** All tasks complete.
+
+---
+
+## Refine
+
+*User stress-tests the solution. AI iterates based on feedback.*
+
+- [ ] [User testing step]
+- [ ] [Iteration based on feedback]
+
+**Checkpoint:** Solution works well in practice.
+
+---
 
 ## Success Criteria
-- [How to verify completion]
+
+- [ ] [How to verify completion]
 ```
 
 ### Process
 
-1. Gather requirements; clarify scope
-2. Generate phased plan
-3. Present for review
-4. Execute Phase 1
-5. Checkpoint: confirm with user
-6. Continue through phases
-7. Mark complete
+1. Complete Witness; confirm shared understanding
+2. Work through Interrogate → Solve → Expand → Refine, checkpointing between each
+3. Mark complete
 
 ## Campaign Mode
 
-For multi-day efforts spanning multiple context windows.
+For multi-day efforts spanning multiple chat sessions. Uses full W-I-S-E-R with resume support.
 
 ### Structure
 
@@ -209,80 +263,138 @@ For multi-day efforts spanning multiple context windows.
 **Created:** YYYY-MM-DD
 **Last Updated:** YYYY-MM-DD
 **Mode:** Campaign
-**Status:** Draft | Active | Paused | Complete
+**Status:** Draft | Active (Canon) | Paused | Complete
 
 ## Context
+
 [Why this work matters. Problem being solved. Background a new session needs.]
 
-## Current State
-[What exists now. Snapshot of starting point.]
+## Preconditions
 
-## Objective
-[End state we're working toward]
+[Prerequisites that must be met, or "None"]
 
-## Scope
-**In:** [What's included]
-**Out:** [What's explicitly excluded]
-**Dependencies:** [What must exist or happen first]
+---
 
-## Milestones
+## Witness
+
+*Ground ourselves in what exists and what we're trying to accomplish.*
+
+**Objective:** [End state we're working toward]
+
+**Scope:**
+- In: [What's included]
+- Out: [What's explicitly excluded]
+- Dependencies: [What must exist or happen first]
+
+**Current State:** [Snapshot of starting point]
+
+**Deliverable:** [What this plan produces: markdown file, web page, tool, feature, etc.]
+
+**Checkpoint:** Shared understanding established.
+
+---
+
+## Interrogate
+
+*Surface unknowns and challenge assumptions before committing.*
+
+- [ ] [Question or research item]
+- [ ] [Assumption to validate]
+
+**Checkpoint:** Unknowns surfaced. Riskiest piece identified.
+
+---
+
+## Solve
+
+*Build the riskiest piece first. Prove it works before expanding.*
+
+**Riskiest piece:** [What carries the most uncertainty?]
+
+- [ ] [Task to prove feasibility]
+- [ ] [Validation step]
+
+**Checkpoint:** Solution proven viable.
+
+---
+
+## Expand
+
+*Build out the full task to meet the objective.*
 
 ### Milestone 1: [Name]
-**Target:** [Date or condition]
-**Status:** Not Started | In Progress | Complete
-
-Tasks:
 - [ ] [Task]
 - [ ] [Task]
-
-**Done when:** [Specific completion criteria]
 
 ### Milestone 2: [Name]
-...
+- [ ] [Task]
+- [ ] [Task]
+
+**Checkpoint:** All milestones complete.
+
+---
+
+## Refine
+
+*User stress-tests the solution. AI iterates based on feedback.*
+
+- [ ] [User testing step]
+- [ ] [Iteration task]
+
+**Checkpoint:** Solution works well in practice.
+
+---
 
 ## Decision Log
+
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | YYYY-MM-DD | [What was decided] | [Why] |
 
 ## Resume Instructions
+
 When starting a new session:
 1. Read Context and Current State
 2. Check Decision Log for recent choices
-3. Find current milestone; verify status
-4. Continue from first incomplete task
+3. Find current Canon (check Status)
+4. Continue from first incomplete task in that Canon
 
 ## Progress
+
 **Last worked:** YYYY-MM-DD
-**Current milestone:** [Name]
+**Current Canon:** [Witness | Interrogate | Solve | Expand | Refine]
 **Next action:** [Specific next step]
+
+---
+
+## Success Criteria
+
+- [ ] [How to verify completion]
 ```
 
 ### Process
 
-1. Gather comprehensive requirements
-2. Map milestones and dependencies
-3. Generate plan with full context
-4. Present for review
-5. Execute current milestone
-6. Update Progress section before ending session
-7. On resume: follow Resume Instructions
-8. Repeat until complete
+1. Complete Witness; confirm shared understanding
+2. Work through Interrogate → Solve → Expand → Refine, checkpointing between each
+3. **Before ending any session:** Update Progress section
+4. **On resume:** Follow Resume Instructions
+5. Mark complete when Success Criteria met
 
 ## Updating Plans
 
 Plans are living documents.
 
-**After each work session:**
+**After work on any Canon:**
 - Update task checkboxes
+- Update Status to current Canon
 - Update Progress section (Campaign)
 - Add to Decision Log if choices were made (Campaign)
 - Update Last Updated date (Campaign)
 
 **If scope changes:**
-- Note the change in Decision Log
+- Note the change in Decision Log (Campaign) or as a comment
 - Update Scope section
-- Adjust milestones/phases as needed
+- Re-evaluate Solve: does riskiest piece change?
 
 ## Handoffs
 
@@ -299,4 +411,3 @@ Plans are living documents.
 - Campaign mode adds overhead; don't use for simple tasks
 - Plans in `/memory/` persist but aren't version-controlled
 - Stale Campaign plans need verification before resuming
-
