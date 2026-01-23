@@ -15,8 +15,12 @@
 import { google } from 'googleapis';
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
+import { dirname, resolve, extname } from 'path';
 import { getAuthClient } from './auth.js';
-import { getFolderId, moveFile, exportFile, EXPORT_TYPES, getLocalPath } from './drive.js';
+import { getFolderId, moveFile, exportFile, EXPORT_TYPES, getLocalPath, uploadFile, makeFilePublic } from './drive.js';
+
+// Supported image formats for embedding
+const SUPPORTED_IMAGE_FORMATS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'];
 
 // Re-export collaboration functions for convenience
 export { 
@@ -34,14 +38,16 @@ export {
 
 /**
  * Parse markdown and convert to Google Docs API requests
- * Returns { plainText, formatRequests } where formatRequests are applied after text insertion
+ * Returns { plainText, formatRequests, imageReferences } where:
+ *   - formatRequests are applied after text insertion
+ *   - imageReferences are { alt, path, index } for image placeholders
  */
-function parseMarkdownToDocRequests(markdown) {
+function parseMarkdownToDocRequests(markdown, options = {}) {
   // Strip HTML comments
   const cleanedMarkdown = markdown.replace(/<!--[\s\S]*?-->/g, '');
   
   const lines = cleanedMarkdown.split('\n');
-  const segments = []; // { text, type, level? }
+  const segments = []; // { text, type, level?, imagePath?, imageAlt?, tableData? }
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -60,6 +66,47 @@ function parseMarkdownToDocRequests(markdown) {
       continue;
     }
     
+    // Check for standalone image line: ![alt](path)
+    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
+    if (imageMatch && options.embedImages) {
+      segments.push({ 
+        text: '\n', // Placeholder newline for image position
+        type: 'image', 
+        imageAlt: imageMatch[1],
+        imagePath: imageMatch[2]
+      });
+      continue;
+    }
+    
+    // Check for markdown table (line starts and ends with |)
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      // Collect all table rows
+      const tableRows = [];
+      let j = i;
+      while (j < lines.length && lines[j].trim().startsWith('|') && lines[j].trim().endsWith('|')) {
+        const row = lines[j].trim();
+        // Skip separator rows (contain only |, -, :, and spaces)
+        if (!/^\|[\s\-:|]+\|$/.test(row)) {
+          // Parse cells: split by | and trim each cell
+          const cells = row.split('|').slice(1, -1).map(cell => cell.trim());
+          tableRows.push(cells);
+        }
+        j++;
+      }
+      
+      if (tableRows.length > 0) {
+        // Determine column count from first row
+        const cols = tableRows[0].length;
+        segments.push({
+          text: '\n', // Placeholder for table position
+          type: 'table',
+          tableData: { rows: tableRows, cols }
+        });
+        i = j - 1; // Skip processed table lines
+        continue;
+      }
+    }
+    
     // Normal text (may contain bold/italic)
     segments.push({ text: line + '\n', type: 'normal' });
   }
@@ -67,6 +114,8 @@ function parseMarkdownToDocRequests(markdown) {
   // Build plain text and track positions for formatting
   let plainText = '';
   const formatRequests = [];
+  const imageReferences = [];
+  const tableReferences = [];
   
   for (const segment of segments) {
     const startIndex = plainText.length + 1; // +1 because doc starts at index 1
@@ -94,6 +143,22 @@ function parseMarkdownToDocRequests(markdown) {
       
       // Add any inline formatting
       formatRequests.push(...inlineFormats);
+    } else if (segment.type === 'image') {
+      // Track image position for later insertion
+      imageReferences.push({
+        alt: segment.imageAlt,
+        path: segment.imagePath,
+        index: startIndex
+      });
+      plainText += segment.text;
+    } else if (segment.type === 'table') {
+      // Track table position for later insertion
+      tableReferences.push({
+        rows: segment.tableData.rows,
+        cols: segment.tableData.cols,
+        index: startIndex
+      });
+      plainText += segment.text;
     } else {
       // Process inline formatting (bold, italic)
       const { text: processedText, inlineFormats } = processInlineFormatting(segment.text, startIndex);
@@ -102,7 +167,7 @@ function parseMarkdownToDocRequests(markdown) {
     }
   }
   
-  return { plainText, formatRequests };
+  return { plainText, formatRequests, imageReferences, tableReferences };
 }
 
 /**
@@ -176,6 +241,332 @@ function processInlineFormatting(text, baseIndex) {
 }
 
 /**
+ * Validate and resolve image paths, rejecting unsupported formats
+ * @param {Array} imageReferences - Array of { alt, path, index }
+ * @param {string} basePath - Base path for resolving relative paths
+ * @returns {Array} - Resolved image references with absolute paths
+ */
+function validateImagePaths(imageReferences, basePath) {
+  const resolved = [];
+  
+  for (const ref of imageReferences) {
+    const ext = extname(ref.path).toLowerCase();
+    
+    // Reject SVG files
+    if (ext === '.svg') {
+      throw new Error(
+        `SVG not supported for embedding: ${ref.path}\n` +
+        `Convert to PNG first using: node "/cofounder/tools/Image Generator/scripts/svg-to-png.js" input.svg output.png`
+      );
+    }
+    
+    // Check if format is supported
+    if (!SUPPORTED_IMAGE_FORMATS.includes(ext)) {
+      throw new Error(`Unsupported image format: ${ref.path}\nSupported: ${SUPPORTED_IMAGE_FORMATS.join(', ')}`);
+    }
+    
+    // Resolve relative paths
+    let absolutePath = ref.path;
+    if (!ref.path.startsWith('/')) {
+      absolutePath = resolve(basePath, ref.path);
+    }
+    
+    // Verify file exists
+    if (!existsSync(absolutePath)) {
+      throw new Error(`Image file not found: ${absolutePath}`);
+    }
+    
+    resolved.push({
+      ...ref,
+      absolutePath
+    });
+  }
+  
+  return resolved;
+}
+
+/**
+ * Upload images to Drive and insert into document
+ * Images are inserted in reverse order to avoid index shifting
+ * @param {string} email - Google account
+ * @param {string} docId - Document ID
+ * @param {Array} imageReferences - Array of { alt, absolutePath, index }
+ */
+async function embedImages(email, docId, imageReferences) {
+  if (imageReferences.length === 0) return;
+  
+  const docs = await getDocsApi(email);
+  
+  // Process images in reverse order (highest index first) to avoid shifting
+  const sortedRefs = [...imageReferences].sort((a, b) => b.index - a.index);
+  
+  for (const ref of sortedRefs) {
+    // Upload to Drive
+    const uploaded = await uploadFile(email, ref.absolutePath);
+    
+    // Make publicly accessible (required for Docs API to embed)
+    await makeFilePublic(email, uploaded.id);
+    
+    // Build the content URI
+    const imageUri = `https://drive.google.com/uc?id=${uploaded.id}`;
+    
+    // Insert the image at the tracked position
+    await docs.documents.batchUpdate({
+      documentId: docId,
+      requestBody: {
+        requests: [{
+          insertInlineImage: {
+            location: { index: ref.index },
+            uri: imageUri,
+            objectSize: {
+              // Default to reasonable width, height auto-calculated
+              width: { magnitude: 400, unit: 'PT' }
+            }
+          }
+        }]
+      }
+    });
+  }
+}
+
+/**
+ * Embed images and tables together, processed in reverse index order
+ * This ensures that inserting one doesn't shift the index of another
+ * @param {string} email - Google account
+ * @param {string} docId - Document ID
+ * @param {Array} imageRefs - Array of { alt, absolutePath, index }
+ * @param {Array} tableRefs - Array of { rows, cols, index }
+ */
+async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
+  const docs = await getDocsApi(email);
+  
+  // Combine images and tables with type markers
+  const items = [
+    ...imageRefs.map(ref => ({ ...ref, type: 'image' })),
+    ...tableRefs.map(ref => ({ ...ref, type: 'table' }))
+  ];
+  
+  // Sort by index descending (highest first)
+  items.sort((a, b) => b.index - a.index);
+  
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    
+    // Add delay to avoid rate limits (except first) - 1 second is safe with ~3-4 API calls per item
+    if (i > 0) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    if (item.type === 'image') {
+      // Upload to Drive
+      const uploaded = await uploadFile(email, item.absolutePath);
+      await makeFilePublic(email, uploaded.id);
+      const imageUri = `https://drive.google.com/uc?id=${uploaded.id}`;
+      
+      await docs.documents.batchUpdate({
+        documentId: docId,
+        requestBody: {
+          requests: [{
+            insertInlineImage: {
+              location: { index: item.index },
+              uri: imageUri,
+              objectSize: { width: { magnitude: 400, unit: 'PT' } }
+            }
+          }]
+        }
+      });
+    } else if (item.type === 'table') {
+      const numRows = item.rows.length;
+      const numCols = item.cols;
+      
+      // Insert table structure
+      await docs.documents.batchUpdate({
+        documentId: docId,
+        requestBody: {
+          requests: [{
+            insertTable: {
+              location: { index: item.index },
+              rows: numRows,
+              columns: numCols
+            }
+          }]
+        }
+      });
+      
+      // Get document to find cell indices
+      const doc = await docs.documents.get({ documentId: docId });
+      
+      // Find the table we just inserted
+      let table = null;
+      for (const element of doc.data.body.content) {
+        if (element.table && element.startIndex >= item.index && element.startIndex < item.index + 10) {
+          table = element;
+          break;
+        }
+      }
+      
+      if (!table) continue;
+      
+      // Build cell text insertion requests (in reverse index order)
+      const insertRequests = [];
+      for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
+        const row = table.table.tableRows[rowIdx];
+        for (let colIdx = 0; colIdx < numCols; colIdx++) {
+          const cell = row.tableCells[colIdx];
+          const cellText = item.rows[rowIdx][colIdx] || '';
+          if (cellText) {
+            const cellContent = cell.content[0];
+            insertRequests.push({
+              insertText: {
+                location: { index: cellContent.startIndex },
+                text: cellText
+              }
+            });
+          }
+        }
+      }
+      
+      // Batch insert all cell text
+      if (insertRequests.length > 0) {
+        insertRequests.sort((a, b) => b.insertText.location.index - a.insertText.location.index);
+        await docs.documents.batchUpdate({
+          documentId: docId,
+          requestBody: { requests: insertRequests }
+        });
+        // Note: Header bolding skipped for performance. Can be done manually or with a post-process step.
+      }
+    }
+  }
+}
+
+/**
+ * Insert markdown tables into a Google Doc
+ * Tables are inserted in reverse order to avoid index shifting
+ * @param {string} email - Google account
+ * @param {string} docId - Document ID
+ * @param {Array} tableReferences - Array of { rows, cols, index }
+ */
+async function embedTables(email, docId, tableReferences) {
+  if (tableReferences.length === 0) return;
+  
+  const docs = await getDocsApi(email);
+  
+  // Process tables in reverse order (highest index first) to avoid shifting
+  const sortedRefs = [...tableReferences].sort((a, b) => b.index - a.index);
+  
+  for (let i = 0; i < sortedRefs.length; i++) {
+    const ref = sortedRefs[i];
+    
+    // Add delay between tables to avoid rate limits (except first)
+    // 3 second delay keeps us under 300 requests/minute limit with ~4 calls per table
+    if (i > 0) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+    
+    const numRows = ref.rows.length;
+    const numCols = ref.cols;
+    
+    // Insert the table structure
+    await docs.documents.batchUpdate({
+      documentId: docId,
+      requestBody: {
+        requests: [{
+          insertTable: {
+            location: { index: ref.index },
+            rows: numRows,
+            columns: numCols
+          }
+        }]
+      }
+    });
+    
+    // Get the updated document to find cell indices
+    const doc = await docs.documents.get({ documentId: docId });
+    
+    // Find the table we just inserted (it should be at approximately ref.index)
+    let table = null;
+    for (const element of doc.data.body.content) {
+      if (element.table && element.startIndex >= ref.index && element.startIndex < ref.index + 10) {
+        table = element;
+        break;
+      }
+    }
+    
+    if (!table) continue;
+    
+    // Build requests to insert text into each cell (in reverse index order to avoid shifting)
+    const insertRequests = [];
+    
+    for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
+      const row = table.table.tableRows[rowIdx];
+      for (let colIdx = 0; colIdx < numCols; colIdx++) {
+        const cell = row.tableCells[colIdx];
+        const cellText = ref.rows[rowIdx][colIdx] || '';
+        
+        if (cellText) {
+          const cellContent = cell.content[0];
+          const insertIndex = cellContent.startIndex;
+          
+          insertRequests.push({
+            insertText: {
+              location: { index: insertIndex },
+              text: cellText
+            }
+          });
+        }
+      }
+    }
+    
+    // Sort by index descending and batch all inserts into one call
+    if (insertRequests.length > 0) {
+      insertRequests.sort((a, b) => b.insertText.location.index - a.insertText.location.index);
+      
+      await docs.documents.batchUpdate({
+        documentId: docId,
+        requestBody: { requests: insertRequests }
+      });
+      
+      // Re-fetch document and apply bold styling to header row in one batch
+      const updatedDoc = await docs.documents.get({ documentId: docId });
+      const styleRequests = [];
+      
+      for (const element of updatedDoc.data.body.content) {
+        if (element.table && element.startIndex >= ref.index && element.startIndex < ref.index + 1000) {
+          const headerRow = element.table.tableRows[0];
+          for (const cell of headerRow.tableCells) {
+            const cellContent = cell.content[0];
+            if (cellContent.paragraph && cellContent.paragraph.elements) {
+              for (const elem of cellContent.paragraph.elements) {
+                if (elem.textRun && elem.textRun.content.trim()) {
+                  styleRequests.push({
+                    updateTextStyle: {
+                      range: {
+                        startIndex: elem.startIndex,
+                        endIndex: elem.endIndex - 1
+                      },
+                      textStyle: { bold: true },
+                      fields: 'bold'
+                    }
+                  });
+                }
+              }
+            }
+          }
+          break;
+        }
+      }
+      
+      if (styleRequests.length > 0) {
+        await docs.documents.batchUpdate({
+          documentId: docId,
+          requestBody: { requests: styleRequests }
+        });
+      }
+    }
+  }
+}
+
+/**
  * Get Docs API instance
  */
 async function getDocsApi(email) {
@@ -193,6 +584,12 @@ async function getDriveApi(email) {
 
 /**
  * Create a new Google Doc
+ * @param {string} email - Google account email
+ * @param {string} title - Document title
+ * @param {object} options - Options
+ * @param {string} options.folder - Folder path to create document in
+ * @param {string} options.content - Content (file path or text)
+ * @param {boolean} options.embedImages - Whether to embed images from markdown
  */
 export async function createDoc(email, title, options = {}) {
   const docs = await getDocsApi(email);
@@ -213,19 +610,31 @@ export async function createDoc(email, title, options = {}) {
   // Add content if specified
   if (options.content) {
     let text;
-    if (existsSync(options.content)) {
+    let contentBasePath = process.cwd();
+    const isFile = existsSync(options.content);
+    
+    if (isFile) {
       text = readFileSync(options.content, 'utf-8');
+      contentBasePath = dirname(resolve(options.content));
     } else {
       text = options.content;
     }
     
     // Check if content appears to be markdown (has markdown patterns)
-    const isMarkdown = options.content.endsWith('.md') || 
+    const isMarkdown = (isFile && options.content.endsWith('.md')) || 
                        /^#{1,6}\s|^\*\*|\*\*$|^\*[^*]|[^*]\*$/m.test(text);
     
     if (isMarkdown) {
       // Parse markdown and apply formatting
-      const { plainText, formatRequests } = parseMarkdownToDocRequests(text);
+      const { plainText, formatRequests, imageReferences, tableReferences } = parseMarkdownToDocRequests(text, { 
+        embedImages: options.embedImages 
+      });
+      
+      // Validate and resolve image paths if embedding
+      let resolvedImages = [];
+      if (options.embedImages && imageReferences.length > 0) {
+        resolvedImages = validateImagePaths(imageReferences, contentBasePath);
+      }
       
       // First insert the plain text
       await docs.documents.batchUpdate({
@@ -248,6 +657,11 @@ export async function createDoc(email, title, options = {}) {
             requests: formatRequests
           }
         });
+      }
+      
+      // Embed images and tables together (must be processed in reverse index order)
+      if (resolvedImages.length > 0 || tableReferences.length > 0) {
+        await embedMediaAndTables(email, docId, resolvedImages, tableReferences);
       }
     } else {
       // Plain text, insert as-is
@@ -414,14 +828,23 @@ export async function getDocumentStyle(email, docId) {
 
 /**
  * Edit a Google Doc (append or replace content)
+ * @param {string} email - Google account email
+ * @param {string} docId - Document ID
+ * @param {string} content - Content (file path or text)
+ * @param {object} options - Options
+ * @param {boolean} options.replace - Replace all content instead of appending
+ * @param {boolean} options.embedImages - Whether to embed images from markdown
  */
 export async function editDoc(email, docId, content, options = {}) {
   const docs = await getDocsApi(email);
   
   let text;
+  let contentBasePath = process.cwd();
   const isFile = existsSync(content);
+  
   if (isFile) {
     text = readFileSync(content, 'utf-8');
+    contentBasePath = dirname(resolve(content));
   } else {
     text = content;
   }
@@ -449,7 +872,15 @@ export async function editDoc(email, docId, content, options = {}) {
   
   if (isMarkdown) {
     // Parse markdown and apply formatting
-    const { plainText, formatRequests } = parseMarkdownToDocRequests(text);
+    const { plainText, formatRequests, imageReferences, tableReferences } = parseMarkdownToDocRequests(text, {
+      embedImages: options.embedImages
+    });
+    
+    // Validate and resolve image paths if embedding
+    let resolvedImages = [];
+    if (options.embedImages && imageReferences.length > 0) {
+      resolvedImages = validateImagePaths(imageReferences, contentBasePath);
+    }
     
     // Insert the plain text
     requests.push({
@@ -473,6 +904,11 @@ export async function editDoc(email, docId, content, options = {}) {
           requests: formatRequests
         }
       });
+    }
+    
+    // Embed images and tables together (must be processed in reverse index order)
+    if (resolvedImages.length > 0 || tableReferences.length > 0) {
+      await embedMediaAndTables(email, docId, resolvedImages, tableReferences);
     }
   } else {
     // Plain text, insert as-is
@@ -549,6 +985,7 @@ Options:
   --title TITLE      Document title (required for create)
   --folder PATH      Folder path like "Shared drives/Work/Docs" (optional for create)
   --content FILE     Markdown file or text to add (optional for create/edit)
+  --embed-images     Embed images from markdown (PNG/JPG/GIF only, no SVG)
   --replace          Replace all content instead of appending (for edit)
   --format FORMAT    Export format: pdf, docx, txt, html, rtf, odt
   --output PATH      Output file path (required for export)
@@ -583,6 +1020,7 @@ Examples:
   let format = null;
   let output = null;
   let replace = false;
+  let embedImages = false;
   let jsonOutput = false;
   let suggestionId = null;
   let text = null;
@@ -611,6 +1049,7 @@ Examples:
       case '--margins': margins = args[++i]; break;
       case '--page-size': pageSize = args[++i]; break;
       case '--replace': replace = true; break;
+      case '--embed-images': embedImages = true; break;
       case '--json': jsonOutput = true; break;
     }
   }
@@ -629,7 +1068,7 @@ Examples:
           console.error('Error: --title is required for create');
           process.exit(1);
         }
-        result = await createDoc(account, title, { folder, content });
+        result = await createDoc(account, title, { folder, content, embedImages });
         break;
         
       case 'read':
@@ -645,7 +1084,7 @@ Examples:
           console.error('Error: --id and --content are required for edit');
           process.exit(1);
         }
-        result = await editDoc(account, id, content, { replace });
+        result = await editDoc(account, id, content, { replace, embedImages });
         break;
         
       case 'export':

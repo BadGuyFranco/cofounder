@@ -10,11 +10,21 @@
  */
 
 import { google } from 'googleapis';
-import { writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
-import { dirname, basename, join } from 'path';
+import { writeFileSync, existsSync, mkdirSync, readdirSync, createReadStream } from 'fs';
+import { dirname, basename, join, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { platform, homedir } from 'os';
 import { getAuthClient } from './auth.js';
+
+// MIME types for common image formats
+const IMAGE_MIME_TYPES = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.bmp': 'image/bmp'
+};
 
 /**
  * Extract Google account email from a local file path
@@ -390,6 +400,65 @@ export async function deleteFile(email, fileId) {
   });
   
   return { id: fileId, deleted: true };
+}
+
+/**
+ * Upload a file to Google Drive
+ * @param {string} email - Google account email
+ * @param {string} localPath - Path to local file
+ * @param {string} parentId - Optional parent folder ID
+ * @param {string} name - Optional custom name (defaults to filename)
+ * @returns {object} - { id, name, webContentLink }
+ */
+export async function uploadFile(email, localPath, parentId = null, name = null) {
+  if (!existsSync(localPath)) {
+    throw new Error(`File not found: ${localPath}`);
+  }
+  
+  const drive = await getDriveApi(email);
+  const fileName = name || basename(localPath);
+  const ext = extname(localPath).toLowerCase();
+  const mimeType = IMAGE_MIME_TYPES[ext] || 'application/octet-stream';
+  
+  const fileMetadata = { name: fileName };
+  if (parentId) {
+    fileMetadata.parents = [parentId];
+  }
+  
+  const media = {
+    mimeType,
+    body: createReadStream(localPath)
+  };
+  
+  const response = await drive.files.create({
+    resource: fileMetadata,
+    media,
+    fields: 'id, name, webContentLink, webViewLink',
+    supportsAllDrives: true
+  });
+  
+  return response.data;
+}
+
+/**
+ * Make a file publicly accessible (anyone with link can view)
+ * Required for embedding images in Google Docs
+ * @param {string} email - Google account email
+ * @param {string} fileId - File ID to make public
+ */
+export async function makeFilePublic(email, fileId) {
+  const drive = await getDriveApi(email);
+  
+  await drive.permissions.create({
+    fileId,
+    requestBody: {
+      role: 'reader',
+      type: 'anyone'
+    },
+    supportsAllDrives: true
+  });
+  
+  return { id: fileId, public: true };
 }
 
 /**

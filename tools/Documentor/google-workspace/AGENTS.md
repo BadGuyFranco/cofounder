@@ -61,6 +61,26 @@ Run any script with `--help` for full command syntax.
 
 ## Key Capabilities
 
+**Image embedding** (via `docs.js --embed-images`):
+
+When uploading markdown with images to Google Docs, always embed them. The workflow:
+
+1. **Convert SVGs to PNG** (if any). For each SVG image in the markdown:
+   ```bash
+   node "/cofounder/tools/Image Generator/scripts/svg-to-png.js" input.svg /tmp/output.png --scale 2
+   ```
+
+2. **Create temp markdown** with PNG paths replacing SVG paths
+
+3. **Upload with embedding**:
+   ```bash
+   node scripts/docs.js create --title "My Doc" --content temp.md --embed-images --account user@example.com
+   ```
+
+4. **Clean up** temp PNGs and temp markdown
+
+Supported formats: PNG, JPG, GIF, WebP, BMP. SVG must be converted first.
+
 **Document styling** (via `docs.js`):
 - Get/set margins (all sides or individual)
 - Get/set page size (Letter, A4, trade paperback, custom)
@@ -87,6 +107,8 @@ When creating a Google Doc/Sheet/Slide from a source file (markdown, text, etc.)
 3. **If no**, require explicit `--title` and `--account`; place in My Drive root
 
 This keeps the Google Doc alongside its source file with a matching name.
+
+**Always provide the Google Docs URL** in your response after creating or uploading a document.
 
 ## Known Limitations
 
