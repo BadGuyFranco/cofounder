@@ -146,7 +146,28 @@ User can override by specifying service in their request.
 
 **Aspect ratio handling:** If user specifies dimensions (e.g., 1920x1080), calculate the closest supported aspect ratio.
 
-**Replicate:**
+**Replicate (async workflow, recommended):**
+
+Use the two-step async workflow to avoid shell timeouts on slow models:
+
+```bash
+# Step 1: Start generation (returns immediately with prediction ID)
+cd "/cofounder/connectors/replicate"
+node scripts/predictions.js run google/nano-banana-pro \
+  --input '{"prompt": "YOUR_PROMPT", "aspect_ratio": "16:9"}' \
+  --no-wait
+```
+
+Output includes: `Prediction created: abc123xyz`
+
+```bash
+# Step 2: Wait for completion and download (use longer timeout, e.g., 300000ms)
+node scripts/predictions.js wait abc123xyz --download /user/specified/output.png
+```
+
+The `wait` command polls until complete, then downloads. This separates job creation from waiting, preventing shell timeout issues.
+
+**Replicate (sync workflow, for fast models only):**
 ```bash
 cd "/cofounder/connectors/replicate"
 node scripts/predictions.js run google/nano-banana-pro \
@@ -180,6 +201,35 @@ node scripts/remove-background.js input.jpg output.png
 ```
 
 Uses Replicate Connector credentials and curated default model.
+
+### Render to Image
+
+**Route to:** `scripts/svg-to-png.js`, `scripts/html-to-png.js`, `scripts/mermaid-to-png.js`, or `scripts/screenshot.js`
+
+**When:** Convert SVG/Mermaid/HTML to PNG, or screenshot a webpage.
+
+**Setup:** Requires `npm install` in Image Generator directory. First run may download browsers (~500MB, shared system-wide).
+
+```bash
+# SVG to PNG
+cd "/cofounder/tools/Image Generator"
+node scripts/svg-to-png.js input.svg output.png [--scale 2] [--width 1000]
+
+# Mermaid to PNG
+node scripts/mermaid-to-png.js input.mmd output.png [--width 800] [--scale 2] [--theme neutral]
+
+# HTML to PNG
+node scripts/html-to-png.js input.html output.png [--width 1200] [--height 630]
+
+# Screenshot webpage
+node scripts/screenshot.js "https://example.com" output.png [--width 1280] [--full-page]
+```
+
+**Mermaid options:**
+- `--width N` - Max width in pixels (default: 800)
+- `--scale N` - Device scale factor for higher resolution (default: 2)
+- `--theme NAME` - Mermaid theme: default, neutral, dark, forest (default: neutral)
+- `--background COLOR` - Background color, use 'transparent' for none (default: white)
 
 ### Generate Video
 

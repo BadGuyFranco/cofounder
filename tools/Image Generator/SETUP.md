@@ -18,6 +18,11 @@ node --version
 cd "/cofounder/connectors/replicate" && npm list 2>/dev/null | head -1
 ```
 
+**Playwright (for SVG/HTML rendering):**
+```bash
+cd "/cofounder/tools/Image Generator" && npm list playwright 2>/dev/null | grep -q playwright && echo "YES" || echo "NO"
+```
+
 **Replicate credentials:**
 ```bash
 test -f "/memory/connectors/replicate/.env" && grep -q "REPLICATE_API_TOKEN" "/memory/connectors/replicate/.env" && echo "Configured" || echo "Not configured"
@@ -32,6 +37,7 @@ Based on the checks above, report only what's missing:
 | Node.js | JavaScript runtime for running scripts |
 | npm packages | Replicate connector libraries |
 | Replicate API key | Authentication with Replicate.com |
+| Playwright | Browser-based rendering for SVG/HTML/screenshots |
 
 **If everything shows as installed/configured:** Skip to AGENTS.md Usage section.
 
@@ -50,6 +56,14 @@ Follow `/cofounder/system/installer/dependencies/nodejs.md`
 ```bash
 cd "/cofounder/connectors/replicate" && npm install
 ```
+
+### Step 2b: Playwright (if missing, for SVG/HTML rendering)
+
+```bash
+cd "/cofounder/tools/Image Generator" && npm install
+```
+
+First run may download browsers (~500MB, shared system-wide at `~/Library/Caches/ms-playwright` on macOS).
 
 ### Step 3: Replicate API key (if missing)
 
