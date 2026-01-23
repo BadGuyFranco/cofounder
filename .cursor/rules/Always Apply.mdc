@@ -21,6 +21,7 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Write or review content | `tools/Content Author/` |
 | Write or review prompts | `tools/Prompt Author/` |
 | Generate or edit images | `tools/Image Generator/` |
+| Screenshot webpage or convert SVG/HTML to image | `tools/Image Generator/` |
 | Generate or edit videos | `tools/Video Generator/` |
 | Create or edit diagrams | `tools/Visualizer/` |
 | Transcribe audio | `tools/Transcriber/` |
