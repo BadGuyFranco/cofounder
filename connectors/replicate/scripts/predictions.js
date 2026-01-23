@@ -235,6 +235,95 @@ async function cancelPrediction(predictionId) {
   return prediction;
 }
 
+/**
+ * Wait for a prediction to complete and optionally download output
+ * @param {string} predictionId - Prediction ID
+ * @param {string} downloadPath - Path to download output (file or directory)
+ * @param {boolean} verbose - Show full response
+ */
+async function waitPrediction(predictionId, downloadPath, verbose) {
+  // First check current status
+  const initial = await apiRequest(`/predictions/${predictionId}`);
+  
+  console.log(`Prediction: ${predictionId}`);
+  console.log(`Model: ${initial.model || 'N/A'}`);
+  console.log(`Status: ${initial.status}`);
+  
+  let prediction = initial;
+  
+  // If not complete, poll
+  if (initial.status !== 'succeeded' && initial.status !== 'failed' && initial.status !== 'canceled') {
+    console.log('\nWaiting for completion...');
+    prediction = await pollPrediction(predictionId);
+  }
+  
+  console.log(`\nFinal status: ${prediction.status}`);
+  
+  if (prediction.metrics?.predict_time) {
+    console.log(`Predict time: ${formatDuration(prediction.metrics.predict_time)}`);
+  }
+  
+  if (prediction.error) {
+    console.log(`Error: ${prediction.error}`);
+    return prediction;
+  }
+  
+  const output = prediction.output;
+  if (!output) {
+    console.log('No output');
+    return prediction;
+  }
+  
+  // Handle output display and download
+  if (typeof output === 'string' && output.startsWith('http')) {
+    console.log(`\nOutput: ${output}`);
+    
+    if (downloadPath) {
+      // Determine if downloadPath is a file or directory
+      const ext = getExtension(output) || '.bin';
+      let finalPath = downloadPath;
+      
+      // If path doesn't have an extension matching output, treat as directory
+      const downloadExt = path.extname(downloadPath).toLowerCase();
+      const outputExt = ext.toLowerCase();
+      
+      if (!downloadExt || (downloadExt !== outputExt && downloadExt !== '.png' && downloadExt !== '.jpg' && downloadExt !== '.jpeg' && downloadExt !== '.webp')) {
+        // Treat as directory
+        finalPath = path.join(downloadPath, `output${ext}`);
+      }
+      
+      await downloadFile(output, finalPath);
+      console.log(`Downloaded: ${finalPath}`);
+    }
+  } else if (Array.isArray(output)) {
+    console.log(`\nOutput (${output.length} items):`);
+    for (let i = 0; i < output.length; i++) {
+      const item = output[i];
+      if (typeof item === 'string' && item.startsWith('http')) {
+        console.log(`  [${i}] ${item}`);
+        if (downloadPath) {
+          const ext = getExtension(item) || '.bin';
+          const filename = `output_${i}${ext}`;
+          const outputPath = path.join(downloadPath, filename);
+          await downloadFile(item, outputPath);
+          console.log(`      Downloaded: ${outputPath}`);
+        }
+      } else {
+        console.log(`  [${i}] ${JSON.stringify(item)}`);
+      }
+    }
+  } else {
+    console.log(`\nOutput: ${JSON.stringify(output, null, 2)}`);
+  }
+  
+  if (verbose) {
+    console.log('\nFull prediction:');
+    console.log(JSON.stringify(prediction, null, 2));
+  }
+  
+  return prediction;
+}
+
 // Show help
 function showHelp() {
   console.log(`Replicate Predictions Script
@@ -242,6 +331,7 @@ function showHelp() {
 Commands:
   run <model> --input '{...}'   Run a model with JSON input
   get <prediction-id>           Get prediction status and output
+  wait <prediction-id>          Wait for prediction to complete and download
   list                          List recent predictions
   cancel <prediction-id>        Cancel a running prediction
   help                          Show this help
@@ -249,8 +339,8 @@ Commands:
 Options:
   --input <json>      Input parameters as JSON string (required for run)
   --wait              Wait for prediction to complete (default: true)
-  --no-wait           Don't wait for completion
-  --download <dir>    Download output files to directory
+  --no-wait           Don't wait for completion (returns prediction ID immediately)
+  --download <path>   Download output to file or directory
   --limit <n>         Max predictions to list (default: 10)
   --verbose           Show full API responses
 
@@ -259,19 +349,18 @@ Model format:
   owner/name:version  Uses specific version
 
 Examples:
-  # Generate an image with FLUX
+  # Generate an image (waits for completion)
   node predictions.js run black-forest-labs/flux-1.1-pro \\
     --input '{"prompt": "a futuristic cityscape at sunset", "aspect_ratio": "16:9"}'
 
-  # Run with specific version
-  node predictions.js run stability-ai/sdxl:version123abc \\
-    --input '{"prompt": "beautiful landscape"}'
-
-  # Generate and download output
+  # Start generation without waiting (returns immediately with prediction ID)
   node predictions.js run black-forest-labs/flux-1.1-pro \\
-    --input '{"prompt": "mountain lake"}' --download ./images
+    --input '{"prompt": "mountain lake"}' --no-wait
 
-  # Check prediction status
+  # Wait for a prediction and download output
+  node predictions.js wait abc123xyz --download ./output.png
+
+  # Check prediction status without waiting
   node predictions.js get p1a2b3c4d5e6f
 
   # List recent predictions
@@ -279,6 +368,12 @@ Examples:
 
   # Cancel a running prediction
   node predictions.js cancel p1a2b3c4d5e6f
+
+Async workflow (recommended for long-running models):
+  1. Start: node predictions.js run <model> --input '...' --no-wait
+     Returns prediction ID immediately
+  2. Wait:  node predictions.js wait <prediction-id> --download ./output.png
+     Polls until complete, then downloads
 `);
 }
 
@@ -345,6 +440,18 @@ async function main() {
           process.exit(1);
         }
         await cancelPrediction(predictionId);
+        break;
+      }
+
+      case 'wait': {
+        const predictionId = args._[1];
+        if (!predictionId) {
+          console.error('Error: Prediction ID is required');
+          console.error('Usage: node predictions.js wait <prediction-id> [--download <path>]');
+          process.exit(1);
+        }
+        const downloadPath = args.download || null;
+        await waitPrediction(predictionId, downloadPath, verbose);
         break;
       }
 
