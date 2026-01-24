@@ -27,7 +27,7 @@
 // DEPENDENCY CHECK - Auto-installs npm packages on first run
 // ============================================================================
 
-import { ensureDeps } from '../../../../connectors/shared/ensure-deps.js';
+import { ensureDeps } from '../../../shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // ============================================================================
