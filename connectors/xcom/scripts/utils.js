@@ -7,8 +7,11 @@
  */
 
 // Dependency check (must be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
+
+// Shared utilities
+import { parseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -242,35 +245,8 @@ export function generateOAuthHeader(method, url, params = {}, credentials) {
   return authHeader;
 }
 
-/**
- * Parse command line arguments
- */
-export function parseArgs(args) {
-  const result = { _: [] };
-  let i = 0;
-  
-  while (i < args.length) {
-    const arg = args[i];
-    
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2);
-      const nextArg = args[i + 1];
-      
-      if (nextArg && !nextArg.startsWith('--')) {
-        result[key] = nextArg;
-        i += 2;
-      } else {
-        result[key] = true;
-        i += 1;
-      }
-    } else {
-      result._.push(arg);
-      i += 1;
-    }
-  }
-  
-  return result;
-}
+// Re-export parseArgs from shared utils
+export { parseArgs };
 
 /**
  * Make authenticated API request to X.com API v2

@@ -6,8 +6,11 @@
  */
 
 // Dependency check (must be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
+
+// Shared utilities
+import { parseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -185,33 +188,8 @@ export function listConfiguredProjects() {
   return projects;
 }
 
-// Parse command line arguments
-export function parseArgs(args) {
-  const result = { _: [] };
-  let i = 0;
-
-  while (i < args.length) {
-    const arg = args[i];
-
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2);
-      const nextArg = args[i + 1];
-
-      if (nextArg && !nextArg.startsWith('--')) {
-        result[key] = nextArg;
-        i += 2;
-      } else {
-        result[key] = true;
-        i += 1;
-      }
-    } else {
-      result._.push(arg);
-      i += 1;
-    }
-  }
-
-  return result;
-}
+// Re-export parseArgs from shared utils
+export { parseArgs };
 
 // Make REST API request (PostgREST for database)
 export async function restRequest(endpoint, options = {}) {
@@ -433,16 +411,8 @@ export function formatFieldValue(value) {
   return String(value);
 }
 
-// Parse JSON safely
-export function parseJSON(str, fieldName) {
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    console.error(`Error: Invalid JSON in --${fieldName}`);
-    console.error(`Received: ${str}`);
-    process.exit(1);
-  }
-}
+// Re-export parseJSON from shared utils
+export { parseJSON };
 
 // Build query string from filter
 export function buildFilterParams(filter) {
@@ -453,10 +423,8 @@ export function buildFilterParams(filter) {
   return filter;
 }
 
-// Sleep helper
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// Re-export sleep from shared utils
+export { sleep };
 
 // Format bytes to human readable
 export function formatBytes(bytes) {

@@ -4,8 +4,11 @@
  */
 
 // Dependency check (must be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
+
+// Shared utilities
+import { parseArgs, sleep } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -54,37 +57,8 @@ export function loadConfig() {
   };
 }
 
-/**
- * Parse command line arguments
- * @param {string[]} args - Command line arguments
- * @returns {object} Parsed arguments { _: positional, ...flags }
- */
-export function parseArgs(args) {
-  const result = { _: [] };
-  let i = 0;
-
-  while (i < args.length) {
-    const arg = args[i];
-
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2);
-      const nextArg = args[i + 1];
-
-      if (nextArg && !nextArg.startsWith('--')) {
-        result[key] = nextArg;
-        i += 2;
-      } else {
-        result[key] = true;
-        i += 1;
-      }
-    } else {
-      result._.push(arg);
-      i += 1;
-    }
-  }
-
-  return result;
-}
+// Re-export parseArgs from shared utils
+export { parseArgs };
 
 /**
  * Make API request to HuggingFace Hub API
@@ -268,14 +242,8 @@ export async function downloadFile(url, outputPath, onProgress = null) {
   return outputPath;
 }
 
-/**
- * Sleep for specified milliseconds
- * @param {number} ms - Milliseconds to sleep
- * @returns {Promise<void>}
- */
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// Re-export sleep from shared utils
+export { sleep };
 
 /**
  * Save binary output to file

@@ -331,7 +331,7 @@ All connectors use a shared dependency checker that automatically runs `npm inst
 
 ```javascript
 // Dependency check (MUST be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Built-in Node.js modules
@@ -394,7 +394,7 @@ const configPath = '/Users/someone/Library/CloudStorage/...';
 
 ```javascript
 // Dependency check (MUST be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Built-in Node.js modules

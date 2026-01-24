@@ -1,6 +1,6 @@
-# Shared Connector Utilities
+# Shared Utilities
 
-Shared code used by all connectors.
+Shared code used by connectors and tools.
 
 ## ensure-deps.js
 
@@ -21,7 +21,7 @@ Automatically installs npm dependencies on first run or when `package.json` chan
 #!/usr/bin/env node
 
 // Step 1: Import and run dependency check (MUST be first)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Step 2: Dynamic import of modules that use npm packages
@@ -60,4 +60,41 @@ Second run (dependencies installed):
 $ node scripts/bases.js list
 Found 3 base(s):
 ...
+```
+
+## utils.js
+
+Common utility functions used across connectors and tools.
+
+### parseArgs(args)
+
+Parse command line arguments into `{ _: [], key: value }` format.
+
+```javascript
+import { parseArgs } from '../../../system/shared/utils.js';
+
+const args = parseArgs(process.argv.slice(2));
+// node script.js list --limit 10 --verbose
+// Returns: { _: ['list'], limit: '10', verbose: true }
+```
+
+### sleep(ms)
+
+Promise-based delay.
+
+```javascript
+import { sleep } from '../../../system/shared/utils.js';
+
+await sleep(1000); // Wait 1 second
+```
+
+### parseJSON(str, fieldName)
+
+Safe JSON parsing with user-friendly error handling.
+
+```javascript
+import { parseJSON } from '../../../system/shared/utils.js';
+
+const config = parseJSON(args.config, 'config');
+// If invalid JSON, exits with helpful error message
 ```

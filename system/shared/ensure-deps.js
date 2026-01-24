@@ -5,7 +5,7 @@
  * Uses only built-in Node.js modules so it works before npm install.
  * 
  * Usage in scripts:
- *   import { ensureDeps } from '../../shared/ensure-deps.js';
+ *   import { ensureDeps } from '../../../system/shared/ensure-deps.js';
  *   ensureDeps(import.meta.url);
  *   
  *   // Then use dynamic import for modules that need npm packages:

@@ -94,7 +94,7 @@ Script tools with npm dependencies must auto-install on first run to prevent con
 
 ```javascript
 // Dependency check (MUST be first, before any npm imports)
-import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Built-in Node.js modules
@@ -119,7 +119,7 @@ Dependencies installed successfully.
 Please re-run your command.
 ```
 
-**Reference:** See `/cofounder/connectors/shared/ensure-deps.js` for the shared utility.
+**Reference:** See `/cofounder/system/shared/ensure-deps.js` for the shared utility.
 
 ### Composite Tool AGENTS.md
 

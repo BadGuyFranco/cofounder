@@ -4,8 +4,11 @@
  */
 
 // Dependency check (must be first, before any npm imports)
-import { ensureDeps } from '../../shared/ensure-deps.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
+
+// Shared utilities
+import { parseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -50,37 +53,8 @@ export function loadConfig() {
   };
 }
 
-/**
- * Parse command line arguments
- * @param {string[]} args - Command line arguments
- * @returns {object} Parsed arguments { _: [], flags }
- */
-export function parseArgs(args) {
-  const result = { _: [] };
-  let i = 0;
-
-  while (i < args.length) {
-    const arg = args[i];
-
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2);
-      const nextArg = args[i + 1];
-
-      if (nextArg && !nextArg.startsWith('--')) {
-        result[key] = nextArg;
-        i += 2;
-      } else {
-        result[key] = true;
-        i += 1;
-      }
-    } else {
-      result._.push(arg);
-      i += 1;
-    }
-  }
-
-  return result;
-}
+// Re-export parseArgs from shared utils
+export { parseArgs };
 
 const BASE_URL = 'https://api.cloudflare.com/client/v4';
 
@@ -205,13 +179,8 @@ export async function resolveZoneId(zoneIdentifier) {
   return zoneId;
 }
 
-/**
- * Sleep helper
- * @param {number} ms - Milliseconds to sleep
- */
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// Re-export sleep from shared utils
+export { sleep };
 
 /**
  * Format output as JSON
@@ -237,18 +206,5 @@ export function outputError(error) {
   process.exit(1);
 }
 
-/**
- * Parse JSON safely
- * @param {string} str - JSON string
- * @param {string} fieldName - Field name for error messages
- * @returns {object} Parsed JSON
- */
-export function parseJSON(str, fieldName) {
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    console.error(`Error: Invalid JSON in --${fieldName}`);
-    console.error(`Received: ${str}`);
-    process.exit(1);
-  }
-}
+// Re-export parseJSON from shared utils
+export { parseJSON };
