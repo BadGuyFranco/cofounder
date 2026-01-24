@@ -20,11 +20,15 @@ If the pull succeeds, tell the user: "CoFounder updated to the latest version."
 
 If the output shows "Already up to date", tell the user: "CoFounder is already at the latest version."
 
-## Step 4: Version Check
+## Step 4: Run Migrations (Required)
 
-After update completes, verify `/memory/system/version.txt` matches `/cofounder/system/version.txt`.
+Always check for pending migrations after git pull:
 
-If mismatch or `/memory/system/version.txt` missing → Follow `/cofounder/system/migrations/AGENTS.md`
+1. Read `/cofounder/system/version.txt`
+2. Read `/memory/system/version.txt`
+3. If values differ or memory version missing → Follow `/cofounder/system/migrations/AGENTS.md`
+
+Do not skip this step even if git reported "Already up to date".
 
 ## Troubleshooting
 

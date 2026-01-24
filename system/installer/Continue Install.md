@@ -47,7 +47,7 @@ Always Apply System Rules
 Create directories and copy template files:
 
 ```bash
-mkdir -p memory/tools/Content\ Author/Writing\ Samples && mkdir -p memory/connectors && mkdir -p memory/my\ tools && mkdir -p memory/my\ connectors && mkdir -p memory/plans && mkdir -p memory/system && cp cofounder/system/templates/Memory\ Templates/README.md memory/README.md && cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md && cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md && cp cofounder/system/version.txt memory/system/version.txt
+mkdir -p memory/tools/Content\ Author/Writing\ Samples && mkdir -p memory/connectors && mkdir -p memory/my\ tools && mkdir -p memory/my\ connectors && mkdir -p memory/plans && mkdir -p memory/system && cp cofounder/system/templates/Memory\ Templates/memory-root-AGENTS.md memory/AGENTS.md && cp cofounder/system/templates/Memory\ Templates/my-tools-AGENTS.md memory/my\ tools/AGENTS.md && cp cofounder/system/templates/Memory\ Templates/my-connectors-AGENTS.md memory/my\ connectors/AGENTS.md && cp cofounder/system/version.txt memory/system/version.txt
 ```
 
 ## Step 4: Create Personal Workspace
@@ -64,7 +64,7 @@ Copy the workspace template:
 cp cofounder/system/templates/Personal\ Workspace\ Template/AGENTS.md [name]/AGENTS.md
 ```
 
-Update the AGENTS.md file, replacing `[Your Name]` with their actual name.
+Update the AGENTS.md file, replacing `[Your Name]` with their actual name and by removing the "## Template Instructions (DELETE WHEN DONE)" section in the new file when complete
 
 ## Step 5: Create Workspace File
 
@@ -76,7 +76,6 @@ cat > workspaces/[name].code-workspace <<'EOF'
   "folders": [
     { "path": "../cofounder" },
     { "path": "../memory" },
-    { "path": "../workspaces" },
     { "path": "../[name]" }
   ],
   "settings": {

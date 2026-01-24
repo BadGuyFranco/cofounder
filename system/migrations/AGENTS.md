@@ -4,36 +4,22 @@ Instructions for updating `/memory/` when the library changes.
 
 ## When to Use
 
-When `/memory/system/version.txt` differs from `/cofounder/system/version.txt` (or `version.txt` is missing).
+When `/memory/system/version.txt` differs from `/cofounder/system/version.txt` (or is missing).
 
 ## Process
 
-1. Read `/cofounder/system/version.txt` to get current library version
-2. Read `/memory/system/version.txt` to get user's last applied version (if missing, assume never migrated)
-3. Find all migration files in this directory dated AFTER user's version
-4. Guide user through each migration in chronological order
-5. After completing all migrations, update `/memory/system/version.txt` to match library version
+1. Read `/cofounder/system/version.txt` (library version)
+2. Read `/memory/system/version.txt` (user's version; if missing, see below)
+3. Find migration files in this directory dated AFTER user's version
+4. Execute each migration in date order (oldest first)
+5. Update `/memory/system/version.txt` to match library version
 
-## Migration Files
+Migration files are named `YYYY-MM-DD-description.md` and contain step-by-step instructions.
 
-Files are named `YYYY-MM-DD-description.md`. Each contains:
-- What changed and why
-- Step-by-step migration instructions
-- Verification steps
+## Missing version.txt
 
-Read and execute them in date order (oldest first).
+If `/memory/system/version.txt` does not exist:
 
-## Example
-
-User's `/memory/system/version.txt`: `2025-01-01`  
-Library `/cofounder/system/version.txt`: `2025-01-14`
-
-Apply: `2025-01-14-memory-restructure.md` (any migrations between those dates)
-
-Then set `/memory/system/version.txt` to `2025-01-14`.
-
-## New Users
-
-If `/memory/system/version.txt` doesn't exist, user either:
-1. Never completed setup (direct to `/cofounder/system/installer/Continue Install.md`)
-2. Setup predates versioning (apply all migrations, then create `system/version.txt`)
+**Check if `/memory/my tools/` exists:**
+- Yes → Setup predates versioning. Apply all migrations, then create version.txt.
+- No → Setup incomplete. Direct to `/cofounder/system/installer/Continue Install.md`.

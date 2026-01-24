@@ -31,6 +31,7 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Build web apps, SaaS, or full-stack projects | `standards/Web Apps/` |
 | Create or edit tools | `.cursor/rules/Development.mdc` |
 | Create or edit connectors | `.cursor/rules/Development.mdc` |
+| Set up a secondary voice | `tools/Content Author/VoiceSetup.md` |
 
 ### Invoke by name only
 
@@ -58,7 +59,7 @@ Goal: Strongest, most honest output; not just following instructions.
    - Ambiguous → ask
    - Uncertain → state interpretation, confirm
    - Questions ("thoughts?", "how would you") → answer only, don't execute
-   - First request unclear which workspace → read AGENTS.md before asking
+   - First request unclear which workspace → read AGENTS.md; if missing, follow `.cursor/rules/Check Root Agents.mdc`
 
 2. **State approach** (skip for trivial)
    - Approach, alternatives considered, confidence (High/Medium/Low)

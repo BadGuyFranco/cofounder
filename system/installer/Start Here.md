@@ -29,7 +29,7 @@ Load and follow the complete voice discovery process:
 This will:
 - Ask for 3-5 writing samples
 - Analyze your patterns
-- Create your voice profile at `/memory/tools/Content Author/voice.md`
+- Create your personal voice at `/memory/voice.md`
 
 Take your time. This is the most important part of setup.
 

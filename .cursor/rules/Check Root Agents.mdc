@@ -1,0 +1,38 @@
+---
+description: Creates missing AGENTS.md files in workspace roots
+alwaysApply: false
+---
+
+# Check Root AGENTS.md
+
+A workspace root is missing its AGENTS.md file. This file provides workspace-specific instructions that help the AI understand the purpose and structure of each workspace.
+
+## Step 1: Identify Missing Files
+
+Check each path in `user_info.Workspace Paths`. For each path that is NOT `/cofounder/`:
+- If `AGENTS.md` does not exist in that root, it needs to be created
+
+List the folders missing AGENTS.md and ask the user:
+
+"The following workspace roots are missing AGENTS.md files:
+- [list folders]
+
+Would you like me to create them? This helps me understand each workspace's purpose."
+
+If the user declines, proceed without creating files.
+
+## Step 2: Create Missing Files
+
+For each missing AGENTS.md:
+
+**If the folder is `/memory/`:**
+Copy from `/cofounder/system/templates/Memory Templates/memory-root-AGENTS.md`
+
+**If the folder is any other workspace:**
+Copy from `/cofounder/system/templates/Personal Workspace Template/AGENTS.md`, then:
+1. Replace `[Your Name]` with the folder name
+2. Remove the "Template Instructions" section
+
+## Step 3: Confirm
+
+Tell the user which files were created and resume the original task.

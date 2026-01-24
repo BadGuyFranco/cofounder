@@ -6,19 +6,24 @@ Produce content that says impactful things plainly. Every piece should pass enfo
 
 ## Required: Load Voice File
 
-Before writing, load `/memory/tools/Content Author/voice.md` (voice patterns, examples, and persona).
+Before writing, load voice.md using this resolution order:
 
-**If voice.md is missing:** Stop. Do not proceed with content writing. Tell the user: "voice.md is missing. Run `tools/Content Author/VoiceSetup.md` to create it, or provide a voice.md file."
+| Priority | Location | When |
+|----------|----------|------|
+| 1 | Current root folder's `voice.md` | If present (rare, for specific brands/clients) |
+| 2 | `/memory/voice.md` | Default (most common) |
 
-**Do NOT load VoiceSetup.md during normal content writing.** VoiceSetup.md is only for creating voice.md, not for writing content.
+**If user explicitly requests a voice** ("use my personal voice" or "use secondary voice"), skip resolution and load the requested one.
 
-**The two files work as a system:**
-- AGENTS.md = Universal craft rules (voice-agnostic, applies to any author)
-- voice.md = This author's voice (patterns, examples, verification)
+**If `/memory/voice.md` does not exist:**
 
-Both must be loaded. They cannot function independently.
+1. Check `/memory/tools/Content Author/voice.md`
+2. **Found:** Move it to `/memory/voice.md` and continue
+3. **Not found:** Ask "You don't have a voice profile yet. Want to set one up now?"
+   - **Yes:** Load `tools/Content Author/VoiceSetup.md`
+   - **No:** Stop; cannot write content without voice
 
-**Context priority:** If context is constrained, prioritize: AGENTS.md enforcement mechanisms → voice.md testable patterns. Never drop enforcement mechanisms.
+Load both this file and voice.md before writing.
 
 ## XML Boundaries
 

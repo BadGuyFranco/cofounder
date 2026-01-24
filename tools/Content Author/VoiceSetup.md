@@ -2,27 +2,37 @@
 
 ## Purpose
 
-This document guides creation of `memory/tools/Content Author/voice.md` when:
-- Setting up Content Author for the first time
-- Rebuilding after memory deletion
-- Adapting Content Author for a different author
+Create your personal voice at `/memory/voice.md`. This is required for Content Author.
 
-**End state:** A voice.md file that works in concert with AGENTS.md to produce authentic, practitioner-quality content in the target author's voice.
+Optionally, create a root folder voice at `[root folder]/voice.md` for specific brands, clients, or personas that need their own voice.
+
+Use this when:
+- Setting up Content Author for the first time (personal voice)
+- Creating a voice for a specific brand, client, or persona (optional, rare)
+- Rebuilding after memory deletion
+
+**End state:** A voice.md file that works in concert with AGENTS.md to produce authentic, practitioner-quality content in the target voice.
 
 ## Prerequisites
 
 Before starting, read AGENTS.md completely (understand what it covers).
 
-## The Two-File Architecture
+## How It Works
 
-Content Author uses two files that cannot function independently:
+Content Author uses two files together:
 
 | File | Contains | Location |
 |------|----------|----------|
 | AGENTS.md | Universal craft rules (voice-agnostic) | `/cofounder/tools/Content Author/` |
-| voice.md | This author's specific voice | `/memory/tools/Content Author/` |
+| voice.md | This author's/brand's specific voice | Root folder level (see below) |
 
-**Segmentation principle:** If guidance applies to ANY good writer, it belongs in AGENTS.md. If it's specific to THIS author's style, it belongs in voice.md.
+**Voice locations:**
+- Personal voice: `/memory/voice.md` (required)
+- Root folder voice: `[root folder]/voice.md` (optional, for specific brands/clients)
+
+**Resolution order:** Root folder voice.md (if present) > `/memory/voice.md` > error
+
+**Segmentation principle:** If guidance applies to ANY good writer, it belongs in AGENTS.md. If it's specific to THIS voice, it belongs in voice.md.
 
 **What AGENTS.md already covers (do NOT duplicate in voice.md):**
 - Bridge Check (causal connection between sentences)
@@ -37,28 +47,48 @@ Content Author uses two files that cannot function independently:
 
 ## Voice Discovery Process
 
-Run this interactive process to discover the author's voice.
+Run this interactive process to discover the voice.
 
 **The Combined Approach:** Writing samples AND discovery questions work together. Neither alone produces the best results.
 - Samples alone miss the author's INTENT (samples may contain habits they want to change)
 - Questions alone miss the author's ACTUAL PATTERNS (what they naturally do well)
 - Together: samples reveal patterns, questions clarify intent, the voice.md captures both
 
-### Step 1: Writing Samples
+### Step 1: Choose Voice Location
+
+**If `/memory/voice.md` does not exist:** This is first-time setup. Default to personal voice (`/memory/voice.md`) without asking. Proceed to Step 2.
+
+**If `/memory/voice.md` already exists:** Ask the user:
+
+> "You already have a personal voice. Where should this new voice profile be saved?
+>
+> **A. This root folder** (`[current root folder]/voice.md`)
+> For a brand, persona, client, or project that needs its own voice.
+>
+> **B. Update personal voice** (`/memory/voice.md`)
+> Replace your existing personal voice."
+
+**If user picks A and that root folder already has a voice.md:**
+> "This root folder already has a voice.md. Update it, or choose a different location?"
+
+**Store the chosen path** for use in Step 6 (Build voice.md).
+
+### Step 2: Writing Samples
 
 **Before asking questions, do this:**
 
-1. Create the Writing Samples directory if it doesn't exist:
-   ```
-   mkdir -p /memory/tools/Content\ Author/Writing\ Samples/
-   ```
+1. Create a Writing Samples directory if samples will be saved (optional):
+   - Personal voice: `/memory/tools/Content Author/Writing Samples/`
+   - Root folder voice: `[root folder]/voice-samples/`
+   
+   Or samples can be pasted inline during this step.
 
 2. Ask the user:
-   > "Let's start with writing samples. Please provide 3-5 pieces you've written. Ideal samples are 500+ words each, from varied contexts (articles, posts, talks, emails).
+   > "Let's start with writing samples. Please provide 3-5 pieces written in this voice. Ideal samples are 500+ words each, from varied contexts (articles, posts, talks, emails).
    >
-   > These help me see your natural patterns. We'll also do a discovery Q&A to clarify your intent, since samples sometimes contain habits you'd want to change.
+   > These help me see natural patterns. We'll also do a discovery Q&A to clarify intent, since samples sometimes contain habits to change.
    >
-   > Place them in `/memory/tools/Content Author/Writing Samples/` or paste them here."
+   > You can paste them here or save them to a directory for reference."
 
 3. Wait for samples before proceeding.
 
@@ -67,7 +97,7 @@ Run this interactive process to discover the author's voice.
 
 This captures intent early, before patterns are extracted.
 
-### Step 2: Context Questions
+### Step 3: Context Questions
 
 Before the style questions, establish context. These answers inform the examples you'll generate and provide guidance for voice.md.
 
@@ -106,7 +136,7 @@ Topic and audience inform voice but are NOT rigid constraints. Include them in v
 These guide tone and examples but don't limit what you can write about.
 ```
 
-### Step 3: Voice Discovery Questions
+### Step 4: Voice Discovery Questions
 
 **Question format:** For each question:
 
@@ -236,33 +266,33 @@ Document these as "Who You Are NOT" in voice.md.
 
 #### Discovery Complete
 
-After Step 3, you should have:
-- Writing samples (Step 1)
-- Stated intent: habits they want to change (Step 1, question 4)
-- Topic and audience context (Questions A-B)
-- Clear persona (Question 1)
-- Reader relationship stance (Question 2)
-- Confidence/certainty style (Question 3)
-- Opening pattern preference (Question 4)
-- Signature rhetorical moves (Question 5)
-- Closing style (Question 6)
-- Anti-patterns to avoid (Question 7)
+After Step 4, you should have:
+- Writing samples (Step 2)
+- Stated intent: habits they want to change (Step 2)
+- Topic and audience context (Step 3)
+- Clear persona (Step 4, Question 1)
+- Reader relationship stance (Step 4, Question 2)
+- Confidence/certainty style (Step 4, Question 3)
+- Opening pattern preference (Step 4, Question 4)
+- Signature rhetorical moves (Step 4, Question 5)
+- Closing style (Step 4, Question 6)
+- Anti-patterns to avoid (Step 4, Question 7)
 
-### Step 4: Writing Sample Analysis
+### Step 5: Writing Sample Analysis
 
-Analyze the samples provided in Step 1, filtering against intent captured throughout discovery.
+Analyze the samples provided in Step 2, filtering against intent captured throughout discovery.
 
-#### 4a: Validate Against Discovery
+#### 5a: Validate Against Discovery
 
 Compare samples to discovery answers:
 - Do samples match the persona they described?
 - Do samples use the rhetorical moves they preferred?
 - Do samples avoid what they said they hate?
-- Do samples contain the habits they flagged wanting to change (from Step 1, question 4)?
+- Do samples contain the habits they flagged wanting to change (from Step 2)?
 
 **When intent and samples conflict:** Discovery answers and stated intent always win. Samples reveal what they DO; discovery reveals what they WANT.
 
-#### 4b: Extract Additional Patterns
+#### 5b: Extract Additional Patterns
 
 Look for patterns not covered in discovery:
 - Specific sentence rhythm tendencies
@@ -270,7 +300,7 @@ Look for patterns not covered in discovery:
 - How they handle transitions
 - Specific credibility markers they use
 
-#### 4c: Filter Against AGENTS.md
+#### 5c: Filter Against AGENTS.md
 
 **Discard from samples:**
 - Patterns that violate AGENTS.md prohibitions
@@ -283,7 +313,7 @@ Look for patterns not covered in discovery:
 - Distinctive patterns that match discovery intent
 - Voice-specific implementations of good craft
 
-### Step 5: Build voice.md
+### Step 6: Build voice.md
 
 #### Pattern Count Guidance
 
@@ -411,7 +441,7 @@ Before finalizing, verify:
 - [ ] Header correctly states two-file system
 - [ ] 4-6 voice-specific patterns (not more, not fewer)
 
-### Step 6: Test and Iterate
+### Step 7: Test and Iterate
 
 #### Initial Test
 
@@ -482,19 +512,25 @@ Fewer than 4 patterns produces generic output. If you can't find 4 distinctive p
 
 ## File Checklist
 
-When complete, `memory/tools/Content Author/` should contain:
-
+**For personal voice:**
 ```
-memory/tools/Content Author/
-├── voice.md (required - the voice file you created)
-└── Writing Samples/ (optional - keep for future reference)
-    └── [author's writing samples if provided]
+/memory/
+├── voice.md (your personal voice)
+└── tools/Content Author/
+    └── Writing Samples/ (optional - keep for future reference)
+```
+
+**For root folder voice:**
+```
+/[root folder]/
+├── voice.md (this root folder's voice)
+└── voice-samples/ (optional - if you want to keep samples)
 ```
 
 The system is ready when:
-- [ ] voice.md exists and follows the structure above
+- [ ] voice.md exists at the chosen location (root folder or `/memory/`)
 - [ ] voice.md contains 4-6 voice-specific patterns
 - [ ] voice.md works WITH AGENTS.md, not independently
-- [ ] Test content sounds like the target author
+- [ ] Test content sounds like the target voice
 - [ ] No AGENTS.md violations in test content
-- [ ] Author confirms voice feels right (if available for feedback)
+- [ ] Author/stakeholder confirms voice feels right (if available for feedback)
