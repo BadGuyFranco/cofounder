@@ -9,7 +9,14 @@
  *   node cloud.js api-keys create --name "My Key" --account user@example.com
  */
 
-import { google } from 'googleapis';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { google } = await import('googleapis');
+
+// Local modules
 import { getAuthClient } from './auth.js';
 import {
   parseArgs,

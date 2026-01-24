@@ -9,11 +9,20 @@
  *   node drive.js move FILE_ID FOLDER_ID --account user@example.com
  */
 
-import { google } from 'googleapis';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { google } = await import('googleapis');
+
+// Built-in Node.js modules
 import { writeFileSync, existsSync, mkdirSync, readdirSync, createReadStream } from 'fs';
 import { dirname, basename, join, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { platform, homedir } from 'os';
+
+// Local modules
 import { getAuthClient } from './auth.js';
 
 // MIME types for common image formats

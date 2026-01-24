@@ -323,6 +323,44 @@ See `AGENTS.md` for AI agent instructions.
 
 Shared utilities every connector needs.
 
+**CRITICAL: Automatic Dependency Installation**
+
+All connectors use a shared dependency checker that automatically runs `npm install` on first use. This prevents the confusing "Cannot find module" error.
+
+**Required pattern for utils.js:**
+
+```javascript
+// Dependency check (MUST be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// Built-in Node.js modules
+import { join, dirname } from 'path';
+import { existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+
+// npm packages (dynamic import AFTER dependency check)
+const dotenv = (await import('dotenv')).default;
+```
+
+**Why dynamic imports?** ES modules resolve all static imports before any code runs. If `dotenv` is imported statically and `node_modules` doesn't exist, the script fails immediately. Dynamic imports allow the dependency check to run first.
+
+**User experience:**
+
+First run (no dependencies):
+```
+$ node scripts/bases.js list
+
+First-time setup: Installing dependencies...
+
+added 5 packages in 2s
+
+Dependencies installed successfully.
+Please re-run your command.
+```
+
+Second run onwards: Works normally.
+
 **CRITICAL: Path Portability Rules**
 
 The cofounder directory is shared/read-only for most users. All paths MUST be portable:
@@ -335,9 +373,6 @@ The cofounder directory is shared/read-only for most users. All paths MUST be po
 **Correct pattern:**
 
 ```javascript
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Script is at: .../GPT/cofounder/connectors/[platform]/scripts/utils.js
@@ -358,10 +393,17 @@ const configPath = '/Users/someone/Library/CloudStorage/...';
 **Full utils.js template:**
 
 ```javascript
-import dotenv from 'dotenv';
+// Dependency check (MUST be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// Built-in Node.js modules
 import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
+
+// npm packages (dynamic import after dependency check)
+const dotenv = (await import('dotenv')).default;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

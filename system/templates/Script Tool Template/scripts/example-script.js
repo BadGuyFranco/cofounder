@@ -23,7 +23,21 @@
  *     See /memory/README.md for setup.
  */
 
-import { config } from 'dotenv';
+// ============================================================================
+// DEPENDENCY CHECK - Auto-installs npm packages on first run
+// ============================================================================
+
+import { ensureDeps } from '../../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// npm packages (dynamic import after dependency check)
+const { config } = await import('dotenv');
+
+// Built-in Node.js modules
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -192,16 +206,25 @@ process.exit(exitCode);
 /**
  * When creating your own scripts:
  *
- * 1. Update the path to /memory/ in the environment loading section
- * 2. Replace [Tool Name] with your actual tool name
- * 3. Update validateConfig() with your required env vars
- * 4. Implement processInput() with your actual logic
- * 5. Update CLI argument parsing as needed
- * 6. Delete this instructions section
+ * 1. Keep the ensureDeps import and call at the top (auto-installs dependencies)
+ * 2. Use dynamic imports for npm packages: const { x } = await import('package');
+ * 3. Update the path to /memory/ in the environment loading section
+ * 4. Replace [Tool Name] with your actual tool name
+ * 5. Update validateConfig() with your required env vars
+ * 6. Implement processInput() with your actual logic
+ * 7. Update CLI argument parsing as needed
+ * 8. Delete this instructions section
  *
  * Path calculation for /memory/:
  * - Scripts at: /cofounder/tools/[Tool Name]/scripts/
  * - Memory at: /memory/tools/[Tool Name]/
  * - Relative: ../../../../memory/tools/[Tool Name]/.env
+ *
+ * Dependency auto-install:
+ * - The ensureDeps() call checks if node_modules exists
+ * - If missing, runs npm install automatically
+ * - User sees "First-time setup: Installing dependencies..."
+ * - Then "Please re-run your command"
+ * - Second run works normally
  */
 

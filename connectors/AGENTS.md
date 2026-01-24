@@ -78,4 +78,4 @@ See `DEVELOPMENT.md` for patterns, templates, and testing checklist.
 
 **"node: command not found":** Follow `/cofounder/system/installer/dependencies/nodejs.md`
 
-**"Cannot find module":** Run `npm install` in the connector directory first.
+**"Cannot find module":** Dependencies should auto-install on first run. If not, run `npm install` in the connector directory manually.

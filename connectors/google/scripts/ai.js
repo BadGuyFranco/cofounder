@@ -9,9 +9,18 @@
  *   node ai.js vision ./photo.jpg "What's in this image?"
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { GoogleGenerativeAI } = await import('@google/generative-ai');
+
+// Built-in Node.js modules
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'fs';
 import { dirname, basename, extname } from 'path';
+
+// Local modules
 import {
   parseArgs,
   output,

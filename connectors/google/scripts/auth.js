@@ -11,10 +11,19 @@
  *   node auth.js scopes
  */
 
-import { google } from 'googleapis';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { google } = await import('googleapis');
+
+// Built-in Node.js modules
 import { createServer } from 'http';
 import { URL, fileURLToPath } from 'url';
 import { exec } from 'child_process';
+
+// Local modules
 import {
   loadCredentials,
   saveCredentials,

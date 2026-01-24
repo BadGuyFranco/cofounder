@@ -8,7 +8,7 @@
 node scripts/[main-script].js "input"
 ```
 
-If you get "Cannot find module", run `npm install` first.
+Dependencies are installed automatically on first run.
 
 Expected output:
 ```

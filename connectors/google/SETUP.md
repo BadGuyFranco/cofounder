@@ -464,6 +464,8 @@ Quick fix: Run `conda activate` first, then retry the command.
 ### General Issues
 
 **"Cannot find module"**
+
+Dependencies should auto-install on first run. If not, run manually:
 ```bash
 cd "/cofounder/connectors/google"
 npm install

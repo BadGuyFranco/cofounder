@@ -12,7 +12,14 @@
  *   import { addInlineMarker, findAndReplace } from './collaboration.js';
  */
 
-import { google } from 'googleapis';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { google } = await import('googleapis');
+
+// Local modules
 import { getAuthClient } from './auth.js';
 import { addComment } from './drive.js';
 

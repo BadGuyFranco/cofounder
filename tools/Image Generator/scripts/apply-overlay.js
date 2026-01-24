@@ -3,9 +3,16 @@
  * Apply a transparent overlay image on top of a base image.
  */
 
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const sharp = (await import('sharp')).default;
+
+// Built-in Node.js modules
 import { existsSync, statSync } from 'fs';
 import { extname } from 'path';
-import sharp from 'sharp';
 
 /**
  * Apply a transparent overlay on top of a base image

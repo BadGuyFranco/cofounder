@@ -12,7 +12,14 @@
  *   --background    Background color (default: white)
  */
 
-import { chromium } from 'playwright';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { chromium } = await import('playwright');
+
+// Built-in Node.js modules
 import fs from 'fs';
 import path from 'path';
 

@@ -7,9 +7,16 @@
  * Install: conda install -y ffmpeg (requires Miniforge)
  */
 
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const ffmpeg = (await import('fluent-ffmpeg')).default;
+
+// Built-in Node.js modules
 import { existsSync, mkdirSync, statSync } from 'fs';
 import { dirname, basename, extname, join } from 'path';
-import ffmpeg from 'fluent-ffmpeg';
 
 /**
  * Trim video to specified time range

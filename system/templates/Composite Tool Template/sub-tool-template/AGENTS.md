@@ -17,6 +17,9 @@ Expected output:
 
 ## Setup
 
+Dependencies are installed automatically on first run.
+
+If manual install is needed:
 ```bash
 cd [sub-tool-name]
 npm install

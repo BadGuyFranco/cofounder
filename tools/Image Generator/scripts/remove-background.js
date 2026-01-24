@@ -8,12 +8,19 @@
  *   - Default model: /connectors/replicate/defaults.json
  */
 
-import { config } from 'dotenv';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { config } = await import('dotenv');
+const Replicate = (await import('replicate')).default;
+const sharp = (await import('sharp')).default;
+
+// Built-in Node.js modules
 import { existsSync, readFileSync, writeFileSync, statSync } from 'fs';
 import { dirname, basename, extname, resolve, join } from 'path';
 import { fileURLToPath } from 'url';
-import Replicate from 'replicate';
-import sharp from 'sharp';
 
 // Environment setup - use Connector credential location
 const __filename = fileURLToPath(import.meta.url);

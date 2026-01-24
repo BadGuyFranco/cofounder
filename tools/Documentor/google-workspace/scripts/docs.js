@@ -12,10 +12,19 @@
  *   node docs.js export --id DOC_ID --format pdf --output ./doc.pdf --account user@example.com
  */
 
-import { google } from 'googleapis';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { google } = await import('googleapis');
+
+// Built-in Node.js modules
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, resolve, extname } from 'path';
+
+// Local modules
 import { getAuthClient } from './auth.js';
 import { getFolderId, moveFile, exportFile, EXPORT_TYPES, getLocalPath, uploadFile, makeFilePublic } from './drive.js';
 

@@ -14,9 +14,16 @@
  *     node local-image-edit.js input.png output.png --grayscale --brightness 0.8 --contrast 0.8 --resize 1440 810
  */
 
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const sharp = (await import('sharp')).default;
+
+// Built-in Node.js modules
 import { existsSync, statSync } from 'fs';
 import { basename, dirname, extname } from 'path';
-import sharp from 'sharp';
 
 // Parse CLI arguments
 function parseArgs(args) {

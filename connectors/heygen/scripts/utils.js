@@ -5,10 +5,17 @@
  * Shared functions for API calls, config, and multi-account support.
  */
 
-import dotenv from 'dotenv';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// Built-in Node.js modules
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+
+// npm packages (dynamic import after dependency check)
+const dotenv = (await import('dotenv')).default;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -11,8 +11,15 @@
  *   node databases.js schema <database-id>
  */
 
-import { Client } from '@notionhq/client';
-import dotenv from 'dotenv';
+// Dependency check (must be first, before any npm imports)
+import { ensureDeps } from '../../shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// npm packages (dynamic import after dependency check)
+const { Client } = await import('@notionhq/client');
+const dotenv = (await import('dotenv')).default;
+
+// Built-in Node.js modules
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';

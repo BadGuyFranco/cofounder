@@ -8,7 +8,7 @@
 node scripts/[main-script].js "input"
 ```
 
-If you get "Cannot find module", run `npm install` first.
+Dependencies are installed automatically on first run.
 
 Expected output:
 ```
@@ -52,7 +52,7 @@ Request for [tool domain]
 
 ### [Default Sub-tool] (No configuration required)
 
-Works immediately after `npm install`.
+Works immediately. Dependencies are installed automatically on first run.
 
 ### [Optional Sub-tool] (Requires setup)
 
@@ -113,7 +113,7 @@ See `[optional-sub-tool]/AGENTS.md` for complete usage.
 
 ### [Default Sub-tool] Issues
 
-**"Cannot find module" errors:**
+**"Cannot find module" errors:** Dependencies should auto-install on first run. If not, run manually:
 ```bash
 cd [default-sub-tool] && npm install
 ```

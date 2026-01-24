@@ -86,6 +86,41 @@ Script Tools with external dependencies (Node.js, Python, API keys) must also ha
 **"node: command not found" or setup issues:** Follow `SETUP.md` in this tool's directory.
 ```
 
+### Script Tool Automatic Dependency Installation
+
+Script tools with npm dependencies must auto-install on first run to prevent confusing "Cannot find module" errors.
+
+**Pattern for utils.js or main script:**
+
+```javascript
+// Dependency check (MUST be first, before any npm imports)
+import { ensureDeps } from '../../../connectors/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
+// Built-in Node.js modules
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// npm packages (dynamic import AFTER dependency check)
+const dotenv = (await import('dotenv')).default;
+```
+
+**Why dynamic imports?** ES modules resolve all static imports before any code runs. Dynamic imports allow the dependency check to run first.
+
+**User experience:**
+
+```
+$ node scripts/generate.js --help
+
+First-time setup: Installing dependencies...
+added 5 packages in 2s
+
+Dependencies installed successfully.
+Please re-run your command.
+```
+
+**Reference:** See `/cofounder/connectors/shared/ensure-deps.js` for the shared utility.
+
 ### Composite Tool AGENTS.md
 
 - One-line description
