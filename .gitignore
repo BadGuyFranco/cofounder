@@ -61,3 +61,6 @@ tools/Video Generator/generated_videos/*
 # Node.js
 node_modules/
 package-lock.json
+
+# Dependency install markers (local state, per-machine)
+**/.deps-installed
