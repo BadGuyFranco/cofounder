@@ -3,11 +3,12 @@
  * html-to-png.js - Render HTML file to PNG using Playwright
  * 
  * Usage:
- *   node scripts/html-to-png.js input.html output.png [--width 1200] [--height 630]
+ *   node scripts/html-to-png.js input.html output.png [--width 1200] [--height 630] [--full-page]
  * 
  * Options:
- *   --width N     Viewport width in pixels (default: 1200)
- *   --height N    Viewport height in pixels (default: 630)
+ *   --width N      Viewport width in pixels (default: 1200)
+ *   --height N     Viewport height in pixels (default: auto-fit to content)
+ *   --full-page    Capture full scrollable page (default: true, captures content height)
  */
 
 // Dependency check (must be first, before any npm imports)
@@ -22,14 +23,17 @@ import fs from 'fs';
 import path from 'path';
 
 function parseArgs(args) {
-  const result = { width: 1200, height: 630 };
+  const result = { width: 1200, height: null, fullPage: true };
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--width' && args[i + 1]) {
       result.width = parseInt(args[i + 1]);
       i++;
     } else if (args[i] === '--height' && args[i + 1]) {
       result.height = parseInt(args[i + 1]);
+      result.fullPage = false; // Explicit height disables auto-fit
       i++;
+    } else if (args[i] === '--full-page') {
+      result.fullPage = true;
     }
   }
   return result;
@@ -47,8 +51,9 @@ async function htmlToPng(inputPath, outputPath, options) {
     browser = await chromium.launch();
     const page = await browser.newPage();
     
-    // Set viewport
-    await page.setViewportSize({ width: options.width, height: options.height });
+    // Set initial viewport width (height will be adjusted)
+    const initialHeight = options.height || 800;
+    await page.setViewportSize({ width: options.width, height: initialHeight });
 
     // Load the HTML file
     const absolutePath = path.resolve(inputPath);
@@ -63,13 +68,34 @@ async function htmlToPng(inputPath, outputPath, options) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    // Screenshot the page
-    await page.screenshot({
-      path: outputPath,
-      type: 'png'
-    });
-
-    console.log(`Created: ${outputPath} (${options.width}x${options.height})`);
+    // If explicit height given, use fixed viewport screenshot
+    if (options.height) {
+      await page.screenshot({
+        path: outputPath,
+        type: 'png'
+      });
+      console.log(`Created: ${outputPath} (${options.width}x${options.height})`);
+    } else {
+      // Auto-fit: screenshot the body element to get exact content bounds
+      const body = await page.$('body');
+      const box = await body.boundingBox();
+      
+      // Expand viewport to ensure full content is visible
+      await page.setViewportSize({ 
+        width: Math.max(options.width, Math.ceil(box.width)), 
+        height: Math.ceil(box.height) + 10 
+      });
+      
+      // Re-get bounding box after resize
+      const finalBox = await body.boundingBox();
+      
+      await body.screenshot({
+        path: outputPath,
+        type: 'png'
+      });
+      
+      console.log(`Created: ${outputPath} (${Math.ceil(finalBox.width)}x${Math.ceil(finalBox.height)})`);
+    }
   } catch (error) {
     if (error.message.includes('Executable doesn\'t exist')) {
       console.error('Playwright not found. Run: cd "/cofounder/tools/Image Generator" && npm install');

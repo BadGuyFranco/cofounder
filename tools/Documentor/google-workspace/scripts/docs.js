@@ -341,6 +341,10 @@ async function embedImages(email, docId, imageReferences) {
 /**
  * Embed images and tables together, processed in reverse index order
  * This ensures that inserting one doesn't shift the index of another
+ * 
+ * Performance optimization: Images are uploaded to Drive in parallel before
+ * sequential insertion into the document.
+ * 
  * @param {string} email - Google account
  * @param {string} docId - Document ID
  * @param {Array} imageRefs - Array of { alt, absolutePath, index }
@@ -349,36 +353,50 @@ async function embedImages(email, docId, imageReferences) {
 async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
   const docs = await getDocsApi(email);
   
-  // Combine images and tables with type markers
+  // Step 1: Upload ALL images to Drive in parallel (major performance gain)
+  const uploadedImages = [];
+  if (imageRefs.length > 0) {
+    const uploadPromises = imageRefs.map(async (ref) => {
+      const uploaded = await uploadFile(email, ref.absolutePath);
+      return { ...ref, driveId: uploaded.id };
+    });
+    const results = await Promise.all(uploadPromises);
+    uploadedImages.push(...results);
+    
+    // Step 2: Make ALL images public in parallel
+    await Promise.all(uploadedImages.map(img => makeFilePublic(email, img.driveId)));
+  }
+  
+  // Step 3: Combine uploaded images and tables with type markers
   const items = [
-    ...imageRefs.map(ref => ({ ...ref, type: 'image' })),
+    ...uploadedImages.map(ref => ({ 
+      ...ref, 
+      type: 'image',
+      imageUri: `https://drive.google.com/uc?id=${ref.driveId}`
+    })),
     ...tableRefs.map(ref => ({ ...ref, type: 'table' }))
   ];
   
-  // Sort by index descending (highest first)
+  // Sort by index descending (highest first) for sequential insertion
   items.sort((a, b) => b.index - a.index);
   
+  // Step 4: Insert items sequentially (required due to index shifting)
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     
-    // Add delay to avoid rate limits (except first) - 1 second is safe with ~3-4 API calls per item
+    // Reduced delay (200ms) since we only have 1 API call per image now
     if (i > 0) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
     
     if (item.type === 'image') {
-      // Upload to Drive
-      const uploaded = await uploadFile(email, item.absolutePath);
-      await makeFilePublic(email, uploaded.id);
-      const imageUri = `https://drive.google.com/uc?id=${uploaded.id}`;
-      
       await docs.documents.batchUpdate({
         documentId: docId,
         requestBody: {
           requests: [{
             insertInlineImage: {
               location: { index: item.index },
-              uri: imageUri,
+              uri: item.imageUri,
               objectSize: { width: { magnitude: 400, unit: 'PT' } }
             }
           }]
@@ -442,7 +460,6 @@ async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
           documentId: docId,
           requestBody: { requests: insertRequests }
         });
-        // Note: Header bolding skipped for performance. Can be done manually or with a post-process step.
       }
     }
   }

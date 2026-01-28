@@ -12,16 +12,21 @@
  *   const { parseArgs, apiRequest } = await import('./utils.js');
  */
 
-import { existsSync, statSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import { createHash } from 'crypto';
 
 /**
  * Ensures npm dependencies are installed and up-to-date.
  * Runs npm install if:
  *   - node_modules is missing (first run)
- *   - package.json is newer than node_modules (dependencies changed after update)
+ *   - .deps-installed marker is missing (incomplete previous install)
+ *   - package.json content has changed since last install (hash mismatch)
+ * 
+ * Uses a marker file with package.json hash instead of timestamp comparison,
+ * which is unreliable on cloud-synced filesystems like Google Drive.
  * 
  * @param {string} metaUrl - Pass import.meta.url from the calling script
  */
@@ -40,12 +45,17 @@ export function ensureDeps(metaUrl) {
   
   const packageJsonPath = join(packageDir, 'package.json');
   const nodeModulesPath = join(packageDir, 'node_modules');
+  const markerPath = join(packageDir, '.deps-installed');
   
   // Check if we found a package.json
   if (!existsSync(packageJsonPath)) {
     // No package.json found, nothing to install
     return;
   }
+  
+  // Compute hash of package.json content
+  const packageJsonContent = readFileSync(packageJsonPath, 'utf8');
+  const currentHash = createHash('md5').update(packageJsonContent).digest('hex');
   
   // Determine if we need to install
   let needsInstall = false;
@@ -55,12 +65,14 @@ export function ensureDeps(metaUrl) {
     // No node_modules at all
     needsInstall = true;
     reason = 'First-time setup: Installing dependencies...\n';
+  } else if (!existsSync(markerPath)) {
+    // node_modules exists but marker is missing (incomplete install or manual deletion)
+    needsInstall = true;
+    reason = 'Verifying dependencies...\n';
   } else {
-    // Check if package.json is newer than node_modules
-    const packageJsonTime = statSync(packageJsonPath).mtimeMs;
-    const nodeModulesTime = statSync(nodeModulesPath).mtimeMs;
-    
-    if (packageJsonTime > nodeModulesTime) {
+    // Check if package.json has changed since last install
+    const installedHash = readFileSync(markerPath, 'utf8').trim();
+    if (installedHash !== currentHash) {
       needsInstall = true;
       reason = 'Dependencies updated: Installing new packages...\n';
     }
@@ -68,6 +80,11 @@ export function ensureDeps(metaUrl) {
   
   if (!needsInstall) {
     return;
+  }
+  
+  // Remove marker before install (in case install fails)
+  if (existsSync(markerPath)) {
+    unlinkSync(markerPath);
   }
   
   // Install dependencies
@@ -80,9 +97,12 @@ export function ensureDeps(metaUrl) {
       // Use shell on Windows for better compatibility
       shell: process.platform === 'win32'
     });
-    console.log('\nDependencies installed successfully.');
-    console.log('Please re-run your command.\n');
-    process.exit(0);
+    
+    // Write marker file with current package.json hash
+    writeFileSync(markerPath, currentHash);
+    
+    console.log('\nDependencies installed successfully.\n');
+    // Continue execution instead of exiting; deps are now installed
   } catch (error) {
     console.error('\nFailed to install dependencies automatically.');
     console.error('Please run manually:\n');
