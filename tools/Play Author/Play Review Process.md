@@ -1,6 +1,6 @@
-# Prompt Review Process
+# Play Review Process
 
-**When to load:** Reviewing or auditing existing prompts. Skip for new prompt writing.
+**When to load:** Reviewing or auditing existing Plays. Skip for new Play writing.
 
 **Prerequisite:** AGENTS.md must be loaded. This process references its criteria.
 
@@ -12,7 +12,7 @@
 3. Audit       →  Check against AGENTS.md criteria
 4. Diagnose    →  Locate problems, describe failure scenarios
 5. Present     →  One observation at a time, get user choice
-6. Verify      →  Did changes improve the prompt?
+6. Verify      →  Did changes improve the Play?
 ```
 
 ## Step 1: Triage
@@ -27,24 +27,24 @@ If rewrite needed: Stop. Rebuild using AGENTS.md Writing Process.
 
 ## Step 2: Stress Test
 
-Before auditing, run one realistic request through the prompt system end-to-end. Trace exactly what happens:
+Before auditing, run one realistic request through the Play end-to-end. Trace exactly what happens:
 - What gets loaded?
-- What guidance does the prompt provide?
+- What guidance does the Play provide?
 - Where is guidance unclear, conflicting, or missing?
 - What could go wrong?
 
-**Required output:** Describe at least one scenario where the current prompt could produce wrong or inconsistent output.
+**Required output:** Describe at least one scenario where the current Play could produce wrong or inconsistent output.
 
-If you can't identify any failure points, either the prompt is excellent or you haven't tried hard enough. Try a harder scenario.
+If you can't identify any failure points, either the Play is excellent or you haven't tried hard enough. Try a harder scenario.
 
 **This step prevents lazy reviewing.** Cosmetic issues (whitespace, minor redundancy) are easy to spot. Effectiveness issues require tracing through actual usage.
 
 ## Step 3: Audit
 
-Check the prompt against AGENTS.md:
+Check the Play against AGENTS.md:
 
 1. **Elegance Principle** - Threshold test, communication insight, structural clarity, durability
-2. **Position Principle** - Critical instructions at start? Format/success at end? (Skip for short prompts)
+2. **Position Principle** - Critical instructions at start? Format/success at end? (Skip for short Plays)
 3. **Objective** - Is it evaluable? Can you determine success/failure from output?
 4. **XML Boundaries** - Is all user content wrapped?
 5. **Failure Modes** - Scan AGENTS.md table. Mark which are present.
@@ -100,7 +100,7 @@ After 5 changes: "Continue, re-assess, or stop?"
 After all observations:
 
 - Did changes fix problems without creating new ones?
-- Is prompt the right length? (shorter if bloated, longer if incomplete)
+- Is the Play the right length? (shorter if bloated, longer if incomplete)
 - Does it pass AGENTS.md Quality Checks?
 - Re-run stress test: Does the failure scenario now produce correct output?
 
@@ -112,20 +112,20 @@ If issues found: Present as new observations, fix, re-verify.
 
 # Library-Level Review
 
-For reviewing multiple coordinated prompts as a system.
+For reviewing multiple coordinated Plays as a system.
 
 ## When to Use
 
-Only if prompts coordinate (handoffs, shared workflows) and inconsistencies would cause problems.
+Only if Plays coordinate (handoffs, shared workflows) and inconsistencies would cause problems.
 
 ## Process
 
-1. **Stress test the system** - Run a realistic multi-step request through the full prompt chain. Trace handoffs. Note where guidance is unclear or missing.
+1. **Stress test the system** - Run a realistic multi-step request through the full Play chain. Trace handoffs. Note where guidance is unclear or missing.
 
-2. **Individual review** - Complete standard review for each prompt, informed by stress test findings.
+2. **Individual review** - Complete standard review for each Play, informed by stress test findings.
 
-3. **Cross-prompt checks:**
-   - Terms consistent across prompts?
+3. **Cross-Play checks:**
+   - Terms consistent across Plays?
    - Handoffs clear?
    - Output formats compatible with downstream inputs?
    - Gaps or overlaps?

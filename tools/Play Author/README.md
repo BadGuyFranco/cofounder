@@ -1,11 +1,11 @@
-# Prompt Author
+# Play Author
 
 Methodology for writing effective prompts, AGENTS.md files, and instruction documents.
 
 ## Documentation
 
 - **AGENTS.md** - Complete methodology for AI agents
-- **Prompt Review Process.md** - Workflow for auditing existing prompts
+- **Play Review Process.md** - Workflow for auditing existing Plays
 
 ## Key Features
 

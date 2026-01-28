@@ -10,7 +10,7 @@ alwaysApply: false
 
 Core principles for writing prompts, AGENTS.md files, and instruction documents.
 
-**For full methodology:** See `/cofounder/tools/Prompt Author/AGENTS.md`
+**For full methodology:** See `/cofounder/tools/Play Author/AGENTS.md`
 
 ## The Elegance Principle
 
@@ -18,11 +18,7 @@ Maximum effect with minimum instruction. Most prompts fail by being too much, no
 
 **Threshold test:** Can you remove this instruction without degrading output quality? If yes, remove it.
 
-**Structural clarity:** If your prompt repeats an instruction, the structure is wrong. Each instruction appears once, in the right place. If you find yourself restating, the structure is wrong.
-
-**Communication insight:** Most prompt failures are communication failures, not LLM failures. A prompt that asks for clarification outperforms one that guesses wrong.
-
-**Durability:** Prompts should leverage model intelligence, not compensate for model weakness.
+**Structural clarity:** Each instruction appears once, in the right place. If you find yourself restating, the structure is wrong.
 
 ## The Position Principle
 
@@ -34,9 +30,30 @@ Models attend most to beginning and end; middle receives less focus.
 
 Short prompts can ignore position; long prompts cannot.
 
+## Prompt Structure
+
+Every effective prompt has these elements (scale to complexity):
+
+| Section | Purpose |
+|---------|---------|
+| Context | When to use, when NOT to use |
+| Objective | Verifiable outcome |
+| Inputs | What's needed, with XML boundaries |
+| Identity | Role and perspective |
+| Steps | Actions with decision points |
+| Pitfalls | Failure modes with responses |
+| Success | How to verify it worked |
+
+## Quality Tests
+
+- **Clarity:** Can an agent unfamiliar with context follow it?
+- **Completeness:** Does it produce the output it promises?
+- **Elegance:** Can you remove anything without degrading execution?
+- **Boundary:** Does it handle edge cases gracefully?
+
 ## XML Boundaries
 
-Separate instructions from user content. Prevents confusion between what to DO and what to process.
+Separate instructions from user content.
 
 | Tag | Use For |
 |-----|---------|
@@ -44,44 +61,18 @@ Separate instructions from user content. Prevents confusion between what to DO a
 | `<source_material>` | Documents, transcripts, references |
 | `<context>` | Background, constraints |
 
-**Convention:** Descriptive, lowercase, underscores. Customize for your domain.
+## Common Failure Modes
 
-## Quality Checks
-
-Before delivering any prompt or instruction document:
-
-- [ ] **Evaluable:** Can you determine if output succeeded?
-- [ ] **XML wrapped:** All user content in appropriate tags?
-- [ ] **No failure modes:** See below
-- [ ] **Threshold passed:** Nothing left to cut without degrading quality?
-- [ ] **Position applied:** Critical at start, format at end?
-- [ ] **Tested:** Run with real input to verify it works?
-
-## Failure Modes
-
-| Mode | Symptom | Fix |
-|------|---------|-----|
-| Vague objective | Inconsistent outputs | Define observable success criteria |
-| Missing XML boundaries | Data confused with instructions | Wrap user content |
-| Over-engineering | Model ignores parts | Apply threshold test |
-| Positive content examples | Robotic output | Show structure, not content examples |
-| Conflicting instructions | Random behavior | State priority; fix structure |
-| No clarification path | Wrong output on ambiguity | Add "ask if unclear" |
-| Critical buried in middle | Key instructions missed | Apply position principle |
-
-## Single Source of Truth
-
-Each piece of information exists in EXACTLY ONE location. AGENTS.md is complete; other docs reference it.
+| Mode | Fix |
+|------|-----|
+| Vague objective | Define observable success criteria |
+| Missing context boundaries | Add "not when Y" constraints |
+| Steps without decision points | Add "if X, then Y" logic |
+| Pitfalls without responses | Add specific response for each |
+| No clarification path | Add "ask if unclear" |
 
 ## Clarification Over Guessing
 
-Prompts should ask for clarity, not guess.
-
-When ambiguity exists:
-- Ask a clarifying question
-- Offer 2-3 options for user to choose
-- Surface what's unclear before proceeding
-
 Include in prompts: "If the request is ambiguous, ask for clarification before proceeding."
 
-The insight: User interaction makes good prompts great. Don't anticipate everything; create a dialogue.
+User interaction makes good prompts great. Don't anticipate everything; create a dialogue.

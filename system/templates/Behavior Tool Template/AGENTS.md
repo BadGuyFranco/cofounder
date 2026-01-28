@@ -1,6 +1,9 @@
 # [Tool Name]
 
-[One-line description of what this tool does and when to use it]
+[One-line description of what this tool does]
+
+**Use when:** [Specific triggers or conditions that should activate this tool]
+**Don't use when:** [When another approach is better]
 
 ## Objective
 
@@ -58,7 +61,7 @@ This prevents user-provided content from being confused with tool instructions.
 - Required structure
 - Context registers
 
-**For routing tools (Prompt Author):**
+**For routing tools (Play Author):**
 - Decision criteria
 - Process descriptions
 - Structure templates

@@ -17,7 +17,7 @@ Scaffolding for creating new tools and workspaces in CoFounder.
 
 ## Choosing a Template
 
-**Behavior Tool** (Content Author, Problem Solver, Prompt Author)
+**Behavior Tool** (Content Author, Problem Solver, Play Author)
 - Defines HOW to act or think
 - No scripts or external dependencies
 - Output guided by methodology

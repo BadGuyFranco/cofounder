@@ -38,12 +38,12 @@ This test follows a six-phase process:
 
 0. **Phase 0: Voice Calibration** - Extract voice characteristics to adapt test
 1. **Phase 1: Inventory** - Read all Content Author files
-2. **Phase 2: Instruction Quality** - Review each file using Prompt Author methodology
+2. **Phase 2: Instruction Quality** - Review each file using Play Author methodology
 3. **Phase 3: Create Content** - Generate sample content following Content Author instructions
 4. **Phase 4: Output Quality** - Evaluate sample content using Content Author's quality checks
 5. **Phase 5: Final Assessment** - Synthesize findings and provide recommendations
 
-**Critical:** Load `/cofounder/tools/Prompt Author/AGENTS.md` before starting Phase 2. Follow its **Prompt Review Process** systematically for each file.
+**Critical:** Load `/cofounder/tools/Play Author/AGENTS.md` before starting Phase 2. Follow its **Prompt Review Process** systematically for each file.
 
 
 ## Test Protocol
@@ -109,11 +109,11 @@ Read the complete Content Author library:
 - Note any files that couldn't be found
 - Identify any unexpected files in the directory
 
-### Phase 2: Evaluate Instruction Quality (Using Prompt Author)
+### Phase 2: Evaluate Instruction Quality (Using Play Author)
 
-**Reference:** Load `/cofounder/tools/Prompt Author/AGENTS.md` and follow its **Prompt Review Process**.
+**Reference:** Load `/cofounder/tools/Play Author/AGENTS.md` and follow its **Prompt Review Process**.
 
-For each major instruction file in Content Author, conduct systematic review following Prompt Author methodology:
+For each major instruction file in Content Author, conduct systematic review following Play Author methodology:
 
 **Files to review:**
 - `AGENTS.md`
@@ -124,7 +124,7 @@ For each major instruction file in Content Author, conduct systematic review fol
 - `content types/spark.md`
 - One format file of your choice (e.g., `long-form.md`)
 
-**Review Process (per Prompt Author):**
+**Review Process (per Play Author):**
 1. **Salvageability Assessment** - Can this be improved incrementally or needs rewrite?
 2. **Prompt-Level Assessment** - Objective clarity, impact measurement, quality checks, completeness-conciseness balance
 3. **Instruction-Level Assessment** - Clarity, actionability, logical order, specificity, consistency
@@ -134,7 +134,7 @@ For each major instruction file in Content Author, conduct systematic review fol
 - File name
 - Assessment level (Prompt/Instruction/Line)
 - Observations (track but don't present yet)
-- Priority level (High/Medium/Low per Prompt Author criteria)
+- Priority level (High/Medium/Low per Play Author criteria)
 
 **After completing all file reviews:**
 - Compile prioritized observation list across all files
@@ -419,7 +419,7 @@ Issues that connect instruction quality problems (Phase 2) with output quality p
 
 ### Phase 2: Instruction Quality Review
 
-**Review methodology:** Following Prompt Author/AGENTS.md review process
+**Review methodology:** Following Play Author/AGENTS.md review process
 
 #### File: AGENTS.md
 

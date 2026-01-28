@@ -26,7 +26,7 @@ Skip this checklist only for trivial changes (typo fixes, comment updates).
 
 | Type | Pattern | Examples |
 |------|---------|----------|
-| **Behavior** | Instructions/methodology only; no scripts | Content Author, Problem Solver, Prompt Author |
+| **Behavior** | Instructions/methodology only; no scripts | Content Author, Problem Solver, Play Author |
 | **Script** | Node/Python scripts with dependencies | Image Generator, Browser Control |
 | **Composite** | Parent routes to multiple sub-tools | Documentor (google-workspace, local-generator) |
 
@@ -145,7 +145,7 @@ Before finalizing any tool:
 2. Ensure Quick Start actually works
 3. Confirm troubleshooting covers common failures
 
-For complex prompt work, invoke Prompt Author tool for full methodology.
+For complex prompt work, invoke Play Author tool for full methodology.
 
 ## Configuration
 
@@ -211,7 +211,7 @@ If a Python library offers 5x+ performance advantage via GPU/native code, presen
 3. Fill in all required sections
 4. Delete template instruction comments
 5. Add to routing table in `.cursor/rules/Always Apply.mdc`
-6. Run Prompt Author quality check
+6. Run Play Author quality check
 
 ## Modifying Existing Tools
 

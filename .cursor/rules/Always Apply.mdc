@@ -19,7 +19,7 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Need | Tool |
 |------|------|
 | Write or review content | `tools/Content Author/` |
-| Write or review prompts | `tools/Prompt Author/` |
+| Write or review prompts, WISER Plays, or agents | `tools/Play Author/` |
 | Generate or edit images | `tools/Image Generator/` |
 | Screenshot webpage or convert SVG/HTML to image | `tools/Image Generator/` |
 | Generate or edit videos | `tools/Video Generator/` |
@@ -42,7 +42,7 @@ Ask before invoking:
 | Browser automation | `tools/Browser Control/` | navigate, screenshot, click through, open URL, browse to |
 | Complex problem solving | `tools/Problem Solver/` | root cause, diagnose, analyze problem |
 | Marketing frameworks | `tools/Marketing System/` | funnel, offer stack, webinar script, sales page |
-| Create execution plans | `tools/Planner/` | make a plan, plan how to, project plan, roadmap |
+| Create execution plans or playbooks | `tools/Playbook Author/` | make a plan, plan how to, project plan, roadmap, playbook, create a playbook |
 | Research with verified sources | `tools/Researcher/` | research, find sources, verify claims |
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
