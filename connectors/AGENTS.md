@@ -31,6 +31,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | Supabase | `supabase/` |
 | WordPress | `wordpress/` |
 | X.com | `xcom/` |
+| Zoom | `zoom/` |
 
 ## Using a Connector
 

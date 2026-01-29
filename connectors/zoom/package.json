@@ -1,0 +1,15 @@
+{
+  "name": "zoom-connector",
+  "version": "1.0.0",
+  "description": "Zoom API connector for cofounder",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/auth.js verify"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
