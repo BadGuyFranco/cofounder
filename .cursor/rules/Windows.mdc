@@ -19,4 +19,4 @@ Before running terminal commands, check if the active `.code-workspace` file has
 }
 ```
 
-If missing, add it. If no Git Bash installed, direct user to https://gitforwindows.org (free).
+If missing, add it. If no Git Bash installed, direct user to https://git-scm.com/install/windows (free).

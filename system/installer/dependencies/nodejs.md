@@ -2,7 +2,7 @@
 
 Node.js is required for connectors and some tools (Image Generator, Video Generator).
 
-**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://gitforwindows.org first.
+**Windows users:** All commands must run in Git Bash, not PowerShell or cmd. No Git Bash? Install from https://git-scm.com/install/windows first.
 
 ## Check If Already Installed
 
