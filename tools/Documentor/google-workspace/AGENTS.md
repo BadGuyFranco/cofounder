@@ -95,20 +95,31 @@ Supported formats: PNG, JPG, GIF, WebP, BMP. SVG must be converted first.
 
 **Path detection**: Automatically extracts account from Google Drive paths like `/Users/.../GoogleDrive-user@example.com/Shared drives/...`
 
-## Creating Documents from Source Files
+## Creating and Updating Documents
 
-When creating a Google Doc/Sheet/Slide from a source file (markdown, text, etc.):
+**Rule:** Never delete and recreate a shared document. Use `edit --replace` to preserve URLs.
 
-1. **Check if source is in Google Drive** - Look for `GoogleDrive-` in the file path
-2. **If yes, apply these defaults:**
-   - `--title` = source filename without extension (e.g., `notes.md` → `notes`)
-   - `--folder` = the folder path containing the source file
-   - `--account` = extracted from the path
-3. **If no**, require explicit `--title` and `--account`; place in My Drive root
+**Decision tree:**
 
-This keeps the Google Doc alongside its source file with a matching name.
+1. **Does a `.gdoc` file exist in the folder?** → Update existing doc
+   ```bash
+   node scripts/docs.js edit --id "DOC_ID" --content source.md --replace --embed-images --account user@example.com
+   ```
 
-**Always provide the Google Docs URL** in your response after creating or uploading a document.
+2. **Is the source file in Google Drive?** → Create with auto-detected defaults
+   ```bash
+   node scripts/docs.js create --content source.md --embed-images --account user@example.com
+   ```
+   Defaults: title from filename, folder from source location, account from path.
+
+3. **Otherwise** → Create with explicit parameters
+   ```bash
+   node scripts/docs.js create --title "My Doc" --content source.md --folder "path" --account user@example.com
+   ```
+
+**Finding the doc ID:** Extract from URL (`docs.google.com/document/d/THIS_IS_THE_ID/edit`) or read the `.gdoc` file.
+
+**Always provide the Google Docs URL** in your response after creating or updating a document.
 
 ## Known Limitations
 

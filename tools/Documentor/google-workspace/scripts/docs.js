@@ -87,6 +87,12 @@ function parseMarkdownToDocRequests(markdown, options = {}) {
       continue;
     }
     
+    // Check for horizontal rule (---, ***, or ___ with optional spaces)
+    if (/^[\s]*[-*_]{3,}[\s]*$/.test(line)) {
+      segments.push({ text: '\n', type: 'hr' });
+      continue;
+    }
+    
     // Check for markdown table (line starts and ends with |)
     if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
       // Collect all table rows
@@ -125,6 +131,7 @@ function parseMarkdownToDocRequests(markdown, options = {}) {
   const formatRequests = [];
   const imageReferences = [];
   const tableReferences = [];
+  const hrReferences = [];
   
   for (const segment of segments) {
     const startIndex = plainText.length + 1; // +1 because doc starts at index 1
@@ -168,6 +175,10 @@ function parseMarkdownToDocRequests(markdown, options = {}) {
         index: startIndex
       });
       plainText += segment.text;
+    } else if (segment.type === 'hr') {
+      // Track horizontal rule position for later insertion
+      hrReferences.push({ index: startIndex });
+      plainText += segment.text;
     } else {
       // Process inline formatting (bold, italic)
       const { text: processedText, inlineFormats } = processInlineFormatting(segment.text, startIndex);
@@ -176,7 +187,7 @@ function parseMarkdownToDocRequests(markdown, options = {}) {
     }
   }
   
-  return { plainText, formatRequests, imageReferences, tableReferences };
+  return { plainText, formatRequests, imageReferences, tableReferences, hrReferences };
 }
 
 /**
@@ -349,8 +360,9 @@ async function embedImages(email, docId, imageReferences) {
  * @param {string} docId - Document ID
  * @param {Array} imageRefs - Array of { alt, absolutePath, index }
  * @param {Array} tableRefs - Array of { rows, cols, index }
+ * @param {Array} hrRefs - Array of { index } for horizontal rules
  */
-async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
+async function embedMediaAndTables(email, docId, imageRefs, tableRefs, hrRefs = []) {
   const docs = await getDocsApi(email);
   
   // Step 1: Upload ALL images to Drive in parallel (major performance gain)
@@ -367,14 +379,15 @@ async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
     await Promise.all(uploadedImages.map(img => makeFilePublic(email, img.driveId)));
   }
   
-  // Step 3: Combine uploaded images and tables with type markers
+  // Step 3: Combine uploaded images, tables, and horizontal rules with type markers
   const items = [
     ...uploadedImages.map(ref => ({ 
       ...ref, 
       type: 'image',
       imageUri: `https://drive.google.com/uc?id=${ref.driveId}`
     })),
-    ...tableRefs.map(ref => ({ ...ref, type: 'table' }))
+    ...tableRefs.map(ref => ({ ...ref, type: 'table' })),
+    ...hrRefs.map(ref => ({ ...ref, type: 'hr' }))
   ];
   
   // Sort by index descending (highest first) for sequential insertion
@@ -389,7 +402,52 @@ async function embedMediaAndTables(email, docId, imageRefs, tableRefs) {
       await new Promise(resolve => setTimeout(resolve, 200));
     }
     
-    if (item.type === 'image') {
+    if (item.type === 'hr') {
+      // Insert horizontal rule
+      await docs.documents.batchUpdate({
+        documentId: docId,
+        requestBody: {
+          requests: [{
+            insertSectionBreak: {
+              location: { index: item.index },
+              sectionType: 'CONTINUOUS'
+            }
+          }]
+        }
+      });
+      // Google Docs doesn't have a direct horizontal rule API, so we insert a paragraph
+      // with a bottom border that acts as a visual divider
+      // Actually, let's use the paragraph border approach
+      const doc = await docs.documents.get({ documentId: docId });
+      // Find the paragraph at this index and add a bottom border
+      for (const element of doc.data.body.content) {
+        if (element.paragraph && element.startIndex >= item.index && element.startIndex < item.index + 5) {
+          await docs.documents.batchUpdate({
+            documentId: docId,
+            requestBody: {
+              requests: [{
+                updateParagraphStyle: {
+                  range: {
+                    startIndex: element.startIndex,
+                    endIndex: element.endIndex
+                  },
+                  paragraphStyle: {
+                    borderBottom: {
+                      color: { color: { rgbColor: { red: 0.8, green: 0.8, blue: 0.8 } } },
+                      width: { magnitude: 1, unit: 'PT' },
+                      padding: { magnitude: 6, unit: 'PT' },
+                      dashStyle: 'SOLID'
+                    }
+                  },
+                  fields: 'borderBottom'
+                }
+              }]
+            }
+          });
+          break;
+        }
+      }
+    } else if (item.type === 'image') {
       await docs.documents.batchUpdate({
         documentId: docId,
         requestBody: {
@@ -521,7 +579,9 @@ async function embedTables(email, docId, tableReferences) {
     if (!table) continue;
     
     // Build requests to insert text into each cell (in reverse index order to avoid shifting)
+    // Also track inline formatting (bold/italic) within cell content
     const insertRequests = [];
+    const cellFormattingInfo = []; // Track { insertIndex, formats } for each cell
     
     for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
       const row = table.table.tableRows[rowIdx];
@@ -533,12 +593,24 @@ async function embedTables(email, docId, tableReferences) {
           const cellContent = cell.content[0];
           const insertIndex = cellContent.startIndex;
           
+          // Process inline formatting (bold/italic) within the cell
+          const { text: cleanText, inlineFormats } = processInlineFormatting(cellText, 0);
+          
           insertRequests.push({
             insertText: {
               location: { index: insertIndex },
-              text: cellText
+              text: cleanText
             }
           });
+          
+          // Store formatting info for later application (adjusting indices relative to insertIndex)
+          if (inlineFormats.length > 0) {
+            cellFormattingInfo.push({
+              insertIndex,
+              cleanTextLength: cleanText.length,
+              formats: inlineFormats
+            });
+          }
         }
       }
     }
@@ -552,28 +624,37 @@ async function embedTables(email, docId, tableReferences) {
         requestBody: { requests: insertRequests }
       });
       
-      // Re-fetch document and apply bold styling to header row in one batch
+      // Re-fetch document to get actual indices after text insertion
       const updatedDoc = await docs.documents.get({ documentId: docId });
       const styleRequests = [];
       
+      // Find the table and apply inline formatting to cells
       for (const element of updatedDoc.data.body.content) {
         if (element.table && element.startIndex >= ref.index && element.startIndex < ref.index + 1000) {
-          const headerRow = element.table.tableRows[0];
-          for (const cell of headerRow.tableCells) {
-            const cellContent = cell.content[0];
-            if (cellContent.paragraph && cellContent.paragraph.elements) {
-              for (const elem of cellContent.paragraph.elements) {
-                if (elem.textRun && elem.textRun.content.trim()) {
-                  styleRequests.push({
-                    updateTextStyle: {
-                      range: {
-                        startIndex: elem.startIndex,
-                        endIndex: elem.endIndex - 1
-                      },
-                      textStyle: { bold: true },
-                      fields: 'bold'
+          // Process each cell to apply inline formatting
+          for (let rowIdx = 0; rowIdx < element.table.tableRows.length; rowIdx++) {
+            const row = element.table.tableRows[rowIdx];
+            for (let colIdx = 0; colIdx < row.tableCells.length; colIdx++) {
+              const cell = row.tableCells[colIdx];
+              const cellContent = cell.content[0];
+              if (cellContent.paragraph && cellContent.paragraph.elements) {
+                for (const elem of cellContent.paragraph.elements) {
+                  if (elem.textRun && elem.textRun.content.trim()) {
+                    const textContent = elem.textRun.content;
+                    const cellStartIndex = elem.startIndex;
+                    
+                    // Check if this cell had formatting info
+                    // Match by looking for cell text that was processed
+                    const originalCellText = ref.rows[rowIdx] && ref.rows[rowIdx][colIdx];
+                    if (originalCellText) {
+                      // Re-process to get formatting positions relative to cell start
+                      const { text: cleanText, inlineFormats } = processInlineFormatting(originalCellText, cellStartIndex);
+                      
+                      for (const fmt of inlineFormats) {
+                        styleRequests.push(fmt);
+                      }
                     }
-                  });
+                  }
                 }
               }
             }
@@ -652,7 +733,7 @@ export async function createDoc(email, title, options = {}) {
     
     if (isMarkdown) {
       // Parse markdown and apply formatting
-      const { plainText, formatRequests, imageReferences, tableReferences } = parseMarkdownToDocRequests(text, { 
+      const { plainText, formatRequests, imageReferences, tableReferences, hrReferences } = parseMarkdownToDocRequests(text, { 
         embedImages: options.embedImages 
       });
       
@@ -685,9 +766,9 @@ export async function createDoc(email, title, options = {}) {
         });
       }
       
-      // Embed images and tables together (must be processed in reverse index order)
-      if (resolvedImages.length > 0 || tableReferences.length > 0) {
-        await embedMediaAndTables(email, docId, resolvedImages, tableReferences);
+      // Embed images, tables, and horizontal rules together (must be processed in reverse index order)
+      if (resolvedImages.length > 0 || tableReferences.length > 0 || hrReferences.length > 0) {
+        await embedMediaAndTables(email, docId, resolvedImages, tableReferences, hrReferences);
       }
     } else {
       // Plain text, insert as-is
@@ -898,7 +979,7 @@ export async function editDoc(email, docId, content, options = {}) {
   
   if (isMarkdown) {
     // Parse markdown and apply formatting
-    const { plainText, formatRequests, imageReferences, tableReferences } = parseMarkdownToDocRequests(text, {
+    const { plainText, formatRequests, imageReferences, tableReferences, hrReferences } = parseMarkdownToDocRequests(text, {
       embedImages: options.embedImages
     });
     
@@ -932,9 +1013,9 @@ export async function editDoc(email, docId, content, options = {}) {
       });
     }
     
-    // Embed images and tables together (must be processed in reverse index order)
-    if (resolvedImages.length > 0 || tableReferences.length > 0) {
-      await embedMediaAndTables(email, docId, resolvedImages, tableReferences);
+    // Embed images, tables, and horizontal rules together (must be processed in reverse index order)
+    if (resolvedImages.length > 0 || tableReferences.length > 0 || hrReferences.length > 0) {
+      await embedMediaAndTables(email, docId, resolvedImages, tableReferences, hrReferences);
     }
   } else {
     // Plain text, insert as-is

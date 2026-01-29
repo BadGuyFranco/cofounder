@@ -83,4 +83,4 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 **Operational:**
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
 - Run commands yourself; never show terminal commands or ask the user to run them
-- Auto-loads: `Prompt Standards.mdc` for AGENTS.md or cursor rules
+- Before editing AGENTS.md or cursor rules: Load and follow `Prompt Standards.mdc`
