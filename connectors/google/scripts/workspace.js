@@ -175,6 +175,82 @@ async function findReplaceInDoc(email, docId, find, replace) {
   return { replacements, docId };
 }
 
+/**
+ * Clear all content from a Google Doc
+ */
+async function clearDoc(email, docId) {
+  const docs = await getDocsApi(email);
+  
+  // Get the document to find content range
+  const doc = await docs.documents.get({ documentId: docId });
+  const content = doc.data.body.content;
+  
+  // Find the end index (last content element)
+  const lastElement = content[content.length - 1];
+  const endIndex = lastElement.endIndex - 1;
+  
+  // Start index is always 1 (after the initial newline)
+  if (endIndex <= 1) {
+    return { cleared: true, docId, message: 'Document was already empty' };
+  }
+  
+  const requests = [{
+    deleteContentRange: {
+      range: {
+        startIndex: 1,
+        endIndex: endIndex
+      }
+    }
+  }];
+  
+  await docs.documents.batchUpdate({
+    documentId: docId,
+    requestBody: { requests }
+  });
+  
+  return { cleared: true, docId };
+}
+
+/**
+ * Set content of a Google Doc (clears existing content first)
+ */
+async function setDocContent(email, docId, text) {
+  // Clear existing content
+  await clearDoc(email, docId);
+  
+  // Insert new content at the beginning
+  const docs = await getDocsApi(email);
+  
+  const requests = [{
+    insertText: {
+      location: { index: 1 },
+      text: text
+    }
+  }];
+  
+  await docs.documents.batchUpdate({
+    documentId: docId,
+    requestBody: { requests }
+  });
+  
+  return { updated: true, docId, length: text.length };
+}
+
+/**
+ * Rename a Google Doc
+ */
+async function renameDoc(email, docId, newTitle) {
+  const drive = await getDriveApi(email);
+  
+  await drive.files.update({
+    fileId: docId,
+    supportsAllDrives: true,
+    requestBody: { name: newTitle }
+  });
+  
+  return { renamed: true, docId, title: newTitle };
+}
+
 // ==================== SHEETS ====================
 
 /**
@@ -411,7 +487,10 @@ function printHelp() {
       'doc create                 Create a new Google Doc',
       'doc read DOC_ID            Read document content',
       'doc append DOC_ID TEXT     Append text to document',
-      'doc replace DOC_ID         Find and replace text'
+      'doc replace DOC_ID         Find and replace text',
+      'doc clear DOC_ID           Clear all content from document',
+      'doc set DOC_ID             Replace all content (--content or --file)',
+      'doc rename DOC_ID          Rename document (--title)'
     ],
     'Sheet Commands': [
       'sheet create               Create a new Google Sheet',
@@ -433,7 +512,9 @@ function printHelp() {
       '--range RANGE              Sheet range (e.g., "A1:D10")',
       '--values JSON              Data as JSON array',
       '--find TEXT                Text to find (for replace)',
-      '--replace TEXT             Replacement text'
+      '--replace TEXT             Replacement text',
+      '--content TEXT             Text content (for doc set)',
+      '--file PATH                File path to read content from (for doc set)'
     ],
     'Examples': [
       'node workspace.js doc create --title "Notes" --account user@example.com',
@@ -536,6 +617,37 @@ async function handleDocCommand(email, action, args, flags) {
       if (!flags.replace) throw new Error('--replace required');
       const result = await findReplaceInDoc(email, args[0], flags.find, flags.replace);
       console.log(`\n✓ Replaced ${result.replacements} occurrence(s)`);
+      break;
+    }
+    
+    case 'clear': {
+      if (!args[0]) throw new Error('DOC_ID required');
+      await clearDoc(email, args[0]);
+      console.log(`\n✓ Document content cleared`);
+      break;
+    }
+    
+    case 'set': {
+      if (!args[0]) throw new Error('DOC_ID required');
+      let content;
+      if (flags.file) {
+        const fs = await import('fs');
+        content = fs.readFileSync(flags.file, 'utf8');
+      } else if (flags.content) {
+        content = flags.content;
+      } else {
+        throw new Error('--content or --file required');
+      }
+      const result = await setDocContent(email, args[0], content);
+      console.log(`\n✓ Document content replaced (${result.length.toLocaleString()} characters)`);
+      break;
+    }
+    
+    case 'rename': {
+      if (!args[0]) throw new Error('DOC_ID required');
+      if (!flags.title) throw new Error('--title required');
+      const result = await renameDoc(email, args[0], flags.title);
+      console.log(`\n✓ Document renamed to: ${result.title}`);
       break;
     }
     
