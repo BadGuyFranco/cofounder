@@ -1,0 +1,12 @@
+{
+  "name": "figma-connector",
+  "version": "1.0.0",
+  "description": "Figma connector for cofounder",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/users.js me"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

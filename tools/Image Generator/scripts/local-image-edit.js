@@ -179,10 +179,10 @@ async function processImage(options) {
       }
     }
 
-    // 4. Grayscale
+    // 4. Grayscale (true grayscale color space, not just desaturated RGB)
     if (grayscale) {
       console.log('Converting to grayscale...');
-      image = image.grayscale();
+      image = image.grayscale().toColorspace('b-w');
     }
 
     // 5. Blur

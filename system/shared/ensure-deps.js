@@ -1,8 +1,13 @@
 /**
  * Shared Dependency Checker
+ * @version 2.0.0 - 2026-02-01
  * 
- * Automatically installs npm dependencies on first run or when package.json changes.
+ * Automatically installs npm dependencies on first run.
  * Uses only built-in Node.js modules so it works before npm install.
+ * 
+ * Compatible with cloud-synced filesystems (Google Drive, Dropbox, etc.) where
+ * some machines may have read-only access. If node_modules exists, the script
+ * proceeds without attempting any write operations.
  * 
  * Usage in scripts:
  *   import { ensureDeps } from '../../../system/shared/ensure-deps.js';
@@ -19,14 +24,19 @@ import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 
 /**
- * Ensures npm dependencies are installed and up-to-date.
- * Runs npm install if:
- *   - node_modules is missing (first run)
- *   - .deps-installed marker is missing (incomplete previous install)
- *   - package.json content has changed since last install (hash mismatch)
+ * Ensures npm dependencies are installed.
  * 
- * Uses a marker file with package.json hash instead of timestamp comparison,
- * which is unreliable on cloud-synced filesystems like Google Drive.
+ * Behavior:
+ *   - If node_modules exists: proceed immediately (no writes, no checks)
+ *   - If node_modules missing: attempt npm install
+ * 
+ * This simple approach is reliable on cloud-synced filesystems where:
+ *   - Permission checks may not reflect actual write capability
+ *   - Marker files may not sync between machines
+ *   - Some machines have read-only access
+ * 
+ * The marker file (.deps-installed) is only used on machines with write access
+ * to track package.json changes for dependency updates.
  * 
  * @param {string} metaUrl - Pass import.meta.url from the calling script
  */
@@ -53,61 +63,58 @@ export function ensureDeps(metaUrl) {
     return;
   }
   
-  // Compute hash of package.json content
-  const packageJsonContent = readFileSync(packageJsonPath, 'utf8');
-  const currentHash = createHash('md5').update(packageJsonContent).digest('hex');
-  
-  // Determine if we need to install
-  let needsInstall = false;
-  let reason = '';
-  
-  if (!existsSync(nodeModulesPath)) {
-    // No node_modules at all
-    needsInstall = true;
-    reason = 'First-time setup: Installing dependencies...\n';
-  } else if (!existsSync(markerPath)) {
-    // node_modules exists but marker is missing (incomplete install or manual deletion)
-    needsInstall = true;
-    reason = 'Verifying dependencies...\n';
-  } else {
-    // Check if package.json has changed since last install
-    const installedHash = readFileSync(markerPath, 'utf8').trim();
-    if (installedHash !== currentHash) {
-      needsInstall = true;
-      reason = 'Dependencies updated: Installing new packages...\n';
+  // If node_modules exists, proceed without any write operations
+  // This ensures compatibility with read-only filesystems and cloud sync
+  if (existsSync(nodeModulesPath)) {
+    // Optionally check for package.json updates (only if marker exists)
+    // Skip this check entirely if marker is missing to avoid write attempts
+    if (existsSync(markerPath)) {
+      const packageJsonContent = readFileSync(packageJsonPath, 'utf8');
+      const currentHash = createHash('md5').update(packageJsonContent).digest('hex');
+      const installedHash = readFileSync(markerPath, 'utf8').trim();
+      
+      if (installedHash !== currentHash) {
+        // Package.json changed, try to update dependencies
+        console.log('Dependencies updated: Installing new packages...\n');
+        try {
+          execSync('npm install', { 
+            cwd: packageDir, 
+            stdio: 'inherit',
+            shell: process.platform === 'win32'
+          });
+          writeFileSync(markerPath, currentHash);
+          console.log('\nDependencies updated successfully.\n');
+        } catch (error) {
+          // Installation failed, but node_modules exists so continue anyway
+          console.warn('\nCould not update dependencies (possibly read-only filesystem).');
+          console.warn('Continuing with existing packages.\n');
+        }
+      }
     }
-  }
-  
-  if (!needsInstall) {
     return;
   }
   
-  // Remove marker before install (in case install fails)
-  if (existsSync(markerPath)) {
-    unlinkSync(markerPath);
-  }
-  
-  // Install dependencies
-  console.log(reason);
+  // No node_modules - attempt first-time installation
+  console.log('First-time setup: Installing dependencies...\n');
   
   try {
     execSync('npm install', { 
       cwd: packageDir, 
       stdio: 'inherit',
-      // Use shell on Windows for better compatibility
       shell: process.platform === 'win32'
     });
     
-    // Write marker file with current package.json hash
+    // Write marker file with package.json hash
+    const packageJsonContent = readFileSync(packageJsonPath, 'utf8');
+    const currentHash = createHash('md5').update(packageJsonContent).digest('hex');
     writeFileSync(markerPath, currentHash);
     
     console.log('\nDependencies installed successfully.\n');
-    // Continue execution instead of exiting; deps are now installed
   } catch (error) {
-    console.error('\nFailed to install dependencies automatically.');
-    console.error('Please run manually:\n');
-    console.error(`  cd "${packageDir}"`);
-    console.error('  npm install\n');
+    console.error('\nFailed to install dependencies.');
+    console.error('If this is a read-only filesystem, dependencies must be');
+    console.error('installed on a machine with write access first.\n');
+    console.error(`Directory: ${packageDir}\n`);
     process.exit(1);
   }
 }

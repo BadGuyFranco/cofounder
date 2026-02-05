@@ -16,6 +16,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | Airtable | `airtable/` |
 | ClickUp | `clickup/` |
 | Cloudflare | `cloudflare/` |
+| Figma | `figma/` |
 | Go High Level | `gohighlevel/` |
 | Google | `google/` |
 | HeyGen | `heygen/` |

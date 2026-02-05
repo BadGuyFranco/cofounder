@@ -144,6 +144,8 @@ User can override by specifying service in their request.
 
 **When:** User requests a new image from a text prompt.
 
+**Before generating:** Apply `processes/Prompt Enhancement.md` to every prompt. This assesses whether the prompt is fully specified, partially specified, or bare, then enhances as needed. Never send an underspecified prompt directly to the model.
+
 **Aspect ratio handling:** If user specifies dimensions (e.g., 1920x1080), calculate the closest supported aspect ratio.
 
 **Replicate (async workflow, recommended):**
@@ -268,9 +270,12 @@ cd "/cofounder/connectors/google" && npm install
 
 **Credential issues:** Verify the .env file exists and contains the correct token format.
 
-## Tips for Better Prompts
+## Prompt Quality
 
-- Be specific: "professional podcast studio with blue lighting" not "studio"
-- Include style: "photorealistic", "minimalist", "illustration"
-- Describe composition: "centered", "wide angle", "close-up"
-- Add context: "for a business podcast", "corporate setting"
+See `processes/Prompt Enhancement.md` for the full prompt assessment and enhancement workflow.
+
+Key principles:
+- Every prompt needs an explicit medium/style (photorealistic, illustration, etc.)
+- Purpose determines style; when unknown, default to professional/photorealistic
+- Never generate text unless exact wording is provided
+- Add quality markers (lighting, focus, composition) to underspecified prompts
