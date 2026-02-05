@@ -47,9 +47,13 @@ Ask before invoking:
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
 
+# First Time Setup
+
+New users: Follow `/cofounder/system/installer/Continue Install.md`
+
 # Update CoFounder
 
-"Update cofounder" or "update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
+"Update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
 
 # Before Responding
 
@@ -81,6 +85,7 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - No horizontal rules (---) in markdown
 
 **Operational:**
+- `/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve to actual paths before running terminal commands.
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
 - Run commands yourself; never show terminal commands or ask the user to run them
 - Before editing AGENTS.md or cursor rules: Load and follow `Prompt Standards.mdc`
