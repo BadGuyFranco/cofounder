@@ -90,7 +90,7 @@ function displayOrders(orders) {
   for (const order of orders) {
     console.log(`- Order ${order._id || order.id}`);
     console.log(`  Status: ${order.status || 'unknown'}`);
-    console.log(`  Amount: ${formatCurrency(order.amount / 100)}`);
+    console.log(`  Amount: ${formatCurrency(order.amount)}`);
     if (order.contactId || order.contact) {
       console.log(`  Contact: ${order.contact?.name || order.contact?.email || order.contactId}`);
     }
@@ -114,7 +114,7 @@ async function getOrder(orderId, locationConfig) {
     const order = data.order || data;
     console.log(`Order ID: ${order._id || order.id}`);
     console.log(`Status: ${order.status}`);
-    console.log(`Amount: ${formatCurrency(order.amount / 100)}`);
+    console.log(`Amount: ${formatCurrency(order.amount)}`);
     console.log(`Currency: ${order.currency || 'USD'}`);
     
     if (order.contact) {
@@ -127,7 +127,7 @@ async function getOrder(orderId, locationConfig) {
       console.log('\nItems:');
       for (const item of order.items) {
         console.log(`  - ${item.name || item.productId}`);
-        console.log(`    Price: ${formatCurrency(item.price / 100)} x ${item.qty || 1}`);
+        console.log(`    Price: ${formatCurrency(item.price)} x ${item.qty || 1}`);
       }
     }
     
@@ -191,7 +191,7 @@ function displayTransactions(transactions) {
     console.log(`- ${txn._id || txn.id}`);
     console.log(`  Type: ${txn.type || 'payment'}`);
     console.log(`  Status: ${txn.status || 'unknown'}`);
-    console.log(`  Amount: ${formatCurrency(txn.amount / 100)}`);
+    console.log(`  Amount: ${formatCurrency(txn.amount)}`);
     if (txn.paymentMode) console.log(`  Mode: ${txn.paymentMode}`);
     console.log(`  Date: ${formatDate(txn.createdAt)}`);
     console.log('');
@@ -211,7 +211,7 @@ async function getTransaction(transactionId, locationConfig) {
     console.log(`Transaction ID: ${txn._id || txn.id}`);
     console.log(`Type: ${txn.type || 'payment'}`);
     console.log(`Status: ${txn.status}`);
-    console.log(`Amount: ${formatCurrency(txn.amount / 100)}`);
+    console.log(`Amount: ${formatCurrency(txn.amount)}`);
     console.log(`Currency: ${txn.currency || 'USD'}`);
     console.log(`Payment Mode: ${txn.paymentMode || 'N/A'}`);
     
@@ -278,7 +278,7 @@ function displaySubscriptions(subscriptions) {
   for (const sub of subscriptions) {
     console.log(`- ${sub._id || sub.id}`);
     console.log(`  Status: ${sub.status || 'unknown'}`);
-    console.log(`  Amount: ${formatCurrency(sub.amount / 100)}`);
+    console.log(`  Amount: ${formatCurrency(sub.amount)}`);
     if (sub.interval) console.log(`  Interval: ${sub.interval}`);
     if (sub.contact) console.log(`  Contact: ${sub.contact.name || sub.contact.email}`);
     if (sub.nextBillingDate) console.log(`  Next Billing: ${formatDate(sub.nextBillingDate)}`);
@@ -299,7 +299,7 @@ async function getSubscription(subscriptionId, locationConfig) {
     const sub = data.subscription || data;
     console.log(`Subscription ID: ${sub._id || sub.id}`);
     console.log(`Status: ${sub.status}`);
-    console.log(`Amount: ${formatCurrency(sub.amount / 100)}`);
+    console.log(`Amount: ${formatCurrency(sub.amount)}`);
     console.log(`Currency: ${sub.currency || 'USD'}`);
     console.log(`Interval: ${sub.interval || 'N/A'}`);
     

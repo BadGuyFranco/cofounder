@@ -109,7 +109,7 @@ async function getProduct(productId, locationConfig) {
       for (const price of prod.prices) {
         console.log(`  - ${price.name || 'Default'}`);
         console.log(`    ID: ${price._id || price.id}`);
-        console.log(`    Amount: ${formatCurrency(price.amount / 100)}`); // Usually in cents
+        console.log(`    Amount: ${formatCurrency(price.amount)}`);
         console.log(`    Type: ${price.type || 'one_time'}`);
         if (price.recurring) {
           console.log(`    Interval: ${price.recurring.interval}`);
@@ -171,10 +171,11 @@ async function updateProduct(productId, locationConfig) {
     if (args.description) body.description = args.description;
     if (args.statement) body.statementDescriptor = args.statement;
     if (args.image) body.image = args.image;
+    if (args.type) body.productType = args.type;
     
     if (Object.keys(body).length <= 1) {
       console.error('Error: No fields to update');
-      console.error('Use --name, --description, --statement, or --image');
+      console.error('Use --name, --description, --statement, --image, or --type');
       process.exit(1);
     }
     
@@ -231,7 +232,7 @@ async function listPrices(productId, locationConfig) {
   try {
     const data = await apiRequest(
       'GET',
-      `/products/${productId}/prices?locationId=${locationConfig.id}`,
+      `/products/${productId}/price?locationId=${locationConfig.id}`,
       locationConfig.key
     );
     
@@ -246,7 +247,7 @@ async function listPrices(productId, locationConfig) {
     for (const price of prices) {
       console.log(`- ${price.name || 'Default'}`);
       console.log(`  ID: ${price._id || price.id}`);
-      console.log(`  Amount: ${formatCurrency(price.amount / 100)}`);
+      console.log(`  Amount: ${formatCurrency(price.amount)}`);
       console.log(`  Type: ${price.type || 'one_time'}`);
       console.log(`  Currency: ${price.currency || 'USD'}`);
       if (price.recurring) {
@@ -287,12 +288,12 @@ async function createPrice(productId, locationConfig) {
       };
     }
     
-    const data = await apiRequest('POST', `/products/${productId}/prices`, locationConfig.key, body);
+    const data = await apiRequest('POST', `/products/${productId}/price`, locationConfig.key, body);
     
     console.log('Price created successfully!\n');
     const price = data.price || data;
     console.log(`ID: ${price._id || price.id}`);
-    console.log(`Amount: ${formatCurrency(price.amount / 100)}`);
+    console.log(`Amount: ${formatCurrency(price.amount)}`);
     console.log(`Type: ${price.type}`);
     
   } catch (error) {
@@ -325,7 +326,7 @@ async function deletePrice(priceId, locationConfig) {
     
     await apiRequest(
       'DELETE',
-      `/products/${productId}/prices/${priceId}?locationId=${locationConfig.id}`,
+      `/products/${productId}/price/${priceId}?locationId=${locationConfig.id}`,
       locationConfig.key
     );
     
@@ -361,7 +362,7 @@ Options:
   --type "TYPE"            Product type: DIGITAL, PHYSICAL, SERVICE
   --statement "Desc"       Statement descriptor
   --image "URL"            Product image URL
-  --amount <cents>         Price amount in cents (1000 = $10.00)
+  --amount <dollars>        Price amount in dollars (5000 = $5,000.00)
   --currency "USD"         Currency code
   --price-type "type"      Price type: one_time, recurring
   --interval "month"       Recurring interval: day, week, month, year

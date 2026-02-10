@@ -9,17 +9,12 @@
 **/zArchive/**
 
 # =============================================================================
-# GENERATED AND TEMPORARY FILES
+# IMAGE AND TEMPORARY FILES
 # =============================================================================
-# Generated image files (keep scripts, exclude outputs)
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
-*.bmp
-*.tiff
-*.tif
+# Large design source files (not needed for context)
+*.psd
+*.ai
+*.eps
 
 # Temporary files
 *.tmp
