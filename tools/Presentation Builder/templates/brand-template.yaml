@@ -1,0 +1,52 @@
+# Brand Template
+# Copy this file to your brand directory and customize.
+# Reference it when creating presentations: --brand /path/to/brand/
+
+# Brand identity
+name: "Brand Name"
+tagline: "Optional tagline"
+
+# Colors (CSS hex values)
+colors:
+  primary: "#2563eb"       # Main brand color (headlines, accents, links)
+  secondary: "#7c3aed"     # Secondary accent (gradients, section backgrounds)
+  accent: "#06b6d4"        # Tertiary accent (highlights, callouts)
+
+# Typography (Google Fonts names or system fonts)
+fonts:
+  heading: "Inter"         # Font for headings
+  body: "Inter"            # Font for body text, lists, captions
+  mono: "JetBrains Mono"   # Font for code blocks
+
+# Logo files (relative to this brand directory)
+logo:
+  default: "assets/logo.svg"        # Standard logo (used on cover slides)
+  white: "assets/logo-white.svg"    # White version (dark/gradient backgrounds)
+  icon: "assets/icon.svg"           # Icon-only version (footers, small spaces)
+
+# Presentation defaults
+defaults:
+  theme: "white"           # reveal.js theme: white, black, moon, night, simple, serif, etc.
+  ratio: "16/9"            # Aspect ratio: 16/9, 4/3, 1/1
+  transition: "slide"      # Slide transition: slide, fade, convex, concave, zoom, none
+  colorSchema: "light"     # light or dark
+
+# Footer (shown on every slide if enabled)
+footer:
+  enabled: false
+  text: "Brand Name | Confidential"
+  showLogo: true           # Show icon logo in footer
+
+# Cover slide defaults
+cover:
+  showLogo: true           # Display logo on cover slide
+  attribution: "Brand Name"  # Default attribution line
+
+# Starter templates (relative to this brand directory)
+# Each template is an HTML fragment with <section> elements
+templates:
+  general: "templates/general.html"
+  pitch: "templates/pitch.html"
+  # Add more as needed:
+  # workshop: "templates/workshop.html"
+  # strategy: "templates/strategy.html"

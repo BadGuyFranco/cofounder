@@ -44,6 +44,8 @@ Ask before invoking:
 | Marketing frameworks | `tools/Marketing System/` | funnel, offer stack, webinar script, sales page |
 | Create execution plans or playbooks | `tools/Playbook Author/` | make a plan, plan how to, project plan, roadmap, playbook, create a playbook |
 | Research with verified sources | `tools/Researcher/` | research, find sources, verify claims |
+| Create compelling proposals or persuasive documents | `tools/Proposal Author/` | proposal, pitch document, base proposal, persuasive document |
+| Create presentations and slide decks | `tools/Presentation Builder/` | presentation, slide deck, slides, pitch deck, talk slides, workshop slides |
 
 Also check `/memory/my tools/AGENTS.md` and `/memory/my connectors/AGENTS.md` for user-created custom tools and connectors.
 

@@ -1,0 +1,15 @@
+{
+  "name": "presentation-builder",
+  "version": "2.0.0",
+  "description": "Create professional presentations using reveal.js. Output opens from file:// with no server needed.",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-setup.js",
+    "setup": "node scripts/check-setup.js --install"
+  },
+  "dependencies": {
+    "reveal.js": "^5.2.1",
+    "yaml": "^2.7.0",
+    "playwright-chromium": "^1.50.0"
+  }
+}
