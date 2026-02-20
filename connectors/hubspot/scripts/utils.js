@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -52,6 +52,14 @@ export function loadEnv(localDir) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ * Uses connector root as local fallback path.
+ */
+export function loadConfig() {
+  return loadEnv(path.join(__dirname, '..'));
+}
+
+/**
  * Get API token from environment
  */
 export function getToken() {
@@ -64,24 +72,58 @@ export function getToken() {
   return token;
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const accessToken = env.HUBSPOT_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error('Error: HUBSPOT_ACCESS_TOKEN not found in environment.');
+    console.error('Add it to /memory/connectors/hubspot/.env');
+    process.exit(1);
+  }
+  return { accessToken };
+}
+
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make API request to HubSpot
  */
-export async function apiRequest(method, endpoint, token, body = null) {
+export async function apiRequest(methodOrEndpoint, endpointOrOptions, token, body = null) {
+  let method;
+  let endpoint;
+  let requestToken;
+  let requestBody;
+
+  if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(String(methodOrEndpoint).toUpperCase())) {
+    method = String(methodOrEndpoint).toUpperCase();
+    endpoint = endpointOrOptions;
+    requestToken = token;
+    requestBody = body;
+  } else {
+    // Canonical shape: apiRequest(endpoint, options)
+    endpoint = methodOrEndpoint;
+    const canonicalOptions = endpointOrOptions || {};
+    method = (canonicalOptions.method || 'GET').toUpperCase();
+    requestToken = getCredentials().accessToken;
+    requestBody = canonicalOptions.body || null;
+  }
+
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
   const options = {
     method,
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${requestToken}`,
       'Content-Type': 'application/json'
     }
   };
   
-  if (body) {
-    options.body = JSON.stringify(body);
+  if (requestBody) {
+    options.body = JSON.stringify(requestBody);
   }
   
   const response = await fetch(url, options);
@@ -101,6 +143,22 @@ export async function apiRequest(method, endpoint, token, body = null) {
   }
   
   return data;
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help' || args.help || args._.length === 0) {
+    showHelp();
+    return null;
+  }
+
+  loadConfig();
+  return { credentials: getCredentials(), args, command };
 }
 
 /**
@@ -271,6 +329,16 @@ export function handleError(error, verbose = false) {
   if (verbose && error.data) {
     console.error('Details:', JSON.stringify(error.data, null, 2));
   }
+  process.exit(1);
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
   process.exit(1);
 }
 

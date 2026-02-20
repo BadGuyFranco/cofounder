@@ -11,8 +11,13 @@
  */
 
 import http from 'http';
-import { chromium } from 'playwright';
 import { getProfileDir, DEFAULT_PORT } from './utils.js';
+import { ensureDeps } from '../../../system/shared/ensure-deps.js';
+import { homedir } from 'os';
+
+ensureDeps(import.meta.url, { layer: 'tools' });
+
+const { chromium } = await import('playwright');
 
 let browser = null;
 let context = null;
@@ -30,6 +35,17 @@ let blockedPatterns = [];
 let currentFrame = null; // null = main page, otherwise frame reference
 let dialogMode = 'off'; // 'off', 'accept', 'dismiss', 'prompt'
 let dialogPromptText = '';
+
+function expandUserPath(filePath) {
+  const home = process.env.HOME || process.env.USERPROFILE || homedir();
+  if (filePath === '~') {
+    return home;
+  }
+  if (filePath.startsWith('~/') || filePath.startsWith('~\\')) {
+    return filePath.replace(/^~(?=\/|\\)/, home);
+  }
+  return filePath;
+}
 
 /**
  * Initialize browser with persistent context
@@ -291,7 +307,7 @@ async function handleDownload(params) {
 
   // Mode 1: Direct URL download (fetch with browser cookies)
   if (url && outputFile) {
-    const resolvedPath = outputFile.replace('~', process.env.HOME);
+    const resolvedPath = expandUserPath(outputFile);
     const dir = path.dirname(resolvedPath);
     await fs.mkdir(dir, { recursive: true });
 
@@ -348,8 +364,8 @@ async function handleUpload(params) {
 
   // Resolve paths
   const resolvedFiles = files.map(f => {
-    if (f.startsWith('/') || f.startsWith('~')) {
-      return f.replace('~', process.env.HOME);
+    if (f.startsWith('/') || f.startsWith('~') || f.match(/^[A-Za-z]:[\\/]/)) {
+      return expandUserPath(f);
     }
     return path.resolve(f);
   });

@@ -1,0 +1,12 @@
+{
+  "name": "zoho-connector",
+  "version": "1.0.0",
+  "description": "Zoho CRM connector for CoFounder",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/auth.js status"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

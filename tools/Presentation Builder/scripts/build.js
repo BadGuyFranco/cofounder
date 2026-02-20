@@ -21,7 +21,7 @@
 
 // Dependency check
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
+ensureDeps(import.meta.url, { layer: 'tools' });
 
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'fs';
 import { dirname, join, resolve, basename } from 'path';
@@ -108,7 +108,7 @@ console.log(`Dimensions: ${presWidth}x${presHeight}`);
 console.log('');
 
 // Dynamic import of Playwright (only when exporting)
-const { chromium } = await import('playwright-chromium');
+const { chromium } = await import('playwright');
 
 const browser = await chromium.launch({ headless: true });
 

@@ -36,19 +36,24 @@ When processing document requests, use XML tags to separate user content:
 ## Routing Logic
 
 ```
-Create or convert document
+Document task
     │
-    ├─ Output is Google Doc/Sheet/Slide?
-    │   └─ Use google-workspace/
+    ├─ CREATE or CONVERT document
+    │   ├─ Output is Google Doc/Sheet/Slide?
+    │   │   └─ Use google-workspace/
+    │   ├─ Output is Word or PDF?
+    │   │   └─ Use local-generator/
+    │   └─ Microsoft 365? (FUTURE)
+    │       └─ Use microsoft-365/ when implemented
     │
-    ├─ Output is Word or PDF?
-    │   └─ Use local-generator/
-    │
-    └─ Microsoft 365? (FUTURE)
-        └─ Use microsoft-365/ when implemented
+    └─ EXTRACT data FROM a document (PDF, image, invoice, form, receipt)
+        ├─ Extract plain text from scanned PDF or image?
+        │   └─ Use connectors/google/ document-ai.js extract-text
+        └─ Extract structured fields (invoice amounts, form values, contract terms)?
+            └─ Use connectors/google/ document-ai.js extract-entities
 ```
 
-**Key principle:** Documentor creates/converts documents. For reading or editing existing Google Docs, use the Google Connector (`connectors/google/`).
+**Key principle:** Documentor creates/converts documents. For reading or editing existing Google Docs, use the Google Connector (`connectors/google/`). For extracting structured data from PDFs or scanned documents, use Document AI via the Google Connector.
 
 ## Configuration
 
@@ -92,6 +97,41 @@ See `local-generator/AGENTS.md` for complete usage.
 
 See `google-workspace/AGENTS.md` for complete usage.
 
+### Cloud Document AI (Extract)
+
+**Location:** `connectors/google/scripts/document-ai.js`
+
+**Setup:** Requires Google connector with Document AI API enabled and a processor created in Google Cloud Console. Set `GOOGLE_CLOUD_PROJECT` in `/memory/connectors/google/.env`.
+
+```bash
+node connectors/google/scripts/auth.js configure-apis --account user@example.com --apis "+document_ai"
+```
+
+| Capability | Supported |
+|------------|-----------|
+| Extract plain text from scanned PDF | Yes |
+| Extract plain text from image (JPG, PNG, TIFF) | Yes |
+| Extract typed fields from invoices | Yes (Invoice processor) |
+| Extract fields from receipts | Yes (Expense processor) |
+| Extract fields from forms | Yes (Form parser processor) |
+| Extract fields from contracts | Yes (Contract processor) |
+| Extract identity document fields | Yes (ID proofing processor) |
+
+**Quick start:**
+
+```bash
+# List your configured processors
+node connectors/google/scripts/document-ai.js processors --account user@example.com
+
+# Extract plain text from a scanned PDF
+node connectors/google/scripts/document-ai.js extract-text ./scan.pdf --account user@example.com
+
+# Extract structured fields (invoice, form, contract)
+node connectors/google/scripts/document-ai.js extract-entities ./invoice.pdf --processor PROCESSOR_ID --account user@example.com
+```
+
+**Creating a processor:** Go to https://console.cloud.google.com/ai/document-ai/processors and create one matching your document type. The processor ID appears in the processor details page.
+
 ### Microsoft 365 (Future)
 
 **Location:** `microsoft-365/`
@@ -128,7 +168,7 @@ Requires Miniforge. If conda not available, follow `/cofounder/system/installer/
 
 **"No credentials found":**
 ```bash
-cd /connectors/google
+cd "/cofounder/connectors/google"
 node scripts/auth.js setup --account your@email.com
 ```
 
@@ -137,3 +177,4 @@ node scripts/auth.js setup --account your@email.com
 ## What Documentor Does NOT Handle
 
 - **HTML file generation** - That's web development, not document creation
+- **Reading or editing existing Google Docs** - Use `connectors/google/scripts/workspace.js` directly

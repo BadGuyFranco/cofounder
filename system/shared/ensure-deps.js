@@ -17,8 +17,8 @@
  *   const { parseArgs, apiRequest } = await import('./utils.js');
  */
 
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { dirname, join } from 'path';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
@@ -39,20 +39,43 @@ import { createHash } from 'crypto';
  * to track package.json changes for dependency updates.
  * 
  * @param {string} metaUrl - Pass import.meta.url from the calling script
+ * @param {object} [options] - Optional dependency scope options
+ * @param {'tools'|'connectors'} [options.layer] - Prefer the layer package.json
  */
-export function ensureDeps(metaUrl) {
+export function ensureDeps(metaUrl, options = {}) {
   const scriptPath = fileURLToPath(metaUrl);
   const scriptDir = dirname(scriptPath);
-  
-  // Find the package.json directory (walk up from script location)
-  let packageDir = scriptDir;
-  while (packageDir !== dirname(packageDir)) {
-    if (existsSync(join(packageDir, 'package.json'))) {
-      break;
+
+  const findNearestPackageDir = (startDir) => {
+    let currentDir = startDir;
+    while (currentDir !== dirname(currentDir)) {
+      if (existsSync(join(currentDir, 'package.json'))) {
+        return currentDir;
+      }
+      currentDir = dirname(currentDir);
     }
-    packageDir = dirname(packageDir);
+    return startDir;
+  };
+
+  const findLayerPackageDir = (startDir, layerName) => {
+    let currentDir = startDir;
+    while (currentDir !== dirname(currentDir)) {
+      if (basename(currentDir) === layerName && existsSync(join(currentDir, 'package.json'))) {
+        return currentDir;
+      }
+      currentDir = dirname(currentDir);
+    }
+    return null;
+  };
+
+  let packageDir = findNearestPackageDir(scriptDir);
+  if (options.layer) {
+    const scopedDir = findLayerPackageDir(scriptDir, options.layer);
+    if (scopedDir) {
+      packageDir = scopedDir;
+    }
   }
-  
+
   const packageJsonPath = join(packageDir, 'package.json');
   const nodeModulesPath = join(packageDir, 'node_modules');
   const markerPath = join(packageDir, '.deps-installed');

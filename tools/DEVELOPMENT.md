@@ -9,6 +9,17 @@ How to build new tools for the cofounder library.
 
 **Windows compatibility:** All commands use bash syntax. The workspace file automatically routes terminal commands through Git Bash on Windows (see `Continue Install.md` Step 5). SETUP.md files may include a Git Bash note for users troubleshooting outside the IDE.
 
+## Architecture Compliance (Required)
+
+Before implementing or modifying tools, read:
+- `/cofounder/tools/ARCHITECTURE.md`
+
+Priority rule:
+- If guidance in this file conflicts with `ARCHITECTURE.md`, the architecture policy wins.
+
+Implementation rule:
+- Treat this file as execution guidance for building within architecture constraints.
+
 ## Pre-Modification Checklist
 
 Before modifying any tool:
@@ -120,6 +131,41 @@ Please re-run your command.
 ```
 
 **Reference:** See `/cofounder/system/shared/ensure-deps.js` for the shared utility.
+
+### Script CLI Standardization Contract
+
+Use this contract for all new or refactored Node script CLIs.
+
+Required shared utilities:
+- `parseCliArgs`
+- `hasHelpFlag`
+- `requireFlag`
+- `output`
+- `outputError`
+
+Import path example (adjust relative depth to your script location):
+
+```javascript
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  output,
+  outputError,
+  requireFlag
+} from '../../../system/shared/cli-utils.js';
+```
+
+Required behavior:
+- Parse args with `parseCliArgs(process.argv.slice(2))`.
+- Show help when no positional command is provided or help flag is set.
+- Validate required flags with `requireFlag(flags, 'name', 'command')`.
+- Route failures through `outputError(...)` so exit handling is consistent.
+- Prefer `output(result, { json, formatter })` for stable machine and human output.
+
+Compatibility rule:
+- When migrating existing scripts, preserve current success output shape.
+- Add adapter formatting in the `formatter` callback only when compatibility is needed.
+- Do not silently change command names or required option names during standardization-only passes.
 
 ### Composite Tool AGENTS.md
 

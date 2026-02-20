@@ -56,6 +56,17 @@ export function loadConfig() {
 }
 
 /**
+ * Canonical credentials mapper used by scripts.
+ */
+export function getCredentials(env) {
+  return {
+    accountId: env.accountId,
+    clientId: env.clientId,
+    clientSecret: env.clientSecret
+  };
+}
+
+/**
  * Get cached access token or fetch new one
  * Zoom S2S tokens expire after 1 hour
  */
@@ -119,8 +130,8 @@ export async function getAccessToken() {
  * Parse command line arguments
  * @returns {object} { command, args, flags }
  */
-export function parseArgs() {
-  const args = process.argv.slice(2);
+export function parseArgs(argsInput = process.argv.slice(2)) {
+  const args = argsInput;
   const command = args[0] || 'help';
   const flags = {};
   const positional = [];

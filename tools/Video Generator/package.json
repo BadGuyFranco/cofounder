@@ -7,7 +7,6 @@
     "edit": "node scripts/local-video-edit.js"
   },
   "dependencies": {
-    "dotenv": "^16.3.0",
     "fluent-ffmpeg": "^2.1.0"
   },
   "engines": {

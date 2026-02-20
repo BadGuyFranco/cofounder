@@ -14,6 +14,8 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | Platform | Location |
 |----------|----------|
 | Airtable | `airtable/` |
+| Bing Webmaster Tools | `bing/` |
+| DataForSEO | `dataforseo/` |
 | ClickUp | `clickup/` |
 | Cloudflare | `cloudflare/` |
 | Figma | `figma/` |
@@ -32,6 +34,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | Supabase | `supabase/` |
 | WordPress | `wordpress/` |
 | X.com | `xcom/` |
+| Zoho CRM | `zoho/` |
 | Zoom | `zoom/` |
 
 ## Using a Connector

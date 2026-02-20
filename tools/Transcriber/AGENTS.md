@@ -1,24 +1,43 @@
 # Transcriber
 
-**100% Local Execution. No API Keys Required. Completely Free.**
-
 ## Path Resolution
 
 `/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve from `user_info.Workspace Paths` before running terminal commands.
 
-Transcribe voice recordings and phone calls locally using OpenAI Whisper with GPU acceleration. Optionally identify different speakers using pyannote speaker diarization.
+Transcribe voice recordings and phone calls. Two engines are available. Choose based on the decision table below.
 
 ## Objective
 
 Convert audio to text and, when requested, produce summaries that capture every key point, nuanced detail, and emotional context. Summaries should be comprehensive enough that someone who didn't hear the recording understands exactly what happened.
 
+## Engine Selection
+
+| | Whisper (Local) | Google Speech-to-Text (Cloud) |
+|---|---|---|
+| **Cost** | Free, unlimited | Pay-per-use (60 min free/month, then $0.024/min) |
+| **Privacy** | 100% local, never leaves device | Audio sent to Google Cloud |
+| **Setup** | Python 3.8+ required | Google connector configured |
+| **Speed** | GPU: 6-10x real-time, CPU: 1x | Near-instant (streaming) |
+| **Max length** | Unlimited | 60s sync, 8hr async |
+| **Speaker labeling** | Yes (HuggingFace) | Yes (built-in) |
+| **Languages** | 99 | 125+ |
+| **Best for** | Long recordings, privacy-sensitive content, offline use | Quick transcriptions, no Python setup, medical/phone call models |
+
+**Default: Whisper.** Use Google Speech-to-Text when:
+- Python/Whisper is not set up and user doesn't want to set it up
+- Audio is already in Google Cloud Storage
+- User specifically needs Google's `phone_call` or `medical_dictation` models
+- User explicitly requests cloud transcription
+
 ## Features
 
-| Feature | Description | Requirements |
-|---------|-------------|--------------|
-| **Basic Transcription** | Convert audio to text | None (works out of box) |
-| **Speaker Diarization** | Label who said what (SPEAKER_00, SPEAKER_01, etc.) | HuggingFace connector |
-| **Comprehensive Summary** | Organized analysis with action items | None (AI generates from transcript) |
+| Feature | Whisper | Google Speech |
+|---------|---------|---------------|
+| **Basic Transcription** | Yes | Yes |
+| **Speaker Diarization** | Yes (HuggingFace) | Yes (built-in, no extra setup) |
+| **Word Timestamps** | Yes | Yes |
+| **Comprehensive Summary** | AI generates from transcript | AI generates from transcript |
+| **Async (long audio)** | Always | `transcribe-async` command |
 
 ## Pre-Transcription Workflow
 
@@ -41,6 +60,8 @@ Convert audio to text and, when requested, produce summaries that capture every 
 
 ## Quick Start
 
+### Whisper (Local)
+
 **Basic transcription (no setup required):**
 ```bash
 python transcribe_audio.py recording.m4a
@@ -59,6 +80,35 @@ python transcribe_audio.py meeting.mp3 --diarize
 **With known speaker count (improves accuracy):**
 ```bash
 python transcribe_audio.py call.wav --diarize --speakers 2
+```
+
+### Google Cloud Speech-to-Text
+
+Requires Google connector configured with `speech` API enabled. See `connectors/google/AGENTS.md`.
+
+**Short audio (< 60 seconds):**
+```bash
+node connectors/google/scripts/speech.js transcribe ./recording.mp3 --account user@example.com
+```
+
+**Long audio (any length, polls until complete):**
+```bash
+node connectors/google/scripts/speech.js transcribe-async ./meeting.mp3 --account user@example.com
+```
+
+**With speaker diarization (no HuggingFace required):**
+```bash
+node connectors/google/scripts/speech.js transcribe ./call.mp3 --speakers 2 --account user@example.com
+```
+
+**Save transcript to file:**
+```bash
+node connectors/google/scripts/speech.js transcribe-async ./webinar.mp3 --output transcript.txt --account user@example.com
+```
+
+**Enable Cloud Speech API:**
+```bash
+node connectors/google/scripts/auth.js configure-apis --account user@example.com --apis "+speech"
 ```
 
 ## Speaker Diarization Setup
@@ -297,6 +347,6 @@ Models download automatically on first use:
 
 ## Cost
 
-**$0.00 - Completely Free!**
+**Whisper:** $0.00. No API costs, no subscriptions, unlimited usage, complete privacy.
 
-No API costs, no subscriptions, unlimited usage, complete privacy.
+**Google Speech-to-Text:** Free tier covers 60 minutes/month. After that: $0.024/min (standard), $0.048/min (with speaker diarization). Most recordings stay within the free tier.

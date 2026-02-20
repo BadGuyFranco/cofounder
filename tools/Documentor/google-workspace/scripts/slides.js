@@ -22,6 +22,13 @@ import { readFileSync, existsSync } from 'fs';
 // Local modules
 import { getAuthClient } from './auth.js';
 import { getFolderId, moveFile, exportFile, EXPORT_TYPES } from './drive.js';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  output,
+  outputError,
+  requireFlag
+} from '../../../../system/shared/cli-utils.js';
 
 /**
  * Get Slides API instance
@@ -347,128 +354,102 @@ Examples:
 }
 
 // Parse CLI arguments
-const args = process.argv.slice(2);
-
-if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+const { positional, flags } = parseCliArgs(process.argv.slice(2));
+if (positional.length === 0 || hasHelpFlag(flags)) {
   showHelp();
 }
 
-const command = args[0];
-let account = null;
-let id = null;
-let title = null;
-let folder = null;
-let layout = null;
-let body = null;
-let slideId = null;
-let notes = null;
-let format = null;
-let output = null;
-let jsonOutput = false;
-
-for (let i = 1; i < args.length; i++) {
-  switch (args[i]) {
-    case '--account': account = args[++i]; break;
-    case '--id': id = args[++i]; break;
-    case '--title': title = args[++i]; break;
-    case '--folder': folder = args[++i]; break;
-    case '--layout': layout = args[++i]; break;
-    case '--body': body = args[++i]; break;
-    case '--slide-id': slideId = args[++i]; break;
-    case '--notes': notes = args[++i]; break;
-    case '--format': format = args[++i]; break;
-    case '--output': output = args[++i]; break;
-    case '--json': jsonOutput = true; break;
-  }
-}
-
-if (!account) {
-  console.error('Error: --account is required');
-  process.exit(1);
-}
+const command = positional[0];
+const account = flags.account;
+const id = flags.id;
+const title = flags.title;
+const folder = flags.folder;
+const layout = flags.layout;
+const body = flags.body;
+const slideId = flags['slide-id'];
+const notes = flags.notes;
+const format = flags.format;
+const outputPath = flags.output;
+const jsonOutput = Boolean(flags.json);
 
 try {
+  requireFlag(flags, 'account');
   let result;
   
   switch (command) {
     case 'create':
-      if (!title) {
-        console.error('Error: --title is required for create');
-        process.exit(1);
-      }
+      requireFlag(flags, 'title', 'create');
       result = await createPresentation(account, title, { folder });
       break;
       
     case 'read':
-      if (!id) {
-        console.error('Error: --id is required for read');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'read');
       result = await readPresentation(account, id);
       break;
       
     case 'add-slide':
-      if (!id) {
-        console.error('Error: --id is required for add-slide');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'add-slide');
       result = await addSlide(account, id, { layout, title, body });
       break;
       
     case 'add-notes':
-      if (!id || !slideId || !notes) {
-        console.error('Error: --id, --slide-id, and --notes are required for add-notes');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'add-notes');
+      requireFlag(flags, 'slide-id', 'add-notes');
+      requireFlag(flags, 'notes', 'add-notes');
       result = await addSpeakerNotes(account, id, slideId, notes);
       break;
       
     case 'delete-slide':
-      if (!id || !slideId) {
-        console.error('Error: --id and --slide-id are required for delete-slide');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'delete-slide');
+      requireFlag(flags, 'slide-id', 'delete-slide');
       result = await deleteSlide(account, id, slideId);
       break;
       
     case 'export':
-      if (!id || !format || !output) {
-        console.error('Error: --id, --format, and --output are required for export');
-        process.exit(1);
-      }
-      result = await exportPresentation(account, id, format, output);
+      requireFlag(flags, 'id', 'export');
+      requireFlag(flags, 'format', 'export');
+      requireFlag(flags, 'output', 'export');
+      result = await exportPresentation(account, id, format, outputPath);
       result = { exported: result };
       break;
       
     default:
-      console.error(`Unknown command: ${command}`);
+      outputError(`Unknown command: ${command}`);
       showHelp();
   }
   
-  if (jsonOutput) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    if (result.url) {
-      console.log(`\nPresentation: ${result.title || result.id}`);
-      console.log(`URL: ${result.url}`);
-      if (result.slides) {
-        console.log(`\nSlides (${result.slideCount}):`);
-        result.slides.forEach(s => {
-          console.log(`  ${s.index}. ${s.title || '(untitled)'}`);
-        });
+  output(result, {
+    json: jsonOutput,
+    formatter: (dataResult) => {
+      if (dataResult.url) {
+        console.log(`\nPresentation: ${dataResult.title || dataResult.id}`);
+        console.log(`URL: ${dataResult.url}`);
+        if (dataResult.slides) {
+          console.log(`\nSlides (${dataResult.slideCount}):`);
+          dataResult.slides.forEach((s) => {
+            console.log(`  ${s.index}. ${s.title || '(untitled)'}`);
+          });
+        }
+        return;
       }
-    } else if (result.exported) {
-      console.log(`\nExported to: ${result.exported}`);
-    } else if (result.added) {
-      console.log(`\nSlide added: ${result.slideId}`);
-    } else if (result.notesAdded) {
-      console.log(`\nSpeaker notes added to slide: ${result.slideId}`);
-    } else if (result.deleted) {
-      console.log(`\nSlide deleted: ${result.deleted}`);
+      if (dataResult.exported) {
+        console.log(`\nExported to: ${dataResult.exported}`);
+        return;
+      }
+      if (dataResult.added) {
+        console.log(`\nSlide added: ${dataResult.slideId}`);
+        return;
+      }
+      if (dataResult.notesAdded) {
+        console.log(`\nSpeaker notes added to slide: ${dataResult.slideId}`);
+        return;
+      }
+      if (dataResult.deleted) {
+        console.log(`\nSlide deleted: ${dataResult.deleted}`);
+      }
     }
-  }
+  });
 } catch (error) {
-  console.error(`Error: ${error.message}`);
-  process.exit(1);
+  outputError(error);
 }
 

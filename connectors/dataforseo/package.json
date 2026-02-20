@@ -1,0 +1,12 @@
+{
+  "name": "dataforseo-connector",
+  "version": "1.0.0",
+  "description": "DataForSEO API connector for rank tracking, keyword research, backlink analysis, and competitor intelligence",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

@@ -98,6 +98,10 @@ Now enable the rest of the free APIs. After each one, click **Library** in the l
 | **YouTube Analytics API** | Channel analytics and statistics |
 | **YouTube Reporting API** | Bulk analytics reports |
 | **Google Calendar API** | Events, calendars |
+| **Google Analytics Data API** | GA4 traffic reports, realtime data |
+| **Google Analytics Admin API** | List GA4 properties |
+| **My Business Account Management API** | Google Business Profile accounts |
+| **My Business Business Information API** | Business locations and details |
 
 **For each API:**
 1. Search for the API name
@@ -123,6 +127,12 @@ These APIs enable advanced AI features like video generation (Veo) and enterpris
 | **Generative Language API** | Gemini AI text/chat/images | Free tier available, may require billing setup |
 | **Vertex AI API** | Veo video generation, Imagen images | Pay per generation |
 | **Cloud Vision API** | Advanced image analysis | Free tier: 1,000 units/month, then pay-per-use |
+| **Cloud Speech-to-Text API** | Transcribe audio files | Free tier: 60 min/month, then $0.006/15 sec |
+| **Cloud Text-to-Speech API** | Generate voiceovers | Free tier: 1M chars/month (Standard), 1M chars/month (WaveNet), pay per char above |
+| **Cloud Natural Language API** | Text analysis: entities, sentiment | Free tier: 5,000 units/month, then pay-per-use |
+| **Cloud Translation API** | Translate text | Free tier: 500,000 chars/month, then $20/M chars |
+| **Cloud Document AI API** | Extract data from PDFs | Free tier: 1,000 pages/month, then pay-per-page |
+| **Cloud Scheduler API** | Schedule automated jobs | Free tier: 3 jobs free, then $0.10/job/month |
 
 **Note:** Generative Language API has a generous free tier via Google AI Studio, but enabling it in Cloud Console may require billing to be configured. Vertex AI is needed for Veo video generation or Imagen's enterprise image features.
 
@@ -155,6 +165,23 @@ These APIs let you manage Google Cloud itself, not just use Google services. Mos
 | **Service Usage API** | Turn APIs on and off programmatically |
 | **Cloud Resource Manager API** | Create and manage Google Cloud projects |
 | **IAM API** | Manage who has access to what |
+| **Google Ads API** | Manage Google Ads campaigns and pull performance data (requires separate developer token) |
+
+**Google Ads additional setup:** The Ads API requires a developer token from your Google Ads account, separate from OAuth. Apply at: https://developers.google.com/google-ads/api/docs/get-started/dev-token
+
+Once approved, add to `/memory/connectors/google/.env`:
+```
+GOOGLE_ADS_DEVELOPER_TOKEN=your_developer_token
+GOOGLE_ADS_CUSTOMER_ID=1234567890
+```
+
+**Cloud Scheduler additional setup:** Scheduler requires App Engine to be initialized in your project. Go to https://console.cloud.google.com/appengine and create an app (choose any region; this is a one-time step).
+
+**Document AI additional setup:** Create a processor at https://console.cloud.google.com/ai/document-ai/processors, then set:
+```
+GOOGLE_CLOUD_PROJECT=your-project-id
+```
+in `/memory/connectors/google/.env`.
 
 **Important:** These APIs require billing to be enabled. Like Round 3, they are pay-per-use. If you don't use them, you won't be charged.
 

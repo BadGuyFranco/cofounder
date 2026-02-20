@@ -2,7 +2,7 @@
 
 Create Google Docs, Sheets, and Slides from other content formats. Export to Word/PDF/Excel/PowerPoint.
 
-**Purpose:** Document creation and format conversion. For reading or editing existing Google Docs, use the Google Connector (`/connectors/google/`).
+**Purpose:** Document creation and format conversion. For reading or editing existing Google Docs, use the Google Connector (`connectors/google/`).
 
 ## Quick Start
 
@@ -24,12 +24,12 @@ This tool uses the centralized **Google Connector** for authentication.
 
 **Step 1: Set up Google Connector**
 
-Follow `/connectors/google/SETUP.md` to configure OAuth credentials.
+Follow `/cofounder/connectors/google/SETUP.md` to configure OAuth credentials.
 
 **Step 2: Authenticate your account**
 
 ```bash
-cd /connectors/google
+cd "/cofounder/connectors/google"
 node scripts/auth.js setup --account your@email.com
 ```
 
@@ -131,7 +131,7 @@ Supported formats: PNG, JPG, GIF, WebP, BMP. SVG must be converted first.
 
 **"No credentials found":** Set up the Google Connector first:
 ```bash
-cd /connectors/google
+cd "/cofounder/connectors/google"
 node scripts/auth.js setup --account your@email.com
 ```
 

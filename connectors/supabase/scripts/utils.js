@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -151,6 +151,28 @@ export function loadConfig(projectId = null) {
 }
 
 /**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const url = env.SUPABASE_URL;
+  const serviceKey = env.SUPABASE_SERVICE_KEY;
+
+  if (!url || !serviceKey) {
+    console.error('Error: SUPABASE_URL and SUPABASE_SERVICE_KEY are required.');
+    console.error('Load a configured project first (for example with --project).');
+    process.exit(1);
+  }
+
+  return {
+    url: url.replace(/\/$/, ''),
+    serviceKey,
+    anonKey: env.SUPABASE_ANON_KEY,
+    accessToken: env.SUPABASE_ACCESS_TOKEN,
+    projectRef: env.SUPABASE_PROJECT_REF
+  };
+}
+
+/**
  * List configured projects with their details
  * @returns {Array} - Array of {name, ref, file} objects
  */
@@ -188,8 +210,34 @@ export function listConfiguredProjects() {
   return projects;
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help' || args.help || args._.length === 0) {
+    showHelp();
+    return null;
+  }
+
+  loadConfig(args.project);
+  return { credentials: getCredentials(), args, command };
+}
+
+/**
+ * Canonical API helper alias.
+ * Maps to PostgREST requests by default.
+ */
+export async function apiRequest(endpoint, options = {}) {
+  return restRequest(endpoint, options);
+}
 
 // Make REST API request (PostgREST for database)
 export async function restRequest(endpoint, options = {}) {
@@ -440,4 +488,14 @@ export function formatDate(dateString) {
   if (!dateString) return '(none)';
   const date = new Date(dateString);
   return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }

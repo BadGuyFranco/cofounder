@@ -8,7 +8,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs, sleep } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs, sleep } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -57,8 +57,37 @@ export function loadConfig() {
   };
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Canonical credentials mapper used by scripts.
+ */
+export function getCredentials(env) {
+  return {
+    apiToken: env.apiToken
+  };
+}
+
+/**
+ * Parse CLI args. Supports explicit args for compatibility.
+ */
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help') {
+    showHelp();
+    return null;
+  }
+
+  const credentials = getCredentials(loadConfig());
+  return { credentials, args, command };
+}
 
 /**
  * Make API request to HuggingFace Hub API
@@ -67,7 +96,7 @@ export { parseArgs };
  * @returns {Promise<object>} Response data
  */
 export async function hubApiRequest(endpoint, options = {}) {
-  const config = loadConfig();
+  const config = getCredentials(loadConfig());
   const url = endpoint.startsWith('http') ? endpoint : `${HUB_API_URL}${endpoint}`;
 
   const fetchOptions = {
@@ -111,7 +140,7 @@ export async function hubApiRequest(endpoint, options = {}) {
  * @returns {Promise<object|Buffer>} Response data
  */
 export async function inferenceRequest(model, payload, options = {}) {
-  const config = loadConfig();
+  const config = getCredentials(loadConfig());
   const baseUrl = options.endpoint || `${INFERENCE_API_URL}/${model}`;
   
   const fetchOptions = {
@@ -203,7 +232,7 @@ export async function inferenceWithRetry(model, payload, options = {}, maxRetrie
  * @returns {Promise<string>} Path to saved file
  */
 export async function downloadFile(url, outputPath, onProgress = null) {
-  const config = loadConfig();
+  const config = getCredentials(loadConfig());
   
   const response = await fetch(url, {
     headers: {
@@ -244,6 +273,29 @@ export async function downloadFile(url, outputPath, onProgress = null) {
 
 // Re-export sleep from shared utils
 export { sleep };
+
+/**
+ * Canonical alias for the connector's primary API request helper.
+ */
+export async function apiRequest(endpoint, options = {}) {
+  return hubApiRequest(endpoint, options);
+}
+
+/**
+ * Standardized success output.
+ */
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+/**
+ * Standardized error output.
+ */
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
+}
 
 /**
  * Save binary output to file

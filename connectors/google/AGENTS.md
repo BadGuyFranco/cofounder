@@ -33,12 +33,43 @@ If you get "Cannot find module", run `npm install` first.
 | `calendar.js` | Events, calendars |
 | `ai.js` | Gemini text, image, video generation |
 | `cloud.js` | Projects, APIs, keys, IAM, deployments |
+| `search-console.js` | Search analytics, URL inspection, sitemaps |
+| `pagespeed.js` | Core Web Vitals, performance scores, opportunities |
+| `vision.js` | Image analysis: faces, labels, text, objects |
+| `analytics.js` | GA4 traffic, top pages, sources, conversions, realtime |
+| `ads.js` | Google Ads campaigns, keywords, ad groups, performance |
+| `speech.js` | Transcribe audio to text, speaker diarization |
+| `tts.js` | Synthesize text to speech, Neural2/Studio voices |
+| `language.js` | NLP: entities, sentiment, classification, moderation |
+| `translate.js` | Translate text and files across 100+ languages |
+| `document-ai.js` | Extract structured data from PDFs and documents |
+| `business.js` | Business Profile: locations, reviews, posts |
+| `scheduler.js` | Schedule HTTP jobs on cron, run tasks automatically |
+| `search-console.js` | Search analytics, URL inspection, sitemaps |
+| `pagespeed.js` | Core Web Vitals, performance score, opportunities |
 
 Run any script with `help` for full command syntax:
 ```bash
 node scripts/drive.js help
 node scripts/gmail.js help
 ```
+
+## Search Console Site Registry
+
+Verified GSC properties are cached at `/memory/connectors/google/search-console-sites.json` after any `sites` command runs. Check this file first when a site URL is needed for Search Console commands - no need to ask the user which property to use.
+
+```json
+{
+  "user@example.com": {
+    "last_updated": "2026-02-20",
+    "properties": [
+      { "siteUrl": "sc-domain:example.com", "permission": "siteOwner", "domain": "example.com" }
+    ]
+  }
+}
+```
+
+If the file is missing or stale, run `node scripts/search-console.js sites --account EMAIL` to refresh it.
 
 ## Configuration
 
@@ -86,9 +117,9 @@ APIs are grouped into rounds during setup:
 | Round | APIs | Billing |
 |-------|------|---------|
 | 1 | Drive | Free |
-| 2 | Docs, Sheets, Slides, Gmail, YouTube, Calendar | Free |
-| 3 | Gemini AI, Vertex AI, Vision | May require billing |
-| 4 | Cloud Run, Functions, API Keys, IAM | Requires billing |
+| 2 | Docs, Sheets, Slides, Gmail, YouTube, Calendar, Analytics (GA4), Business Profile | Free |
+| 3 | Gemini AI, Vertex AI, Vision, Speech-to-Text, Text-to-Speech, Natural Language, Translation, Document AI, Scheduler | May require billing |
+| 4 | Google Ads, Cloud Run, Functions, API Keys, IAM | Requires billing or developer tokens |
 
 Check enabled APIs: `node scripts/auth.js status --account EMAIL`
 
@@ -122,6 +153,18 @@ node scripts/auth.js configure-apis --account your@email.com --apis "+api_name"
 
 ## API Documentation
 
+- PageSpeed Insights: https://developers.google.com/speed/docs/insights/v5/get-started
+- Search Console: https://developers.google.com/webmaster-tools/search-console-api/reference/rest
+- Cloud Vision: https://cloud.google.com/vision/docs/reference/rest
+- Analytics (GA4): https://developers.google.com/analytics/devguides/reporting/data/v1
+- Google Ads: https://developers.google.com/google-ads/api/docs
+- Speech-to-Text: https://cloud.google.com/speech-to-text/docs/reference/rest
+- Text-to-Speech: https://cloud.google.com/text-to-speech/docs/reference/rest
+- Natural Language: https://cloud.google.com/natural-language/docs/reference/rest
+- Translation: https://cloud.google.com/translate/docs/reference/rest
+- Document AI: https://cloud.google.com/document-ai/docs/reference/rest
+- Business Profile: https://developers.google.com/my-business/reference/businessinformation/rest
+- Cloud Scheduler: https://cloud.google.com/scheduler/docs/reference/rest
 - Drive: https://developers.google.com/drive/api/v3
 - Gmail: https://developers.google.com/gmail/api
 - YouTube: https://developers.google.com/youtube/v3

@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "reveal.js": "^5.2.1",
-    "yaml": "^2.7.0",
-    "playwright-chromium": "^1.50.0"
+    "yaml": "^2.7.0"
   }
 }

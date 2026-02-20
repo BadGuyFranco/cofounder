@@ -71,6 +71,116 @@ Side-by-side content using the `.columns` utility.
 </section>
 ```
 
+## Feature Cards (Single)
+
+A single centered card for highlighting one concept, framework, or key idea. Good for "anatomy of" or "how it works" slides.
+
+```html
+<section>
+  <h2>Slide Title</h2>
+  <div class="cards cards-single">
+    <div class="card">
+      <div class="card-label">Category Label</div>
+      <div class="card-title">Card Title</div>
+      <ul class="card-list">
+        <li><strong style="color: #f58229;">Term One:</strong> Definition or description</li>
+        <li><strong style="color: #f58229;">Term Two:</strong> Definition or description</li>
+        <li><strong style="color: #f58229;">Term Three:</strong> Definition or description</li>
+      </ul>
+    </div>
+  </div>
+  <p class="text-muted" style="margin-top: 1em;">Optional footer text or call to action.</p>
+</section>
+```
+
+Use `.card-description` instead of `.card-list` for paragraph text:
+
+```html
+<div class="card">
+  <div class="card-label">Category</div>
+  <div class="card-title">Title</div>
+  <div class="card-description">Descriptive paragraph text that explains the concept. Wraps naturally within the card.</div>
+</div>
+```
+
+## Feature Cards (Two)
+
+Side-by-side cards for comparisons, before/after, or contrasting concepts. More visually polished than `.columns`.
+
+```html
+<section>
+  <h2>Comparison Title</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Left Label</div>
+      <div class="card-title">Left Title</div>
+      <ul class="card-list">
+        <li>Point one</li>
+        <li>Point two</li>
+        <li>Point three</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-label">Right Label</div>
+      <div class="card-title">Right Title</div>
+      <ul class="card-list">
+        <li>Point one</li>
+        <li>Point two</li>
+        <li>Point three</li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+To highlight the second card title (e.g., the "solution" side), add an inline style:
+
+```html
+<div class="card-title" style="color: #24ccb8;">Solution Title</div>
+```
+
+## Feature Cards (Three)
+
+Three cards for presenting options, tiers, or related concepts. Cards share space equally.
+
+```html
+<section>
+  <h2>Options Title</h2>
+  <div class="cards cards-three">
+    <div class="card">
+      <div class="card-label">Option 1</div>
+      <div class="card-title">Title One</div>
+      <div class="card-description">Brief description of this option or tier.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Option 2</div>
+      <div class="card-title">Title Two</div>
+      <div class="card-description">Brief description of this option or tier.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Option 3</div>
+      <div class="card-title">Title Three</div>
+      <div class="card-description">Brief description of this option or tier.</div>
+    </div>
+  </div>
+  <p class="text-muted" style="margin-top: 1em;">Optional footer text.</p>
+</section>
+```
+
+### Card Components Reference
+
+| Class | Purpose |
+|-------|---------|
+| `.cards` | Container; centers cards with proper spacing |
+| `.cards-single` | Single card layout (wider, more padding) |
+| `.cards-three` | Three card layout (narrower, tighter spacing) |
+| `.card` | Individual card with gradient background and border |
+| `.card-label` | Small uppercase label above title (uses accent color) |
+| `.card-title` | Bold card heading |
+| `.card-description` | Paragraph text inside card |
+| `.card-list` | Bullet list inside card (custom orange bullets) |
+| `.card-price` | Large accent-colored text for pricing |
+
 ## Image Right
 
 Text on the left, image on the right.

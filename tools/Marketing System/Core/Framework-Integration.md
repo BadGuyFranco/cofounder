@@ -17,6 +17,7 @@ Load when building complex multi-framework outputs: funnels, presentation paths,
 | Email sequences | Sequences/[type].md | Persuasion/* |
 | Traffic strategy | Growth-Engines/[type].md | Platforms/* |
 | Optimize/diagnose | Measurement/* | Diagnostics/* |
+| Production playbook | Playbooks/[name]/AGENTS.md | (playbook manages its own framework loading) |
 
 ### Load Based on Depth
 
@@ -70,6 +71,13 @@ Core Principles → Hook-Architecture.md → Story-Engineering.md → Offer-Desi
 ```
 Core Principles → Sequences/[type].md → Persuasion/* → Quality-Checks.md
 ```
+
+### Playbook (Production System)
+```
+Playbooks/[name]/AGENTS.md → (playbook owns orchestration) → calls Marketing System frameworks + other tools as needed
+```
+
+Playbooks are self-contained production systems with their own AGENTS.md and multi-step pipeline. They differ from framework integration patterns because the playbook orchestrator controls the workflow. Marketing System frameworks serve as inputs that playbooks reference, not the other way around.
 
 ## Conflict Resolution
 

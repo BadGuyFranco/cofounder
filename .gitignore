@@ -20,6 +20,9 @@
 # Cursor plans (local only, not tracked)
 .cursor/plans/
 
+# Maintainer development workbench (local only, not tracked)
+/zDeveloper/
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -56,6 +59,9 @@ tools/Video Generator/generated_videos/*
 
 # Archive directories (optional - remove these lines to include archives)
 **/zArchive/
+
+# Reference material (source inputs, not tracked)
+**/zReference/
 
 
 # Node.js

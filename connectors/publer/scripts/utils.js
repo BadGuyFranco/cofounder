@@ -12,7 +12,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs, sleep, parseJSON } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -68,8 +68,38 @@ export function loadConfig() {
   };
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Canonical credentials mapper used by scripts.
+ */
+export function getCredentials(env) {
+  return {
+    apiKey: env.apiKey,
+    workspaceId: env.workspaceId
+  };
+}
+
+/**
+ * Parse CLI args. Supports explicit args for compatibility.
+ */
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help') {
+    showHelp();
+    return null;
+  }
+
+  const credentials = getCredentials(loadConfig());
+  return { credentials, args, command };
+}
 
 /**
  * Check and enforce rate limits
@@ -378,4 +408,20 @@ export function validateEnv(required) {
   }
   
   return config;
+}
+
+/**
+ * Standardized success output.
+ */
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+/**
+ * Standardized error output.
+ */
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }

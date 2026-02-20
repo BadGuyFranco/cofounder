@@ -137,6 +137,52 @@ const AVAILABLE_SCOPES = {
   'calendar.events': {
     scope: 'https://www.googleapis.com/auth/calendar.events',
     description: 'Manage calendar events only'
+  },
+  
+  // Google Search Console
+  'webmasters': {
+    scope: 'https://www.googleapis.com/auth/webmasters',
+    description: 'Google Search Console read and write access'
+  },
+  'webmasters.readonly': {
+    scope: 'https://www.googleapis.com/auth/webmasters.readonly',
+    description: 'Google Search Console read-only access'
+  },
+
+  // Cloud Vision
+  'cloud-vision': {
+    scope: 'https://www.googleapis.com/auth/cloud-vision',
+    description: 'Cloud Vision API for image analysis'
+  },
+  'cloud-platform': {
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
+    description: 'Full Google Cloud Platform access (Speech, TTS, NL, Translation, Document AI, Scheduler)'
+  },
+
+  // Google Analytics (GA4)
+  'analytics': {
+    scope: 'https://www.googleapis.com/auth/analytics',
+    description: 'Full Google Analytics access'
+  },
+  'analytics.readonly': {
+    scope: 'https://www.googleapis.com/auth/analytics.readonly',
+    description: 'Read-only Google Analytics access'
+  },
+  'analytics.edit': {
+    scope: 'https://www.googleapis.com/auth/analytics.edit',
+    description: 'Edit Google Analytics account settings'
+  },
+
+  // Google Ads
+  'adwords': {
+    scope: 'https://www.googleapis.com/auth/adwords',
+    description: 'Google Ads account management'
+  },
+
+  // Google Business Profile
+  'business.manage': {
+    scope: 'https://www.googleapis.com/auth/business.manage',
+    description: 'Google Business Profile (My Business) management'
   }
 };
 
@@ -149,7 +195,11 @@ const DEFAULT_SCOPES = [
   'gmail.modify',
   'youtube',
   'youtube.upload',
-  'calendar'
+  'calendar',
+  'webmasters',
+  'analytics.readonly',
+  'business.manage',
+  'cloud-platform'
 ];
 
 // Scope presets for common use cases
@@ -161,7 +211,12 @@ const SCOPE_PRESETS = {
   'gmail-readonly': ['gmail.readonly'],
   'youtube-only': ['youtube', 'youtube.upload'],
   'calendar-only': ['calendar'],
-  'readonly': ['drive.readonly', 'documents.readonly', 'spreadsheets.readonly', 'presentations.readonly', 'gmail.readonly', 'youtube.readonly', 'calendar.readonly']
+  'search-console-only': ['webmasters'],
+  'analytics-only': ['analytics.readonly'],
+  'ads-only': ['adwords'],
+  'business-only': ['business.manage'],
+  'cloud': ['cloud-platform'],
+  'readonly': ['drive.readonly', 'documents.readonly', 'spreadsheets.readonly', 'presentations.readonly', 'gmail.readonly', 'youtube.readonly', 'calendar.readonly', 'webmasters.readonly', 'analytics.readonly']
 };
 
 /**
@@ -601,17 +656,17 @@ function listApiRounds() {
   
   console.log('\nRound 2 - Services (Free, no billing):');
   for (const api of API_ROUNDS.round2) {
-    console.log(`  ${api.padEnd(20)} ${API_DESCRIPTIONS[api]}`);
+    console.log(`  ${api.padEnd(22)} ${API_DESCRIPTIONS[api]}`);
   }
-  
-  console.log('\nRound 3 - AI (May require billing):');
+
+  console.log('\nRound 3 - AI & Cloud Services (May require billing):');
   for (const api of API_ROUNDS.round3) {
-    console.log(`  ${api.padEnd(20)} ${API_DESCRIPTIONS[api]}`);
+    console.log(`  ${api.padEnd(22)} ${API_DESCRIPTIONS[api]}`);
   }
-  
-  console.log('\nRound 4 - Cloud Management (Requires billing):');
+
+  console.log('\nRound 4 - Advanced / Paid (Requires billing or developer tokens):');
   for (const api of API_ROUNDS.round4) {
-    console.log(`  ${api.padEnd(20)} ${API_DESCRIPTIONS[api]}`);
+    console.log(`  ${api.padEnd(22)} ${API_DESCRIPTIONS[api]}`);
   }
   
   console.log('\nUsage:');
@@ -799,7 +854,12 @@ function listScopes() {
     'Google Slides': ['presentations', 'presentations.readonly'],
     'Gmail': ['gmail.modify', 'gmail.readonly', 'gmail.send', 'gmail.compose'],
     'YouTube': ['youtube', 'youtube.readonly', 'youtube.upload', 'youtube.force-ssl'],
-    'Calendar': ['calendar', 'calendar.readonly', 'calendar.events']
+    'Calendar': ['calendar', 'calendar.readonly', 'calendar.events'],
+    'Search Console': ['webmasters', 'webmasters.readonly'],
+    'Analytics (GA4)': ['analytics', 'analytics.readonly', 'analytics.edit'],
+    'Google Ads': ['adwords'],
+    'Business Profile': ['business.manage'],
+    'Google Cloud (Speech, TTS, NL, Translation, Doc AI, Scheduler)': ['cloud-platform', 'cloud-vision']
   };
   
   for (const [category, scopes] of Object.entries(categories)) {
@@ -856,18 +916,23 @@ function printHelp() {
     ],
     'API Rounds': [
       'Round 1   Core: Drive',
-      'Round 2   Services: Docs, Sheets, Slides, Gmail, YouTube, Calendar',
-      'Round 3   AI: Gemini, Vertex AI, Vision (may require billing)',
-      'Round 4   Cloud: Run, Functions, App Engine, etc. (requires billing)'
+      'Round 2   Services: Docs, Sheets, Slides, Gmail, YouTube, Calendar, Analytics, Business Profile',
+      'Round 3   AI & Cloud: Gemini, Vertex, Vision, Speech, TTS, NL, Translation, Document AI, Scheduler',
+      'Round 4   Advanced: Ads, Cloud Run, Functions, IAM, etc. (billing + developer tokens)'
     ],
     'Scope Presets': [
-      'full          All scopes (default)',
-      'workspace     Drive, Docs, Sheets, Slides',
-      'drive-only    Just Google Drive',
-      'gmail-only    Just Gmail',
-      'youtube-only  YouTube and uploads',
-      'calendar-only Just Calendar',
-      'readonly      Read-only access to all services'
+      'full              All scopes (default)',
+      'workspace         Drive, Docs, Sheets, Slides',
+      'drive-only        Just Google Drive',
+      'gmail-only        Just Gmail',
+      'youtube-only      YouTube and uploads',
+      'calendar-only     Just Calendar',
+      'search-console-only  Just Search Console',
+      'analytics-only    Just Analytics (GA4)',
+      'ads-only          Just Google Ads',
+      'business-only     Just Business Profile',
+      'cloud             Cloud Platform (Speech, TTS, NL, Translation, Doc AI, Scheduler)',
+      'readonly          Read-only access to all services'
     ]
   });
 }

@@ -208,7 +208,7 @@ Uses Replicate Connector credentials and curated default model.
 
 **Route to:** `scripts/svg-to-png.js`, `scripts/html-to-png.js`, `scripts/mermaid-to-png.js`, or `scripts/screenshot.js`
 
-**When:** Convert SVG/Mermaid/HTML to PNG, or screenshot a webpage.
+**When:** Convert SVG/Mermaid/HTML to image, or screenshot a webpage.
 
 **Setup:** Requires `npm install` in Image Generator directory. First run may download browsers (~500MB, shared system-wide).
 
@@ -220,12 +220,20 @@ node scripts/svg-to-png.js input.svg output.png [--scale 2] [--width 1000]
 # Mermaid to PNG
 node scripts/mermaid-to-png.js input.mmd output.png [--width 800] [--scale 2] [--theme neutral]
 
-# HTML to PNG
+# HTML to PNG or JPG
 node scripts/html-to-png.js input.html output.png [--width 1200] [--height 630]
+node scripts/html-to-png.js input.html output.jpg [--width 1920] [--height 1080] [--quality 90]
 
 # Screenshot webpage
 node scripts/screenshot.js "https://example.com" output.png [--width 1280] [--full-page]
 ```
+
+**HTML to image options:**
+- `--width N` - Viewport width in pixels (default: 1200)
+- `--height N` - Viewport height in pixels (default: auto-fit to content)
+- `--quality N` - JPEG quality 1-100 (default: 90, only applies to .jpg/.jpeg output)
+
+Output format is determined by file extension (.png, .jpg, .jpeg). Local images referenced in the HTML resolve relative to the HTML file's location.
 
 **Mermaid options:**
 - `--width N` - Max width in pixels (default: 800)

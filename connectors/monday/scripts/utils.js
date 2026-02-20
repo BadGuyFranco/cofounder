@@ -11,7 +11,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -53,6 +53,14 @@ export function loadEnv(localDir) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ * Uses connector root as local fallback path.
+ */
+export function loadConfig() {
+  return loadEnv(path.join(__dirname, '..'));
+}
+
+/**
  * Get API token from environment
  */
 export function getToken() {
@@ -65,8 +73,23 @@ export function getToken() {
   return token;
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const apiToken = env.MONDAY_API_KEY;
+  if (!apiToken) {
+    console.error('Error: MONDAY_API_KEY not found in environment.');
+    console.error('Add it to /memory/connectors/monday/.env');
+    process.exit(1);
+  }
+  return { apiToken };
+}
+
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make GraphQL request to Monday.com
@@ -99,6 +122,32 @@ export async function graphqlRequest(query, variables = {}, token) {
   }
   
   return data.data;
+}
+
+/**
+ * Canonical API helper alias.
+ * For Monday.com, the endpoint argument is a GraphQL query string.
+ */
+export async function apiRequest(endpoint, options = {}) {
+  const { variables = {}, token } = options;
+  const apiToken = token || getCredentials().apiToken;
+  return graphqlRequest(endpoint, variables, apiToken);
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help' || args.help || args._.length === 0) {
+    showHelp();
+    return null;
+  }
+
+  loadConfig();
+  return { credentials: getCredentials(), args, command };
 }
 
 /**
@@ -172,6 +221,16 @@ export function handleError(error, verbose = false) {
   if (verbose && error.data) {
     console.error('Data:', JSON.stringify(error.data, null, 2));
   }
+  process.exit(1);
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
   process.exit(1);
 }
 

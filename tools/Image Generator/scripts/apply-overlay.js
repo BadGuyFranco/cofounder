@@ -5,7 +5,7 @@
 
 // Dependency check (must be first, before any npm imports)
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
+ensureDeps(import.meta.url, { layer: 'tools' });
 
 // npm packages (dynamic import after dependency check)
 const sharp = (await import('sharp')).default;
@@ -13,6 +13,11 @@ const sharp = (await import('sharp')).default;
 // Built-in Node.js modules
 import { existsSync, statSync } from 'fs';
 import { extname } from 'path';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  outputError
+} from '../../../system/shared/cli-utils.js';
 
 /**
  * Apply a transparent overlay on top of a base image
@@ -74,35 +79,30 @@ Arguments:
 Example:
   node apply-overlay.js image.png overlay.png result.png
 `);
-  process.exit(0);
 }
 
-// Parse CLI arguments
-const args = process.argv.slice(2);
-
-if (args.length < 2 || args.includes('--help') || args.includes('-h')) {
+const { positional, flags } = parseCliArgs(process.argv.slice(2));
+if (positional.length < 2 || hasHelpFlag(flags)) {
   showHelp();
+  process.exit(hasHelpFlag(flags) ? 0 : 1);
 }
 
-const basePath = args[0];
-const overlayPath = args[1];
-const outputPath = args[2] || null;
+const basePath = positional[0];
+const overlayPath = positional[1];
+const outputPath = positional[2] || null;
 
 // Validate inputs
 if (!existsSync(basePath)) {
-  console.log(`Error: Base image not found: ${basePath}`);
-  process.exit(1);
+  outputError(`Base image not found: ${basePath}`);
 }
 
 if (!existsSync(overlayPath)) {
-  console.log(`Error: Overlay image not found: ${overlayPath}`);
-  process.exit(1);
+  outputError(`Overlay image not found: ${overlayPath}`);
 }
 
 try {
   await applyOverlay(basePath, overlayPath, outputPath);
 } catch (e) {
-  console.log(`Error: ${e.message}`);
-  process.exit(1);
+  outputError(e);
 }
 

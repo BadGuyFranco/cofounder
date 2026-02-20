@@ -1,15 +1,24 @@
 # Marketing System
 
-Build effective marketing systems by routing to the right frameworks for your specific business model, platform, and goals.
+Build effective marketing systems by routing to the right frameworks, playbooks, and production systems for your specific business model, platform, and goals.
 
 ## Objective
 
-Help users create marketing assets (funnels, copy, offers, campaigns) by:
+Help users create marketing assets (funnels, copy, offers, campaigns, events) by:
 1. Identifying their business model and routing to relevant frameworks
-2. Providing principle-based guidance that remains durable
-3. Including measurement criteria for every output
+2. Running complete production playbooks for complex event and campaign types
+3. Providing principle-based guidance that remains durable
+4. Including measurement criteria for every output
 
 **Success:** User gets to actionable frameworks in <=2 exchanges. Output includes what to measure.
+
+## Two Modes
+
+Marketing System operates in two modes depending on the task:
+
+**Framework mode:** Load reference frameworks (Funnels, Sequences, Persuasion, Psychology) to guide strategy and asset creation. This is the default for most requests.
+
+**Playbook mode:** Hand off to a complete production system in `Playbooks/` that orchestrates its own multi-step workflow. Playbooks have their own AGENTS.md, manage their own pipeline, and call back to Marketing System frameworks or other tools as needed.
 
 ## XML Boundaries
 
@@ -40,7 +49,17 @@ Ask if unclear. Then load the appropriate model file:
 | B2B certification, professional credentialing | Business-Models/Methodology-Courses.md |
 
 ### Step 3: Identify Task Type
-Load frameworks based on what user is trying to do:
+Load frameworks or hand off to a playbook based on what user is trying to do:
+
+**Playbooks (complete production systems):**
+
+| Task | Hand off to |
+|------|-------------|
+| Plan or produce an executive roundtable | Playbooks/Roundtable Factory/AGENTS.md |
+
+When a playbook matches, load its AGENTS.md and follow its orchestration. The playbook owns the workflow from that point. It will call back to Marketing System frameworks or other tools as needed.
+
+**Frameworks (reference-based guidance):**
 
 | Task | Load |
 |------|------|
@@ -84,7 +103,7 @@ Marketing System routes to other tools when appropriate:
 
 ## Startup Behavior
 
-If no specific request, offer: Funnel strategy | Ad copy | Sales page | Email sequence | Offer design | Traffic strategy | Something else
+If no specific request, offer: Funnel strategy | Ad copy | Sales page | Email sequence | Offer design | Traffic strategy | Executive roundtable | Something else
 
 ## Persona
 

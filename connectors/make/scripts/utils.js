@@ -8,7 +8,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -45,6 +45,41 @@ export function validateEnv() {
     console.error('See SETUP.md for instructions on creating an API token.');
     process.exit(1);
   }
+}
+
+/**
+ * Canonical config loader.
+ */
+export function loadConfig() {
+  if (fs.existsSync(memoryEnvPath)) {
+    dotenv.config({ path: memoryEnvPath });
+  } else if (fs.existsSync(localEnvPath)) {
+    dotenv.config({ path: localEnvPath });
+  }
+
+  validateEnv();
+  return {
+    apiToken: process.env.MAKE_API_TOKEN,
+    region: process.env.MAKE_REGION || 'us1',
+    baseUrl: getBaseUrl()
+  };
+}
+
+/**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const apiToken = env.MAKE_API_TOKEN;
+  if (!apiToken) {
+    console.error('Error: MAKE_API_TOKEN not found in environment.');
+    console.error('Add it to /memory/connectors/make/.env');
+    process.exit(1);
+  }
+
+  return {
+    apiToken,
+    region: env.MAKE_REGION || 'us1'
+  };
 }
 
 // Get the API base URL based on region
@@ -92,6 +127,13 @@ export async function makeRequest(endpoint, options = {}) {
   return JSON.parse(text);
 }
 
+/**
+ * Canonical API helper alias.
+ */
+export async function apiRequest(endpoint, options = {}) {
+  return makeRequest(endpoint, options);
+}
+
 // GET request helper
 export async function get(endpoint, params = {}) {
   const queryString = new URLSearchParams(params).toString();
@@ -120,8 +162,26 @@ export async function del(endpoint) {
   return makeRequest(endpoint, { method: 'DELETE' });
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help' || args.help || args._.length === 0) {
+    showHelp();
+    return null;
+  }
+
+  loadConfig();
+  return { credentials: getCredentials(), args, command };
+}
 
 // Format output based on verbosity
 export function formatOutput(data, verbose = false) {
@@ -130,6 +190,16 @@ export function formatOutput(data, verbose = false) {
   } else {
     console.log(JSON.stringify(data, null, 2));
   }
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }
 
 // Print a table of items

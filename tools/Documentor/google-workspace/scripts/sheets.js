@@ -22,6 +22,13 @@ import { readFileSync, existsSync } from 'fs';
 // Local modules
 import { getAuthClient } from './auth.js';
 import { getFolderId, moveFile, exportFile, EXPORT_TYPES } from './drive.js';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  output,
+  outputError,
+  requireFlag
+} from '../../../../system/shared/cli-utils.js';
 
 /**
  * Get Sheets API instance
@@ -229,112 +236,85 @@ Examples:
   process.exit(0);
 }
 
-// Parse CLI arguments
-const args = process.argv.slice(2);
-
-if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+const { positional, flags } = parseCliArgs(process.argv.slice(2));
+if (positional.length === 0 || hasHelpFlag(flags)) {
   showHelp();
 }
 
-const command = args[0];
-let account = null;
-let id = null;
-let title = null;
-let folder = null;
-let range = null;
-let data = null;
-let format = null;
-let output = null;
-let jsonOutput = false;
-
-for (let i = 1; i < args.length; i++) {
-  switch (args[i]) {
-    case '--account': account = args[++i]; break;
-    case '--id': id = args[++i]; break;
-    case '--title': title = args[++i]; break;
-    case '--folder': folder = args[++i]; break;
-    case '--range': range = args[++i]; break;
-    case '--data': data = args[++i]; break;
-    case '--format': format = args[++i]; break;
-    case '--output': output = args[++i]; break;
-    case '--json': jsonOutput = true; break;
-  }
-}
-
-if (!account) {
-  console.error('Error: --account is required');
-  process.exit(1);
-}
+const command = positional[0];
+const account = flags.account;
+const id = flags.id;
+const title = flags.title;
+const folder = flags.folder;
+const range = flags.range;
+const data = flags.data;
+const format = flags.format;
+const outputPath = flags.output;
+const jsonOutput = Boolean(flags.json);
 
 try {
+  requireFlag(flags, 'account');
+
   let result;
   
   switch (command) {
     case 'create':
-      if (!title) {
-        console.error('Error: --title is required for create');
-        process.exit(1);
-      }
+      requireFlag(flags, 'title', 'create');
       result = await createSheet(account, title, { folder, data });
       break;
       
     case 'read':
-      if (!id) {
-        console.error('Error: --id is required for read');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'read');
       result = await readSheet(account, id, range || 'A1:Z1000');
       break;
       
     case 'write':
-      if (!id || !data) {
-        console.error('Error: --id and --data are required for write');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'write');
+      requireFlag(flags, 'data', 'write');
       result = await writeSheet(account, id, range || 'A1', data);
       break;
       
     case 'append':
-      if (!id || !data) {
-        console.error('Error: --id and --data are required for append');
-        process.exit(1);
-      }
+      requireFlag(flags, 'id', 'append');
+      requireFlag(flags, 'data', 'append');
       result = await appendSheet(account, id, range || 'A1', data);
       break;
       
     case 'export':
-      if (!id || !format || !output) {
-        console.error('Error: --id, --format, and --output are required for export');
-        process.exit(1);
-      }
-      result = await exportSheet(account, id, format, output);
+      requireFlag(flags, 'id', 'export');
+      requireFlag(flags, 'format', 'export');
+      requireFlag(flags, 'output', 'export');
+      result = await exportSheet(account, id, format, outputPath);
       result = { exported: result };
       break;
       
     default:
-      console.error(`Unknown command: ${command}`);
+      outputError(`Unknown command: ${command}`);
       showHelp();
   }
   
-  if (jsonOutput) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    if (result.url) {
-      console.log(`\nSpreadsheet: ${result.title || result.id}`);
-      console.log(`URL: ${result.url}`);
-    } else if (result.values) {
-      // Format as simple table
-      result.values.forEach(row => {
-        console.log(row.join('\t'));
-      });
-    } else if (result.exported) {
-      console.log(`\nExported to: ${result.exported}`);
-    } else if (result.updatedCells || result.updatedRows) {
-      console.log(`\nUpdated: ${result.updatedCells || result.updatedRows} cells/rows`);
+  output(result, {
+    json: jsonOutput,
+    formatter: (dataResult) => {
+      if (dataResult.url) {
+        console.log(`\nSpreadsheet: ${dataResult.title || dataResult.id}`);
+        console.log(`URL: ${dataResult.url}`);
+        return;
+      }
+      if (dataResult.values) {
+        dataResult.values.forEach((row) => console.log(row.join('\t')));
+        return;
+      }
+      if (dataResult.exported) {
+        console.log(`\nExported to: ${dataResult.exported}`);
+        return;
+      }
+      if (dataResult.updatedCells || dataResult.updatedRows) {
+        console.log(`\nUpdated: ${dataResult.updatedCells || dataResult.updatedRows} cells/rows`);
+      }
     }
-  }
+  });
 } catch (error) {
-  console.error(`Error: ${error.message}`);
-  process.exit(1);
+  outputError(error);
 }
 

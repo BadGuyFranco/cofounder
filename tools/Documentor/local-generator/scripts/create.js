@@ -9,10 +9,14 @@
  *   node create.js output.pdf --title "My Document" --content content.md
  */
 
-import { marked } from 'marked';
+import { ensureDeps } from '../../../../system/shared/ensure-deps.js';
+ensureDeps(import.meta.url);
+
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname, extname } from 'path';
-import puppeteer from 'puppeteer';
+
+const { marked } = await import('marked');
+const puppeteer = (await import('puppeteer')).default;
 
 // html-docx-js is CommonJS, need dynamic import
 const htmlDocx = await import('html-docx-js').then(m => m.default || m);

@@ -11,7 +11,11 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { extname } from 'path';
-import mammoth from 'mammoth';
+import { ensureDeps } from '../../../../system/shared/ensure-deps.js';
+
+ensureDeps(import.meta.url);
+
+const mammoth = (await import('mammoth')).default;
 
 // pdf-parse is CommonJS, need dynamic import
 const pdfParse = await import('pdf-parse').then(m => m.default || m);

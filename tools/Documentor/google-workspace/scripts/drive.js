@@ -24,6 +24,13 @@ import { platform, homedir } from 'os';
 
 // Local modules
 import { getAuthClient } from './auth.js';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  output,
+  outputError,
+  requireFlag
+} from '../../../../system/shared/cli-utils.js';
 
 // MIME types for common image formats
 const IMAGE_MIME_TYPES = {
@@ -581,101 +588,89 @@ Examples:
     process.exit(0);
   }
 
-  // Parse CLI arguments
-  const args = process.argv.slice(2);
-
-  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  const { positional, flags } = parseCliArgs(process.argv.slice(2));
+  if (positional.length === 0 || hasHelpFlag(flags)) {
     showHelp();
   }
 
-  const command = args[0];
-  let account = null;
-
-  // Find --account flag
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--account' && args[i + 1]) {
-      account = args[++i];
-    }
-  }
+  const command = positional[0];
+  const account = flags.account;
+  const force = Boolean(flags.force || flags.f);
+  const quotedText = flags.quote;
 
   try {
     switch (command) {
       case 'detect-account': {
-        const path = args[1];
+        const path = positional[1];
         if (!path) {
-          console.error('Error: PATH is required');
-          process.exit(1);
+          outputError('PATH is required');
         }
         const detected = detectAccountFromPath(path);
         if (detected) {
-          console.log(detected);
+          output(detected);
         } else {
-          console.error('Could not detect Google account from path');
-          process.exit(1);
+          outputError('Could not detect Google account from path');
         }
         break;
       }
       
       case 'get-folder-id': {
-        const pathStr = args[1];
-        if (!pathStr || !account) {
-          console.error('Error: PATH and --account are required');
-          process.exit(1);
+        const pathStr = positional[1];
+        if (!pathStr) {
+          outputError('PATH is required');
         }
+        requireFlag(flags, 'account', 'get-folder-id');
         const folderId = await getFolderId(account, pathStr);
-        console.log(folderId);
+        output(folderId);
         break;
       }
       
       case 'export': {
-        const fileId = args[1];
-        const format = args[2];
-        const output = args[3];
-        if (!fileId || !format || !output || !account) {
-          console.error('Error: FILE_ID, FORMAT, OUTPUT, and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        const format = positional[2];
+        const outputPath = positional[3];
+        if (!fileId || !format || !outputPath) {
+          outputError('FILE_ID, FORMAT, and OUTPUT are required');
         }
+        requireFlag(flags, 'account', 'export');
         const mimeType = EXPORT_TYPES[format.toLowerCase()];
         if (!mimeType) {
-          console.error(`Error: Unknown format: ${format}`);
-          console.error('Available formats: ' + Object.keys(EXPORT_TYPES).join(', '));
-          process.exit(1);
+          outputError(`Unknown format: ${format}. Available formats: ${Object.keys(EXPORT_TYPES).join(', ')}`);
         }
-        await exportFile(account, fileId, mimeType, output);
-        console.log(`Exported to: ${output}`);
+        await exportFile(account, fileId, mimeType, outputPath);
+        output(`Exported to: ${outputPath}`);
         break;
       }
       
       case 'move': {
-        const fileId = args[1];
-        const folderId = args[2];
-        if (!fileId || !folderId || !account) {
-          console.error('Error: FILE_ID, FOLDER_ID, and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        const folderId = positional[2];
+        if (!fileId || !folderId) {
+          outputError('FILE_ID and FOLDER_ID are required');
         }
+        requireFlag(flags, 'account', 'move');
         await moveFile(account, fileId, folderId);
-        console.log(`File moved successfully`);
+        output('File moved successfully');
         break;
       }
       
       case 'info': {
-        const fileId = args[1];
-        if (!fileId || !account) {
-          console.error('Error: FILE_ID and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        if (!fileId) {
+          outputError('FILE_ID is required');
         }
+        requireFlag(flags, 'account', 'info');
         const info = await getFileInfo(account, fileId);
-        console.log(JSON.stringify(info, null, 2));
+        output(info, { json: true });
         break;
       }
       
       case 'delete': {
-        const fileId = args[1];
-        const force = args.includes('--force') || args.includes('-f');
-        if (!fileId || !account) {
-          console.error('Error: FILE_ID and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        if (!fileId) {
+          outputError('FILE_ID is required');
         }
+        requireFlag(flags, 'account', 'delete');
         
         // Get file info first to show what we're deleting
         const fileInfo = await getFileInfo(account, fileId);
@@ -711,11 +706,11 @@ Examples:
       }
       
       case 'comments': {
-        const fileId = args[1];
-        if (!fileId || !account) {
-          console.error('Error: FILE_ID and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        if (!fileId) {
+          outputError('FILE_ID is required');
         }
+        requireFlag(flags, 'account', 'comments');
         const comments = await listComments(account, fileId);
         if (comments.length === 0) {
           console.log('\nNo comments on this file.');
@@ -742,18 +737,14 @@ Examples:
       }
       
       case 'comment': {
-        const fileId = args[1];
-        const content = args[2];
-        if (!fileId || !content || !account) {
-          console.error('Error: FILE_ID, comment text, and --account are required');
-          console.error('Use --quote "text" to anchor comment to specific text in the document');
-          process.exit(1);
+        const fileId = positional[1];
+        const content = positional[2];
+        if (!fileId || !content) {
+          outputError('FILE_ID and comment text are required. Use --quote "text" to anchor comment to specific text.');
         }
-        // Check for --quote option
-        const quoteIndex = args.indexOf('--quote');
-        const quotedText = quoteIndex !== -1 ? args[quoteIndex + 1] : null;
-        const comment = await addComment(account, fileId, content, quotedText);
-        console.log(`\nComment added: ${comment.id}`);
+        requireFlag(flags, 'account', 'comment');
+        const commentResult = await addComment(account, fileId, content, quotedText);
+        console.log(`\nComment added: ${commentResult.id}`);
         if (quotedText) {
           console.log(`Anchored to: "${quotedText}"`);
         } else {
@@ -763,25 +754,23 @@ Examples:
       }
       
       case 'reply': {
-        const fileId = args[1];
-        const commentId = args[2];
-        const content = args[3];
-        if (!fileId || !commentId || !content || !account) {
-          console.error('Error: FILE_ID, COMMENT_ID, reply text, and --account are required');
-          process.exit(1);
+        const fileId = positional[1];
+        const commentId = positional[2];
+        const content = positional[3];
+        if (!fileId || !commentId || !content) {
+          outputError('FILE_ID, COMMENT_ID, and reply text are required');
         }
+        requireFlag(flags, 'account', 'reply');
         const reply = await replyToComment(account, fileId, commentId, content);
         console.log(`\nReply added: ${reply.id}`);
         break;
       }
       
       default:
-        console.error(`Unknown command: ${command}`);
-        showHelp();
+        outputError(`Unknown command: ${command}`);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    outputError(error);
   }
 }
 

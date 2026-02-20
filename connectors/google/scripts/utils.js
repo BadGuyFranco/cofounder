@@ -18,7 +18,7 @@ const MEMORY_DIR_RELATIVE = join(__dirname, '..', '..', '..', '..', 'memory', 'c
 export const MEMORY_DIR = '/memory/connectors/google';
 
 // Get the actual memory directory path
-function getMemoryDir() {
+export function getMemoryDir() {
   // Primary: Use relative path from script location
   if (existsSync(MEMORY_DIR_RELATIVE)) {
     return MEMORY_DIR_RELATIVE;
@@ -55,6 +55,51 @@ export function loadEnvFile() {
   }
   
   return env;
+}
+
+/**
+ * Canonical config loader.
+ * For Google, config is account-centric (OAuth JSON per account).
+ * @param {string|null} account - Account email
+ * @returns {{account: string, credentials: object, env: object}}
+ */
+export function loadConfig(account = null) {
+  const env = loadEnvFile();
+  const accounts = listAccounts();
+
+  let selectedAccount = account || env.GOOGLE_ACCOUNT || null;
+  if (!selectedAccount) {
+    selectedAccount = detectAccountFromPath(process.cwd());
+  }
+
+  if (!selectedAccount) {
+    if (accounts.length === 1) {
+      selectedAccount = accounts[0];
+    } else if (accounts.length > 1) {
+      console.error('Error: Multiple Google accounts configured. Use --account <email>.');
+      for (const email of accounts) {
+        console.error(`  - ${email}`);
+      }
+      process.exit(1);
+    } else {
+      console.error('Error: No Google account credentials found.');
+      console.error('Run setup in connectors/google/SETUP.md to configure an account.');
+      process.exit(1);
+    }
+  }
+
+  const credentials = loadCredentials(selectedAccount);
+  if (!credentials) {
+    console.error(`Error: Account not configured: ${selectedAccount}`);
+    console.error('Run setup in connectors/google/SETUP.md to configure this account.');
+    process.exit(1);
+  }
+
+  return {
+    account: selectedAccount,
+    credentials,
+    env
+  };
 }
 
 /**
@@ -236,11 +281,92 @@ export function output(data) {
  * @param {Error} error - Error to output
  */
 export function outputError(error) {
-  console.error(`Error: ${error.message}`);
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
   if (process.env.DEBUG) {
-    console.error(error.stack);
+    console.error(error instanceof Error ? error.stack : error);
   }
   process.exit(1);
+}
+
+/**
+ * Canonical credentials mapper.
+ * @param {{account: string, credentials: object, env: object}} config
+ * @returns {{account: string, accessToken: string|null, refreshToken: string|null, credentials: object}}
+ */
+export function getCredentials(config) {
+  const resolved = config || loadConfig();
+  return {
+    account: resolved.account,
+    accessToken: resolved.credentials.access_token || null,
+    refreshToken: resolved.credentials.refresh_token || null,
+    credentials: resolved.credentials
+  };
+}
+
+/**
+ * Canonical script initializer.
+ * @param {Function} showHelp
+ * @returns {{credentials: object, args: object, command: string}|null}
+ */
+export function initScript(showHelp) {
+  const args = parseArgs(process.argv.slice(2));
+  const command = args.command || 'help';
+
+  if (command === 'help' || args.flags.help || args.flags.h) {
+    showHelp();
+    return null;
+  }
+
+  const config = loadConfig(args.flags.account || args.flags.a || null);
+  return {
+    credentials: getCredentials(config),
+    args,
+    command
+  };
+}
+
+/**
+ * Canonical API request helper for Google REST endpoints.
+ * Requires an OAuth access token from config credentials.
+ * @param {string} url
+ * @param {object} options
+ * @returns {Promise<any>}
+ */
+export async function apiRequest(url, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  const body = options.body || null;
+  const token = options.accessToken || options.credentials?.accessToken || getCredentials().accessToken;
+
+  if (!token) {
+    throw new Error('Missing Google OAuth access token for apiRequest');
+  }
+
+  const response = await fetch(url, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  if (response.status === 204) {
+    return { success: true };
+  }
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || data?.message || 'API request failed');
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 }
 
 /**
@@ -314,9 +440,9 @@ export function getGeminiApiKey() {
  */
 export const API_ROUNDS = {
   round1: ['drive'],
-  round2: ['docs', 'sheets', 'slides', 'gmail', 'youtube', 'youtube_analytics', 'youtube_reporting', 'calendar'],
-  round3: ['ai', 'vertex', 'vision'],
-  round4: ['cloud_run', 'cloud_functions', 'app_engine', 'cloud_build', 'api_keys', 'service_usage', 'resource_manager', 'iam']
+  round2: ['docs', 'sheets', 'slides', 'gmail', 'youtube', 'youtube_analytics', 'youtube_reporting', 'calendar', 'search_console', 'pagespeed', 'analytics', 'my_business'],
+  round3: ['ai', 'vertex', 'vision', 'speech', 'tts', 'natural_language', 'translate', 'document_ai', 'scheduler'],
+  round4: ['ads', 'cloud_run', 'cloud_functions', 'app_engine', 'cloud_build', 'api_keys', 'service_usage', 'resource_manager', 'iam']
 };
 
 /**
@@ -332,9 +458,20 @@ export const API_DESCRIPTIONS = {
   youtube_analytics: 'YouTube Analytics',
   youtube_reporting: 'YouTube Reporting',
   calendar: 'Google Calendar',
+  search_console: 'Google Search Console',
+  pagespeed: 'PageSpeed Insights',
+  analytics: 'Google Analytics (GA4)',
+  my_business: 'Google Business Profile',
   ai: 'Gemini AI (Generative Language)',
   vertex: 'Vertex AI (Veo, Imagen)',
   vision: 'Cloud Vision',
+  speech: 'Cloud Speech-to-Text',
+  tts: 'Cloud Text-to-Speech',
+  natural_language: 'Cloud Natural Language',
+  translate: 'Cloud Translation',
+  document_ai: 'Cloud Document AI',
+  scheduler: 'Cloud Scheduler',
+  ads: 'Google Ads',
   cloud_run: 'Cloud Run',
   cloud_functions: 'Cloud Functions',
   app_engine: 'App Engine',
@@ -360,11 +497,22 @@ export const DEFAULT_ENABLED_APIS = {
   youtube_analytics: true,
   youtube_reporting: true,
   calendar: true,
+  search_console: true,
+  pagespeed: true,
+  analytics: true,
+  my_business: true,
   // Round 3 (off by default - may require billing)
   ai: false,
   vertex: false,
   vision: false,
-  // Round 4 (off by default - advanced)
+  speech: false,
+  tts: false,
+  natural_language: false,
+  translate: false,
+  document_ai: false,
+  scheduler: false,
+  // Round 4 (off by default - advanced, requires billing or developer tokens)
+  ads: false,
   cloud_run: false,
   cloud_functions: false,
   app_engine: false,
@@ -453,8 +601,11 @@ export function getMissingApis(email, apiNames) {
 
 export default {
   MEMORY_DIR,
+  getMemoryDir,
+  loadConfig,
   loadEnvFile,
   saveEnvFile,
+  getCredentials,
   getAccountPath,
   loadCredentials,
   saveCredentials,
@@ -463,6 +614,8 @@ export default {
   detectAccountFromPath,
   parseGoogleDrivePath,
   parseArgs,
+  initScript,
+  apiRequest,
   output,
   outputError,
   showHelp,

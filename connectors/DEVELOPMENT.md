@@ -9,6 +9,17 @@ How to build new connectors for the cofounder library.
 
 **Windows compatibility:** All commands use bash syntax. The workspace file automatically routes terminal commands through Git Bash on Windows (see `Continue Install.md` Step 5). SETUP.md files may include a Git Bash note for users troubleshooting outside the IDE.
 
+## Architecture Compliance (Required)
+
+Before implementing or modifying connectors, read:
+- `/cofounder/connectors/ARCHITECTURE.md`
+
+Priority rule:
+- If guidance in this file conflicts with `ARCHITECTURE.md`, the architecture policy wins.
+
+Implementation rule:
+- Treat this file as execution guidance for building within architecture constraints.
+
 ## Step 0: Planning Phase (Required)
 
 Before writing any code, create a thoughtful plan. This step is mandatory.
@@ -416,8 +427,9 @@ const localEnvPath = join(__dirname, '..', '.env');
 /**
  * Load configuration from .env file
  * Checks memory location first, then local fallback
+ * @param {string} [account] - Optional account name for multi-account connectors
  */
-export function loadConfig() {
+export function loadConfig(account) {
   if (existsSync(memoryEnvPath)) {
     dotenv.config({ path: memoryEnvPath });
   } else if (existsSync(localEnvPath)) {
@@ -435,6 +447,17 @@ export function loadConfig() {
   }
   
   return { apiKey: process.env.API_KEY };
+}
+
+/**
+ * Normalize credentials object for scripts
+ * @param {object} env - Environment returned by loadConfig()
+ * @returns {object}
+ */
+function getCredentials(env) {
+  return {
+    apiKey: env.apiKey
+  };
 }
 
 /**
@@ -474,9 +497,9 @@ function initScript(showHelp) {
     return null;
   }
   
-  const env = loadEnv(flags.account);
+  const env = loadConfig(flags.account);
   const credentials = getCredentials(env);
-  return { env, credentials };
+  return { credentials };
 }
 
 /**
@@ -521,24 +544,41 @@ function outputError(error) {
   process.exit(1);
 }
 
-module.exports = {
-  loadEnv,
+export {
+  loadConfig,
   getCredentials,
   parseArgs,
   initScript,
   apiRequest,
   output,
-  outputError,
-  MEMORY_DIR
+  outputError
 };
 ```
+
+### Canonical Connector Bootstrap Contract (Option B)
+
+For new connectors and major connector updates, use this baseline contract in `scripts/utils.js`.
+
+Required exports:
+- `loadConfig(account?)` - loads environment and validates required values
+- `getCredentials(env)` - maps env values to a consistent credentials object
+- `parseArgs()` - parses command, args, and flags
+- `initScript(showHelp)` - handles `help`, loads config, returns `{ credentials }`
+- `apiRequest(url, options)` - shared request/error handling
+- `output(data)` and `outputError(error)` - consistent stdout/stderr behavior
+
+Notes:
+- Keep `ensureDeps(import.meta.url)` first in file, before npm imports.
+- Use dynamic npm imports after dependency check.
+- `account?` is optional and used by multi-account connectors.
+- Existing connectors do not need immediate rewrites. Apply this contract when touching them for feature work or maintenance.
 
 ### scripts/[domain].js
 
 Feature scripts follow this pattern:
 
 ```javascript
-const { initScript, parseArgs, apiRequest, output, outputError } = require('./utils');
+import { initScript, parseArgs, apiRequest, output, outputError } from './utils.js';
 
 // Help text for this script
 function showHelp() {

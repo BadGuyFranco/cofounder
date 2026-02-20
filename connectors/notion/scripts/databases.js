@@ -11,73 +11,7 @@
  *   node databases.js schema <database-id>
  */
 
-// Dependency check (must be first, before any npm imports)
-import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
-
-// npm packages (dynamic import after dependency check)
-const { Client } = await import('@notionhq/client');
-const dotenv = (await import('dotenv')).default;
-
-// Built-in Node.js modules
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Detect memory directory dynamically from script location
-// Script is at: .../GPT/cofounder/connectors/notion/scripts/databases.js
-// Memory is at: .../GPT/memory/connectors/notion/
-const memoryEnvPath = path.join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'notion', '.env');
-const localEnvPath = path.join(__dirname, '..', '.env');
-
-if (fs.existsSync(memoryEnvPath)) {
-  dotenv.config({ path: memoryEnvPath });
-} else if (fs.existsSync(localEnvPath)) {
-  dotenv.config({ path: localEnvPath });
-} else {
-  console.error('Error: No .env file found.');
-  console.error('Create /memory/connectors/notion/.env with your NOTION_API_KEY');
-  console.error('See SETUP.md for instructions.');
-  process.exit(1);
-}
-
-if (!process.env.NOTION_API_KEY) {
-  console.error('Error: NOTION_API_KEY not found in environment.');
-  console.error('Add NOTION_API_KEY=secret_xxx to your .env file.');
-  process.exit(1);
-}
-
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
-
-// Parse command line arguments
-function parseArgs(args) {
-  const result = { _: [] };
-  let i = 0;
-  
-  while (i < args.length) {
-    const arg = args[i];
-    
-    if (arg.startsWith('--')) {
-      const key = arg.slice(2);
-      const nextArg = args[i + 1];
-      
-      if (nextArg && !nextArg.startsWith('--')) {
-        result[key] = nextArg;
-        i += 2;
-      } else {
-        result[key] = true;
-        i += 1;
-      }
-    } else {
-      result._.push(arg);
-      i += 1;
-    }
-  }
-  
-  return result;
-}
+import { notion, parseArgs, handleError } from './utils.js';
 
 // Query a database
 async function queryDatabase(databaseId, filter, sorts, verbose) {
@@ -330,14 +264,7 @@ async function main() {
         process.exit(0);
     }
   } catch (error) {
-    console.error('Error:', error.message);
-    if (error.code) {
-      console.error('Code:', error.code);
-    }
-    if (verbose && error.body) {
-      console.error('Details:', JSON.stringify(error.body, null, 2));
-    }
-    process.exit(1);
+    handleError(error, verbose);
   }
 }
 

@@ -1,0 +1,12 @@
+{
+  "name": "bing-webmaster-connector",
+  "version": "1.0.0",
+  "description": "Bing Webmaster Tools API connector for site management, sitemaps, crawl data, and URL submission",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

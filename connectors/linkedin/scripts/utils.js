@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -55,6 +55,14 @@ export function loadEnv(localDir) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ * Uses connector root as local fallback path.
+ */
+export function loadConfig() {
+  return loadEnv(path.join(__dirname, '..'));
+}
+
+/**
  * Get API token from environment
  */
 export function getToken() {
@@ -84,34 +92,79 @@ export function getClientCredentials() {
   return { clientId, clientSecret };
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const accessToken = env.LINKEDIN_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error('Error: LINKEDIN_ACCESS_TOKEN not found in environment.');
+    console.error('Add it to /memory/connectors/linkedin/.env');
+    process.exit(1);
+  }
+
+  return {
+    accessToken,
+    clientId: env.LINKEDIN_CLIENT_ID,
+    clientSecret: env.LINKEDIN_CLIENT_SECRET
+  };
+}
+
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make API request to LinkedIn v2 API
  */
-export async function apiRequest(method, endpoint, token, body = null, options = {}) {
-  const { useRestApi = false, version = '202401' } = options;
+export async function apiRequest(methodOrEndpoint, endpointOrOptions, token, body = null, options = {}) {
+  let method;
+  let endpoint;
+  let requestToken;
+  let requestBody;
+  let apiOptions;
+
+  if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(String(methodOrEndpoint).toUpperCase())) {
+    method = String(methodOrEndpoint).toUpperCase();
+    endpoint = endpointOrOptions;
+    requestToken = token;
+    requestBody = body;
+    apiOptions = options;
+  } else {
+    // Canonical shape: apiRequest(endpoint, options)
+    endpoint = methodOrEndpoint;
+    const canonicalOptions = endpointOrOptions || {};
+    method = (canonicalOptions.method || 'GET').toUpperCase();
+    requestToken = getCredentials().accessToken;
+    requestBody = canonicalOptions.body || null;
+    apiOptions = {
+      useRestApi: canonicalOptions.useRestApi,
+      version: canonicalOptions.version
+    };
+  }
+
+  const { useRestApi = false, version = '202401' } = apiOptions;
   const baseUrl = useRestApi ? REST_API_URL : BASE_URL;
   const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
   
   const headers = {
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `Bearer ${requestToken}`,
     'Content-Type': 'application/json',
     'X-Restli-Protocol-Version': '2.0.0',
     'LinkedIn-Version': version
   };
   
-  const requestOptions = {
+  const fetchOptions = {
     method,
     headers
   };
   
-  if (body) {
-    requestOptions.body = JSON.stringify(body);
+  if (requestBody) {
+    fetchOptions.body = JSON.stringify(requestBody);
   }
   
-  const response = await fetch(url, requestOptions);
+  const response = await fetch(url, fetchOptions);
   
   // Handle 204 No Content
   if (response.status === 204) {
@@ -139,6 +192,22 @@ export async function apiRequest(method, endpoint, token, body = null, options =
   }
   
   return data;
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help' || args.help || args._.length === 0) {
+    showHelp();
+    return null;
+  }
+
+  loadConfig();
+  return { credentials: getCredentials(), args, command };
 }
 
 /**
@@ -272,6 +341,16 @@ export function handleError(error, verbose = false) {
   if (verbose && error.data) {
     console.error('Details:', JSON.stringify(error.data, null, 2));
   }
+  process.exit(1);
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
   process.exit(1);
 }
 

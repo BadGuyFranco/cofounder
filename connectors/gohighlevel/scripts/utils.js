@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -51,6 +51,14 @@ export function loadEnv(localDir) {
 }
 
 /**
+ * Canonical alias for connector contract.
+ * Supports optional localDir for backward compatibility.
+ */
+export function loadConfig(localDir) {
+  return loadEnv(localDir || __dirname);
+}
+
+/**
  * Parse locations from environment variables
  * Looks for GHL_*_ID and GHL_*_KEY pairs
  */
@@ -73,6 +81,16 @@ export function loadLocations() {
   const defaultLoc = process.env.GHL_DEFAULT || null;
   
   return { locations, default: defaultLoc };
+}
+
+/**
+ * Canonical credentials mapper used by scripts.
+ */
+export function getCredentials(locationConfig) {
+  return {
+    locationId: locationConfig.id,
+    apiKey: locationConfig.key
+  };
 }
 
 /**
@@ -132,8 +150,34 @@ export function resolveLocation(locationArg, locationsConfig) {
   process.exit(1);
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+/**
+ * Parse CLI args. Supports explicit args for compatibility.
+ */
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
+
+/**
+ * Canonical script initializer.
+ * Keeps existing GHL location behavior.
+ */
+export function initScript(showHelp, localDir = __dirname) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help') {
+    showHelp();
+    return null;
+  }
+
+  loadConfig(localDir);
+  const locationsConfig = loadLocations();
+  const locationArg = args.location || null;
+  const locationConfig = resolveLocation(locationArg, locationsConfig);
+  const credentials = getCredentials(locationConfig);
+
+  return { credentials, args, command, locationsConfig, locationConfig };
+}
 
 /**
  * Make API request to Go High Level
@@ -323,3 +367,19 @@ export function handleError(error, verbose = false) {
 }
 
 export { MEMORY_DIR, BASE_URL };
+
+/**
+ * Standardized success output.
+ */
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+/**
+ * Standardized error output.
+ */
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
+}

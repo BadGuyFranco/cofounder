@@ -8,13 +8,15 @@
  *   node scripts/check-setup.js --install  # Auto-install missing dependencies
  */
 
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import { homedir } from 'os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const toolDir = join(__dirname, '..');
+const toolsLayerDir = join(toolDir, '..');
 
 const results = {
   node: { ok: false, detail: '' },
@@ -65,7 +67,7 @@ console.log(`reveal.js: ${results.revealjs.detail}`);
 
 // Check Playwright browsers
 try {
-  const homeDir = process.env.HOME || process.env.USERPROFILE;
+  const homeDir = process.env.HOME || process.env.USERPROFILE || homedir();
   const cacheLocations = [
     join(homeDir, 'Library', 'Caches', 'ms-playwright'),  // macOS
     join(homeDir, '.cache', 'ms-playwright'),               // Linux
@@ -75,8 +77,7 @@ try {
   const hasBrowsers = cacheLocations.some(loc => {
     if (!existsSync(loc)) return false;
     try {
-      const entries = execSync(`ls "${loc}" 2>/dev/null`, { encoding: 'utf8', shell: true });
-      return entries.includes('chromium');
+      return readdirSync(loc).some((entry) => entry.includes('chromium'));
     } catch {
       return false;
     }
@@ -90,7 +91,7 @@ try {
       console.log('Playwright: installing chromium...');
       try {
         execSync('npx playwright install chromium', {
-          cwd: toolDir,
+          cwd: toolsLayerDir,
           stdio: 'inherit',
           shell: process.platform === 'win32'
         });

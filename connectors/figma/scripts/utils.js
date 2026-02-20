@@ -53,14 +53,23 @@ export function loadConfig() {
 }
 
 /**
+ * Canonical credentials mapper used by scripts.
+ */
+export function getCredentials(env) {
+  return {
+    pat: env.pat
+  };
+}
+
+/**
  * Parse command line arguments
  * @returns {object} { command, args, flags }
  */
-export function parseArgs() {
-  const parsed = sharedParseArgs(process.argv.slice(2));
+export function parseArgs(args = process.argv.slice(2)) {
+  const parsed = sharedParseArgs(args);
   const positional = parsed._ || [];
   const command = positional[0];
-  const args = positional.slice(1);
+  const commandArgs = positional.slice(1);
   
   // Extract flags (everything except _)
   const flags = {};
@@ -70,7 +79,23 @@ export function parseArgs() {
     }
   }
   
-  return { command, args, flags };
+  return { command, args: commandArgs, flags };
+}
+
+/**
+ * Canonical script initializer.
+ */
+export function initScript(showHelp) {
+  const parsed = parseArgs();
+  const command = parsed.command || 'help';
+
+  if (command === 'help') {
+    showHelp();
+    return null;
+  }
+
+  const credentials = getCredentials(loadConfig());
+  return { credentials, args: parsed, command };
 }
 
 /**
@@ -80,7 +105,7 @@ export function parseArgs() {
  * @returns {Promise<object>} Response data
  */
 export async function apiRequest(endpoint, options = {}) {
-  const config = loadConfig();
+  const config = getCredentials(loadConfig());
   const baseUrl = 'https://api.figma.com';
   const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
 

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "mode": "report-only",
+  "notes": "Phase 0 baseline policy. Candidates listed here are expected to converge to tools shared dependency layer over phased migration.",
+  "shared_dependency_candidates": [
+    "dotenv",
+    "playwright",
+    "googleapis"
+  ],
+  "disallowed_mixed_sets": [
+    [
+      "playwright",
+      "playwright-chromium"
+    ]
+  ],
+  "allow_local_only": {
+    "Presentation Builder": [
+      "reveal.js",
+      "yaml"
+    ],
+    "Image Generator": [
+      "replicate",
+      "sharp"
+    ],
+    "Video Generator": [
+      "fluent-ffmpeg"
+    ],
+    "Documentor/local-generator": [
+      "marked",
+      "html-docx-js",
+      "puppeteer",
+      "mammoth",
+      "pdf-parse"
+    ]
+  }
+}

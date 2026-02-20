@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -121,6 +121,37 @@ export function loadEnv(localDir, site = null) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ * Uses connector root as local fallback path.
+ */
+export function loadConfig(site = null) {
+  return loadEnv(path.join(__dirname, '..'), site);
+}
+
+/**
+ * Canonical credentials mapper.
+ */
+export function getCredentials(env = process.env) {
+  const siteUrl = env.WP_SITE_URL;
+  const username = env.WP_USERNAME;
+  const appPassword = env.WP_APP_PASSWORD;
+
+  if (!siteUrl) {
+    console.error('Error: WP_SITE_URL is required.');
+    console.error('Add it to your .env file: WP_SITE_URL=https://yoursite.com');
+    process.exit(1);
+  }
+
+  if (!username || !appPassword) {
+    console.error('Error: WP_USERNAME and WP_APP_PASSWORD are required.');
+    console.error('Add them to your .env file.');
+    process.exit(1);
+  }
+
+  return { siteUrl: siteUrl.replace(/\/+$/, ''), username, appPassword };
+}
+
+/**
  * Get site configuration from environment
  */
 export function getConfig() {
@@ -167,8 +198,10 @@ export function getLoadedSite() {
   return loadedSite;
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make API request to WordPress REST API
@@ -345,7 +378,29 @@ export async function listAll(endpoint, options = {}) {
 /**
  * Initialize script with site support
  */
-export function initScript(localDir, args) {
+export function initScript(localDirOrShowHelp, maybeArgs) {
+  // Canonical initScript(showHelp) contract path
+  if (typeof localDirOrShowHelp === 'function') {
+    const showHelp = localDirOrShowHelp;
+    const args = parseArgs();
+    const command = args._[0] || 'help';
+
+    if (command === 'sites') {
+      printSites();
+      return null;
+    }
+
+    if (command === 'help' || args.help || args._.length === 0) {
+      showHelp();
+      return null;
+    }
+
+    loadConfig(args.site);
+    return { credentials: getCredentials(), args, command };
+  }
+
+  const localDir = localDirOrShowHelp;
+  const args = maybeArgs;
   // Handle "sites" command
   if (args._[0] === 'sites') {
     printSites();
@@ -364,6 +419,16 @@ export function initScript(localDir, args) {
   if (args.site && args.site !== 'default') {
     console.log(`Using site: ${args.site}\n`);
   }
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }
 
 /**

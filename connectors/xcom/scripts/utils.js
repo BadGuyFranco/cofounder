@@ -11,7 +11,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -132,6 +132,14 @@ export function loadEnv(localDir, account = null) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ * Uses connector root as local fallback path.
+ */
+export function loadConfig(account = null) {
+  return loadEnv(path.join(__dirname, '..'), account);
+}
+
+/**
  * Get currently loaded account name
  */
 export function getLoadedAccount() {
@@ -141,12 +149,12 @@ export function getLoadedAccount() {
 /**
  * Get OAuth 1.0a credentials from environment
  */
-export function getCredentials() {
-  const apiKey = process.env.X_API_KEY;
-  const apiSecret = process.env.X_API_SECRET;
-  const accessToken = process.env.X_ACCESS_TOKEN;
-  const accessTokenSecret = process.env.X_ACCESS_TOKEN_SECRET;
-  const bearerToken = process.env.X_BEARER_TOKEN;
+export function getCredentials(env = process.env) {
+  const apiKey = env.X_API_KEY;
+  const apiSecret = env.X_API_SECRET;
+  const accessToken = env.X_ACCESS_TOKEN;
+  const accessTokenSecret = env.X_ACCESS_TOKEN_SECRET;
+  const bearerToken = env.X_BEARER_TOKEN;
   
   if (!apiKey || !apiSecret) {
     console.error('Error: X_API_KEY and X_API_SECRET are required.');
@@ -245,8 +253,10 @@ export function generateOAuthHeader(method, url, params = {}, credentials) {
   return authHeader;
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make authenticated API request to X.com API v2
@@ -555,7 +565,29 @@ export async function getAuthenticatedUserId() {
  * Initialize script with account support
  * Call this at the start of each script instead of loadEnv directly
  */
-export function initScript(localDir, args) {
+export function initScript(localDirOrShowHelp, maybeArgs) {
+  // Canonical initScript(showHelp) contract path
+  if (typeof localDirOrShowHelp === 'function') {
+    const showHelp = localDirOrShowHelp;
+    const args = parseArgs();
+    const command = args._[0] || 'help';
+
+    if (command === 'accounts') {
+      printAccounts();
+      return null;
+    }
+
+    if (command === 'help' || args.help || args._.length === 0) {
+      showHelp();
+      return null;
+    }
+
+    loadConfig(args.account);
+    return { credentials: getCredentials(), args, command };
+  }
+
+  const localDir = localDirOrShowHelp;
+  const args = maybeArgs;
   // Handle "accounts" command
   if (args._[0] === 'accounts') {
     printAccounts();
@@ -574,6 +606,16 @@ export function initScript(localDir, args) {
   if (args.account && args.account !== 'default') {
     showAccountInfo();
   }
+}
+
+export function output(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }
 
 export { MEMORY_DIR, API_BASE, UPLOAD_BASE };

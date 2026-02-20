@@ -27,6 +27,13 @@ import { dirname, resolve, extname } from 'path';
 // Local modules
 import { getAuthClient } from './auth.js';
 import { getFolderId, moveFile, exportFile, EXPORT_TYPES, getLocalPath, uploadFile, makeFilePublic } from './drive.js';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  output,
+  outputError,
+  requireFlag
+} from '../../../../system/shared/cli-utils.js';
 
 // Supported image formats for embedding
 const SUPPORTED_IMAGE_FORMATS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'];
@@ -1111,122 +1118,76 @@ Examples:
     process.exit(0);
   }
 
-  // Parse CLI arguments
-  const args = process.argv.slice(2);
-
-  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  const { positional, flags } = parseCliArgs(process.argv.slice(2));
+  if (positional.length === 0 || hasHelpFlag(flags)) {
     showHelp();
   }
 
-  const command = args[0];
-  let account = null;
-  let id = null;
-  let title = null;
-  let folder = null;
-  let content = null;
-  let format = null;
-  let output = null;
-  let replace = false;
-  let embedImages = false;
-  let jsonOutput = false;
-  let suggestionId = null;
-  let text = null;
-  let comment = null;
-  let after = null;
-  let type = null;
-  let message = null;
-  let margins = null;
-  let pageSize = null;
-
-  for (let i = 1; i < args.length; i++) {
-    switch (args[i]) {
-      case '--account': account = args[++i]; break;
-      case '--id': id = args[++i]; break;
-      case '--title': title = args[++i]; break;
-      case '--folder': folder = args[++i]; break;
-      case '--content': content = args[++i]; break;
-      case '--format': format = args[++i]; break;
-      case '--output': output = args[++i]; break;
-      case '--suggestion-id': suggestionId = args[++i]; break;
-      case '--text': text = args[++i]; break;
-      case '--comment': comment = args[++i]; break;
-      case '--after': after = args[++i]; break;
-      case '--type': type = args[++i]; break;
-      case '--message': message = args[++i]; break;
-      case '--margins': margins = args[++i]; break;
-      case '--page-size': pageSize = args[++i]; break;
-      case '--replace': replace = true; break;
-      case '--embed-images': embedImages = true; break;
-      case '--json': jsonOutput = true; break;
-    }
-  }
-
-  if (!account) {
-    console.error('Error: --account is required');
-    process.exit(1);
-  }
+  const command = positional[0];
+  const account = flags.account;
+  const id = flags.id;
+  const title = flags.title;
+  const folder = flags.folder;
+  const content = flags.content;
+  const format = flags.format;
+  const outputPath = flags.output;
+  const replace = Boolean(flags.replace);
+  const embedImages = Boolean(flags['embed-images']);
+  const jsonOutput = Boolean(flags.json);
+  const suggestionId = flags['suggestion-id'];
+  const text = flags.text;
+  const comment = flags.comment;
+  const after = flags.after;
+  const type = flags.type;
+  const message = flags.message;
+  const margins = flags.margins;
+  const pageSize = flags['page-size'];
 
   try {
+    requireFlag(flags, 'account');
     let result;
     
     switch (command) {
       case 'create':
-        if (!title) {
-          console.error('Error: --title is required for create');
-          process.exit(1);
-        }
+        requireFlag(flags, 'title', 'create');
         result = await createDoc(account, title, { folder, content, embedImages });
         break;
         
       case 'read':
-        if (!id) {
-          console.error('Error: --id is required for read');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'read');
         result = await readDoc(account, id);
         break;
         
       case 'edit':
-        if (!id || !content) {
-          console.error('Error: --id and --content are required for edit');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'edit');
+        requireFlag(flags, 'content', 'edit');
         result = await editDoc(account, id, content, { replace, embedImages });
         break;
         
       case 'export':
-        if (!id || !format) {
-          console.error('Error: --id and --format are required for export');
-          console.error('If --output is omitted, exports to the same directory as the Google Doc');
-          process.exit(1);
-        }
-        result = await exportDoc(account, id, format, output);
+        requireFlag(flags, 'id', 'export');
+        requireFlag(flags, 'format', 'export');
+        result = await exportDoc(account, id, format, outputPath);
         result = { exported: result };
         break;
       
       case 'style':
-        if (!id) {
-          console.error('Error: --id is required for style');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'style');
         const currentStyle = await getDocumentStyle(account, id);
-        if (jsonOutput) {
-          console.log(JSON.stringify(currentStyle, null, 2));
-        } else {
-          console.log('\nDocument Style:');
-          console.log(`  Margins (inches): top=${currentStyle.margins.top}, bottom=${currentStyle.margins.bottom}, left=${currentStyle.margins.left}, right=${currentStyle.margins.right}`);
-          console.log(`  Page size (inches): ${currentStyle.pageSize.width} x ${currentStyle.pageSize.height}`);
-        }
+        output(currentStyle, {
+          json: jsonOutput,
+          formatter: (styleResult) => {
+            console.log('\nDocument Style:');
+            console.log(`  Margins (inches): top=${styleResult.margins.top}, bottom=${styleResult.margins.bottom}, left=${styleResult.margins.left}, right=${styleResult.margins.right}`);
+            console.log(`  Page size (inches): ${styleResult.pageSize.width} x ${styleResult.pageSize.height}`);
+          }
+        });
         return;
       
       case 'style-update':
-        if (!id) {
-          console.error('Error: --id is required for style-update');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'style-update');
         if (!margins && !pageSize) {
-          console.error('Error: at least --margins or --page-size is required');
-          process.exit(1);
+          outputError('at least --margins or --page-size is required');
         }
         const styleUpdate = {};
         if (margins) {
@@ -1255,40 +1216,37 @@ Examples:
         return;
         
       case 'suggestions':
-        if (!id) {
-          console.error('Error: --id is required for suggestions');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'suggestions');
         const suggestions = await listSuggestions(account, id);
-        if (jsonOutput) {
-          console.log(JSON.stringify(suggestions, null, 2));
-        } else if (suggestions.length === 0) {
-          console.log('\nNo pending suggestions in this document.');
-        } else {
-          console.log(`\nPending Suggestions (${suggestions.length}):\n`);
-          for (const suggestion of suggestions) {
-            console.log('─'.repeat(35));
-            console.log(`ID: ${suggestion.id}`);
-            if (suggestion.delete) console.log(`Delete: "${suggestion.delete}"`);
-            if (suggestion.insert) console.log(`Insert: "${suggestion.insert}"`);
+        output(suggestions, {
+          json: jsonOutput,
+          formatter: (items) => {
+            if (items.length === 0) {
+              console.log('\nNo pending suggestions in this document.');
+              return;
+            }
+            console.log(`\nPending Suggestions (${items.length}):\n`);
+            for (const suggestion of items) {
+              console.log('─'.repeat(35));
+              console.log(`ID: ${suggestion.id}`);
+              if (suggestion.delete) console.log(`Delete: "${suggestion.delete}"`);
+              if (suggestion.insert) console.log(`Insert: "${suggestion.insert}"`);
+            }
           }
-        }
+        });
         return;
         
       case 'accept':
-        if (!id || !suggestionId) {
-          console.error('Error: --id and --suggestion-id are required for accept');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'accept');
+        requireFlag(flags, 'suggestion-id', 'accept');
         const acceptResult = await acceptSuggestion(account, id, suggestionId);
         console.log(`\nSuggestion accepted: ${acceptResult.change}`);
         return;
       
       case 'comment':
-        if (!id || !text || !comment) {
-          console.error('Error: --id, --text, and --comment are required for comment');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'comment');
+        requireFlag(flags, 'text', 'comment');
+        requireFlag(flags, 'comment', 'comment');
         const commentResult = await addAnchoredComment(account, id, text, comment);
         console.log(`\nAnchored comment added!`);
         console.log(`Comment ID: ${commentResult.commentId}`);
@@ -1296,13 +1254,12 @@ Examples:
         return;
       
       case 'marker':
-        if (!id || !after || !type || !message) {
-          console.error('Error: --id, --after, --type, and --message are required');
-          process.exit(1);
-        }
+        requireFlag(flags, 'id', 'marker');
+        requireFlag(flags, 'after', 'marker');
+        requireFlag(flags, 'type', 'marker');
+        requireFlag(flags, 'message', 'marker');
         if (type !== 'comment' && type !== 'suggestion') {
-          console.error('Error: --type must be "comment" or "suggestion"');
-          process.exit(1);
+          outputError('--type must be "comment" or "suggestion"');
         }
         const markerResult = await addInlineMarker(account, id, after, type, message);
         const colorName = type === 'comment' ? 'blue' : 'dark gold';
@@ -1312,30 +1269,29 @@ Examples:
         return;
         
       default:
-        console.error(`Unknown command: ${command}`);
-        showHelp();
+        outputError(`Unknown command: ${command}`);
     }
     
-    if (jsonOutput) {
-      console.log(JSON.stringify(result, null, 2));
-    } else {
-      if (result.text !== undefined) {
-        console.log(`\nDocument: ${result.title || result.id}`);
-        console.log(`URL: ${result.url}`);
-        console.log(`\n${'─'.repeat(50)}\n`);
-        console.log(result.text);
-      } else if (result.url) {
-        console.log(`\nDocument: ${result.title || result.id}`);
-        console.log(`URL: ${result.url}`);
-      } else if (result.exported) {
-        console.log(`\nExported to: ${result.exported}`);
-      } else if (result.updated) {
-        console.log(`\nDocument updated: ${result.id}`);
+    output(result, {
+      json: jsonOutput,
+      formatter: (dataResult) => {
+        if (dataResult.text !== undefined) {
+          console.log(`\nDocument: ${dataResult.title || dataResult.id}`);
+          console.log(`URL: ${dataResult.url}`);
+          console.log(`\n${'─'.repeat(50)}\n`);
+          console.log(dataResult.text);
+        } else if (dataResult.url) {
+          console.log(`\nDocument: ${dataResult.title || dataResult.id}`);
+          console.log(`URL: ${dataResult.url}`);
+        } else if (dataResult.exported) {
+          console.log(`\nExported to: ${dataResult.exported}`);
+        } else if (dataResult.updated) {
+          console.log(`\nDocument updated: ${dataResult.id}`);
+        }
       }
-    }
+    });
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    outputError(error);
   }
 }
 

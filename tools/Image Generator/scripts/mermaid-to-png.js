@@ -14,7 +14,7 @@
 
 // Dependency check (must be first, before any npm imports)
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
+ensureDeps(import.meta.url, { layer: 'tools' });
 
 // npm packages (dynamic import after dependency check)
 const { chromium } = await import('playwright');
@@ -22,45 +22,23 @@ const { chromium } = await import('playwright');
 // Built-in Node.js modules
 import fs from 'fs';
 import path from 'path';
-
-function parseArgs(args) {
-  const result = { 
-    width: 800, 
-    scale: 2, 
-    theme: 'neutral',
-    background: 'white'
-  };
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--width' && args[i + 1]) {
-      result.width = parseInt(args[i + 1]);
-      i++;
-    } else if (args[i] === '--scale' && args[i + 1]) {
-      result.scale = parseFloat(args[i + 1]);
-      i++;
-    } else if (args[i] === '--theme' && args[i + 1]) {
-      result.theme = args[i + 1];
-      i++;
-    } else if (args[i] === '--background' && args[i + 1]) {
-      result.background = args[i + 1];
-      i++;
-    }
-  }
-  return result;
-}
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  outputError
+} from '../../../system/shared/cli-utils.js';
 
 async function mermaidToPng(inputPath, outputPath, options) {
   // Validate input file exists
   if (!fs.existsSync(inputPath)) {
-    console.error(`Error: File not found: ${inputPath}`);
-    process.exit(1);
+    throw new Error(`File not found: ${inputPath}`);
   }
 
   // Read Mermaid source
   const mermaidCode = fs.readFileSync(inputPath, 'utf8').trim();
   
   if (!mermaidCode) {
-    console.error('Error: Mermaid file is empty');
-    process.exit(1);
+    throw new Error('Mermaid file is empty');
   }
 
   // Create HTML template with Mermaid
@@ -127,8 +105,7 @@ ${mermaidCode}
     // Get the rendered diagram element
     const element = await page.$('#container');
     if (!element) {
-      console.error('Error: Could not find rendered diagram');
-      process.exit(1);
+      throw new Error('Could not find rendered diagram');
     }
 
     // Ensure output directory exists
@@ -153,15 +130,12 @@ ${mermaidCode}
     console.log(`Created: ${outputPath} (${actualWidth}x${actualHeight}px at ${options.scale}x scale)`);
   } catch (error) {
     if (error.message.includes('Executable doesn\'t exist')) {
-      console.error('Playwright not installed. Run: cd "/cofounder/tools/Image Generator" && npm install');
-      process.exit(1);
+      throw new Error('Playwright not installed. Run: cd "/cofounder/tools/Image Generator" && npm install');
     }
     if (error.message.includes('Timeout')) {
-      console.error('Error: Mermaid failed to render. Check syntax in input file.');
-      process.exit(1);
+      throw new Error('Mermaid failed to render. Check syntax in input file.');
     }
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    throw error;
   } finally {
     if (browser) {
       await browser.close();
@@ -169,9 +143,7 @@ ${mermaidCode}
   }
 }
 
-// Main
-const args = process.argv.slice(2);
-if (args.length < 2) {
+function showHelp() {
   console.log(`Usage: node scripts/mermaid-to-png.js input.mmd output.png [options]
 
 Options:
@@ -184,11 +156,21 @@ Examples:
   node scripts/mermaid-to-png.js diagram.mmd output.png
   node scripts/mermaid-to-png.js diagram.mmd output.png --width 600 --scale 3
   node scripts/mermaid-to-png.js diagram.mmd output.png --theme dark`);
-  process.exit(1);
 }
 
-const inputPath = args[0];
-const outputPath = args[1];
-const options = parseArgs(args.slice(2));
+const { positional, flags } = parseCliArgs(process.argv.slice(2));
+if (positional.length < 2 || hasHelpFlag(flags)) {
+  showHelp();
+  process.exit(hasHelpFlag(flags) ? 0 : 1);
+}
 
-mermaidToPng(inputPath, outputPath, options);
+const inputPath = positional[0];
+const outputPath = positional[1];
+const options = {
+  width: flags.width ? parseInt(flags.width, 10) : 800,
+  scale: flags.scale ? parseFloat(flags.scale) : 2,
+  theme: flags.theme || 'neutral',
+  background: flags.background || 'white'
+};
+
+mermaidToPng(inputPath, outputPath, options).catch(outputError);

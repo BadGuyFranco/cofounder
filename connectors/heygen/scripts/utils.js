@@ -10,7 +10,7 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 // Shared utilities
-import { parseArgs } from '../../../system/shared/utils.js';
+import { parseArgs as sharedParseArgs } from '../../../system/shared/utils.js';
 
 // Built-in Node.js modules
 import path from 'path';
@@ -119,6 +119,13 @@ export function loadEnv(account = null) {
 }
 
 /**
+ * Canonical alias used by standardized connectors.
+ */
+export function loadConfig(account = null) {
+  return loadEnv(account);
+}
+
+/**
  * Get currently loaded account name
  */
 export function getLoadedAccount() {
@@ -128,8 +135,8 @@ export function getLoadedAccount() {
 /**
  * Get API credentials from environment
  */
-export function getCredentials() {
-  const apiKey = process.env.HEYGEN_API_KEY;
+export function getCredentials(env = process.env) {
+  const apiKey = env.HEYGEN_API_KEY;
   
   if (!apiKey) {
     console.error('Error: HEYGEN_API_KEY not found in environment.');
@@ -140,8 +147,10 @@ export function getCredentials() {
   return { apiKey };
 }
 
-// Re-export parseArgs from shared utils
-export { parseArgs };
+// Canonical parseArgs wrapper
+export function parseArgs(args = process.argv.slice(2)) {
+  return sharedParseArgs(args);
+}
 
 /**
  * Make API request to HeyGen
@@ -211,7 +220,28 @@ export async function apiRequest(method, endpoint, options = {}) {
 /**
  * Initialize script with account support
  */
-export function initScript(args) {
+export function initScript(showHelpOrArgs) {
+  // Canonical initScript(showHelp) contract path
+  if (typeof showHelpOrArgs === 'function') {
+    const showHelp = showHelpOrArgs;
+    const args = parseArgs();
+    const command = args._[0] || 'help';
+
+    if (command === 'accounts') {
+      printAccounts();
+      return null;
+    }
+
+    if (command === 'help' || args.help || args._.length === 0) {
+      showHelp();
+      return null;
+    }
+
+    loadConfig(args.account);
+    return { credentials: getCredentials(), args, command };
+  }
+
+  const args = showHelpOrArgs;
   // Handle "accounts" command
   if (args._[0] === 'accounts') {
     printAccounts();
@@ -298,6 +328,12 @@ export function showHelp(commandName, sections) {
  */
 export function output(data) {
   console.log(JSON.stringify(data, null, 2));
+}
+
+export function outputError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }
 
 /**

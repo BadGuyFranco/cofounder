@@ -6,7 +6,7 @@
  * Credentials are managed by the centralized Google Connector.
  * 
  * Credential location: /memory/connectors/google/[email].json
- * Setup: See /connectors/google/SETUP.md
+ * Setup: See /cofounder/connectors/google/SETUP.md
  */
 
 // Dependency check (must be first, before any npm imports)
@@ -30,6 +30,29 @@ const CONNECTOR_BASE = resolve(__dirname, '..', '..', '..', '..', '..', 'memory'
 const LEGACY_BASE = resolve(__dirname, '..', '..', '..', '..', '..', 'memory', 'Documentor', 'accounts', 'google');
 
 /**
+ * Migrate legacy account credentials into connector location.
+ * Keeps runtime behavior backward compatible while reducing legacy reliance.
+ */
+function migrateLegacyAccount(email) {
+  const connectorPath = join(CONNECTOR_BASE, `${email}.json`);
+  const legacyPath = join(LEGACY_BASE, `${email}.json`);
+
+  if (existsSync(connectorPath) || !existsSync(legacyPath)) {
+    return connectorPath;
+  }
+
+  try {
+    const legacyCredentials = JSON.parse(readFileSync(legacyPath, 'utf-8'));
+    saveCredentials(email, legacyCredentials);
+    console.log(`Note: Migrated legacy credentials for ${email} to Connector location.`);
+    return connectorPath;
+  } catch (error) {
+    console.log(`Note: Legacy credential migration failed for ${email}; using legacy file.`);
+    return legacyPath;
+  }
+}
+
+/**
  * Get path to account credentials file
  * Checks Connector location first, then legacy Documentor location
  */
@@ -42,8 +65,7 @@ function getAccountPath(email) {
   // Fallback to legacy location
   const legacyPath = join(LEGACY_BASE, `${email}.json`);
   if (existsSync(legacyPath)) {
-    console.log(`Note: Using legacy credential location. Consider migrating to Connector.`);
-    return legacyPath;
+    return migrateLegacyAccount(email);
   }
   
   return connectorPath; // Return connector path for error messages
@@ -129,8 +151,8 @@ export async function getAuthClient(email) {
     throw new Error(
       `No credentials found for ${email}.\n\n` +
       `Set up Google credentials using the Connector:\n` +
-      `  1. Follow /connectors/google/SETUP.md\n` +
-      `  2. Run: cd /connectors/google && node scripts/auth.js setup --account ${email}`
+      `  1. Follow /cofounder/connectors/google/SETUP.md\n` +
+      `  2. Run: cd "/cofounder/connectors/google" && node scripts/auth.js setup --account ${email}`
     );
   }
   
@@ -167,7 +189,7 @@ export async function getAuthClient(email) {
       throw new Error(
         `Token refresh failed for ${email}.\n\n` +
         `Re-run setup using the Connector:\n` +
-        `  cd /connectors/google && node scripts/auth.js setup --account ${email}`
+        `  cd "/cofounder/connectors/google" && node scripts/auth.js setup --account ${email}`
       );
     }
   }
@@ -181,7 +203,7 @@ async function main() {
 Documentor now uses the Google Connector for authentication.
 
 To set up or manage Google credentials:
-  cd /connectors/google
+  cd "/cofounder/connectors/google"
   node scripts/auth.js setup --account your@email.com
 
 To check status:
@@ -190,7 +212,7 @@ To check status:
 To list accounts:
   node scripts/auth.js list
 
-See /connectors/google/SETUP.md for full instructions.
+See /cofounder/connectors/google/SETUP.md for full instructions.
 `);
 }
 

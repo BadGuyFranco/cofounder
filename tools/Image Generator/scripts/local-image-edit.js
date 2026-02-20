@@ -16,7 +16,7 @@
 
 // Dependency check (must be first, before any npm imports)
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
+ensureDeps(import.meta.url, { layer: 'tools' });
 
 // npm packages (dynamic import after dependency check)
 const sharp = (await import('sharp')).default;
@@ -24,6 +24,11 @@ const sharp = (await import('sharp')).default;
 // Built-in Node.js modules
 import { existsSync, statSync } from 'fs';
 import { basename, dirname, extname } from 'path';
+import {
+  parseCliArgs,
+  hasHelpFlag,
+  outputError
+} from '../../../system/shared/cli-utils.js';
 
 // Parse CLI arguments
 function parseArgs(args) {
@@ -110,7 +115,6 @@ Examples:
   node local-image-edit.js photo.jpg --resize 800 600
   node local-image-edit.js image.png result.jpg --format jpg --brightness 1.2
 `);
-  process.exit(0);
 }
 
 async function processImage(options) {
@@ -118,13 +122,11 @@ async function processImage(options) {
 
   // Validate input
   if (!inputPath) {
-    console.log('Error: Input file path is required');
-    showHelp();
+    outputError('Input file path is required');
   }
 
   if (!existsSync(inputPath)) {
-    console.log(`Error: Input file not found: ${inputPath}`);
-    process.exit(1);
+    outputError(`Input file not found: ${inputPath}`);
   }
 
   let outputPath = outPath || inputPath;
@@ -236,18 +238,17 @@ async function processImage(options) {
     const fileSize = statSync(outputPath).size / 1024;
     console.log(`Done! File size: ${fileSize.toFixed(2)} KB`);
   } catch (e) {
-    console.log(`Error processing image: ${e.message}`);
-    process.exit(1);
+    outputError(`Error processing image: ${e.message}`);
   }
 }
 
-// Main
-const args = process.argv.slice(2);
-
-if (args.length === 0) {
+const rawArgs = process.argv.slice(2);
+const { positional, flags } = parseCliArgs(rawArgs);
+if (positional.length === 0 || hasHelpFlag(flags)) {
   showHelp();
+  process.exit(hasHelpFlag(flags) ? 0 : 1);
 }
 
-const options = parseArgs(args);
+const options = parseArgs(rawArgs);
 await processImage(options);
 

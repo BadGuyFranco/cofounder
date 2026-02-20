@@ -6,8 +6,5 @@
   "scripts": {
     "start": "node scripts/session.js start",
     "stop": "node scripts/session.js stop"
-  },
-  "dependencies": {
-    "playwright": "^1.50.0"
   }
 }

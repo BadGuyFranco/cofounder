@@ -10,7 +10,7 @@
 
 // Dependency check (must be first, before any npm imports)
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
-ensureDeps(import.meta.url);
+ensureDeps(import.meta.url, { layer: 'tools' });
 
 // npm packages (dynamic import after dependency check)
 const { config } = await import('dotenv');
@@ -18,9 +18,13 @@ const Replicate = (await import('replicate')).default;
 const sharp = (await import('sharp')).default;
 
 // Built-in Node.js modules
-import { existsSync, readFileSync, writeFileSync, statSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, statSync, mkdirSync, renameSync } from 'fs';
 import { dirname, basename, extname, resolve, join } from 'path';
 import { fileURLToPath } from 'url';
+import {
+  parseCliArgs,
+  hasHelpFlag
+} from '../../../system/shared/cli-utils.js';
 
 // Environment setup - use Connector credential location
 const __filename = fileURLToPath(import.meta.url);
@@ -34,6 +38,64 @@ const memoryConnectorPath = resolve(__dirname, '../../../../memory/connectors/re
 const connectorEnvPath = resolve(__dirname, '../../../connectors/replicate/.env');
 // Fallback: Legacy Image Generator location (for migration)
 const legacyEnvPath = resolve(__dirname, '../../../../memory/tools/Image Generator/.env');
+const legacyMigratedEnvPath = resolve(__dirname, '../../../../memory/tools/Image Generator/.env.migrated');
+
+function extractEnvVar(content, key) {
+  const regex = new RegExp(`^${key}=(.*)$`, 'm');
+  const match = content.match(regex);
+  return match ? match[1].trim() : null;
+}
+
+function ensureReplicateTokenInConnectorEnv(token) {
+  const connectorDir = dirname(memoryConnectorPath);
+  if (!existsSync(connectorDir)) {
+    mkdirSync(connectorDir, { recursive: true });
+  }
+
+  let existing = '';
+  if (existsSync(memoryConnectorPath)) {
+    existing = readFileSync(memoryConnectorPath, 'utf8');
+    const currentToken = extractEnvVar(existing, 'REPLICATE_API_TOKEN');
+    if (currentToken) {
+      return;
+    }
+  }
+
+  const normalizedExisting = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
+  const updated = `${normalizedExisting}REPLICATE_API_TOKEN=${token}\n`;
+  writeFileSync(memoryConnectorPath, updated);
+}
+
+function migrateLegacyCredentialsIfNeeded() {
+  if (!existsSync(legacyEnvPath)) {
+    return;
+  }
+
+  const connectorHasToken = existsSync(memoryConnectorPath) &&
+    Boolean(extractEnvVar(readFileSync(memoryConnectorPath, 'utf8'), 'REPLICATE_API_TOKEN'));
+
+  if (connectorHasToken) {
+    return;
+  }
+
+  try {
+    const legacyContent = readFileSync(legacyEnvPath, 'utf8');
+    const token = extractEnvVar(legacyContent, 'REPLICATE_API_TOKEN');
+    if (!token) {
+      return;
+    }
+
+    ensureReplicateTokenInConnectorEnv(token);
+    if (!existsSync(legacyMigratedEnvPath)) {
+      renameSync(legacyEnvPath, legacyMigratedEnvPath);
+    }
+    console.log('Note: Migrated legacy Image Generator credentials to Connector location.');
+  } catch (error) {
+    console.log(`Note: Legacy credential migration failed: ${error.message}`);
+  }
+}
+
+migrateLegacyCredentialsIfNeeded();
 
 // Load credentials in order of preference
 if (existsSync(memoryConnectorPath)) {
@@ -214,18 +276,16 @@ Output is always PNG format to preserve transparency.
 Credentials: /memory/connectors/replicate/.env
 Default model: ${DEFAULT_MODEL.split(':')[0]}
 `);
-  process.exit(0);
 }
 
-// Parse CLI arguments
-const args = process.argv.slice(2);
-
-if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+const { positional, flags } = parseCliArgs(process.argv.slice(2));
+if (positional.length === 0 || hasHelpFlag(flags)) {
   showHelp();
+  process.exit(hasHelpFlag(flags) ? 0 : 1);
 }
 
-const inputFile = args[0];
-const outputFile = args[1] || null;
+const inputFile = positional[0];
+const outputFile = positional[1] || null;
 
 const success = await processHeadshot(inputFile, outputFile);
 process.exit(success ? 0 : 1);

@@ -22,12 +22,12 @@ Expected: v18.0.0 or higher
 
 **reveal.js vendor files:**
 ```bash
-ls node_modules/reveal.js/dist/reveal.js 2>/dev/null && echo "OK" || echo "NOT INSTALLED"
+node -e "const fs=require('fs');console.log(fs.existsSync('node_modules/reveal.js/dist/reveal.js')?'OK':'NOT INSTALLED')"
 ```
 
 **Playwright browsers (needed only for PDF/PNG export):**
 ```bash
-ls ~/Library/Caches/ms-playwright/chromium-* 2>/dev/null && echo "OK" || echo "NOT INSTALLED"
+node -e "const fs=require('fs');const os=require('os');const path=require('path');const dirs=[path.join(os.homedir(),'Library','Caches','ms-playwright'),path.join(os.homedir(),'.cache','ms-playwright'),path.join(process.env.LOCALAPPDATA||path.join(os.homedir(),'AppData','Local'),'ms-playwright')];const ok=dirs.some(d=>fs.existsSync(d)&&fs.readdirSync(d).some(n=>n.includes('chromium')));console.log(ok?'OK':'NOT INSTALLED')"
 ```
 
 Note: If Image Generator or Browser Control is already set up, Playwright browsers are already installed system-wide. No extra download needed.
