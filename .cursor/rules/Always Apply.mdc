@@ -95,4 +95,6 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - `/cofounder/` and `/memory/` are workspace roots, not filesystem paths. Resolve to actual paths before running terminal commands.
 - Google Drive paths (GoogleDrive-*) require `required_permissions: ["all"]`
 - Run commands yourself; never show terminal commands or ask the user to run them
+- Scripts: Node.js preferred.
 - Before editing AGENTS.md or cursor rules: Load and follow `Prompt Standards.mdc`
+- Committing or pushing in `/cofounder/` → follow `.cursor/rules/Commit.mdc`

@@ -1,0 +1,31 @@
+---
+description: Commit and push workflow for the /cofounder/ repository
+alwaysApply: false
+---
+
+# Commit
+
+**Applies to:** `/cofounder/` repository only. Do not follow for WISER Core, AI First Principles, or any other repo.
+
+## Steps
+
+### 1. Review changes
+Run `git diff HEAD` and `git status` to understand what changed.
+
+### 2. Update changelog
+For each change that adds, fixes, or improves something a user touches: add a bullet to `system/installer/CHANGELOG.md` under today's date (create the section if needed). Skip internal changes: rule tweaks, refactors, config-only.
+
+### 3. Update version and check for required migrations
+Always update `system/version.txt` to today's date.
+
+A migration is also required if the change moves, renames, or removes something users may have in `/memory/`, changes a template they set up during install, or alters tool behavior in a way they must adapt to.
+
+If a migration is required:
+1. Create `system/migrations/YYYY-MM-DD-description.md` with what changed and step-by-step update instructions for users
+2. Add the entry to the Version History table in `system/migrations/README.md`
+
+### 4. Leak check
+Scan the diff for real email addresses or personal identifiers. Replace with placeholders before staging.
+
+### 5. Commit and push
+Stage all changes including CHANGELOG.md, system/version.txt, and any migration files. Commit with a clear message. Push.

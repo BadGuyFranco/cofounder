@@ -55,8 +55,3 @@ The `/cofounder/` directory is shared and read-only for most users. **All paths 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const memoryPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', '[platform]', '.env');
 ```
-
-## Before Committing
-
-1. **Versioning:** Follow `/cofounder/system/migrations/README.md` "Creating Migrations" section
-2. **Leak check:** Search for your email/username in changed files to catch accidental leaks

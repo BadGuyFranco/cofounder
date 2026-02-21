@@ -14,11 +14,23 @@ Run git pull from the cofounder directory. Always run this command; do not skip 
 cd "COFOUNDER_PATH" && git pull
 ```
 
-## Step 3: Confirm
+## Step 3: Confirm and Show What's New
 
-If the pull succeeds, tell the user: "CoFounder updated to the latest version."
+If the output shows "Already up to date", tell the user: "CoFounder is already at the latest version." Then skip to Step 5.
 
-If the output shows "Already up to date", tell the user: "CoFounder is already at the latest version."
+If new commits were pulled, run this command to find the date of the oldest new commit:
+
+```bash
+cd "COFOUNDER_PATH" && git log ORIG_HEAD..HEAD --format="%ad" --date=short | sort | head -1
+```
+
+Read `/cofounder/system/installer/CHANGELOG.md` and find all entries dated on or after that date. Present them to the user in this format:
+
+"CoFounder updated. Here's what's new:
+
+[paste the matching changelog entries here]"
+
+If no matching entries are found in the changelog, simply tell the user: "CoFounder updated to the latest version."
 
 ## Step 4: Run Migrations (Required)
 
