@@ -1,5 +1,8 @@
 # What's New in CoFounder
 
+## February 22, 2026
+- **SEO Expert** - Now maintains a persistent `seo/` directory per site with dated plan folders, an asset library, a fixed-schema `history.md` for tracking KPIs across audits, a prioritized `todos.md` for cross-plan carry-forward items, and a content folder for SEO-produced content. Every session opens with a history update and todos review before auditing. See migration note if you have existing SEO plans.
+
 ## February 21, 2026
 - **Update notifications** - CoFounder now shows what's new after every update, surfacing only the changes since your last sync. Includes full history going back to the original December 2025 release.
 

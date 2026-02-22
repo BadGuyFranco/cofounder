@@ -9,13 +9,79 @@ Comprehensive SEO tool that audits any website, generates ready-to-use assets, a
 
 Produce a prioritized, site-specific todo list that an owner or developer can act on immediately. Every item names the exact problem, explains the ranking or traffic cost, specifies the fix, and estimates effort. No generic advice.
 
+## SEO Directory Structure
+
+Every site audited by the SEO Expert maintains a persistent `seo/` directory. On the first run for a new site, create this structure if code access is available. If code access is not available, skip creation and note it.
+
+```
+seo/
+  plans/
+    plan-YYYY-MM-DD/     (one folder per audit cycle)
+      plan.md            (self-tracking checklist; mark [x] as steps complete)
+      assets/            (all generated files: schema JSON-LD, robots.txt, llms.txt, disavow.txt, etc.)
+  content/
+    pages/               (net-new SEO landing pages)
+    articles/            (long-form blog/article content)
+    briefs/              (keyword and content research briefs)
+  todos.md               (cross-plan long-term items with priority and source)
+  history.md             (one row per audit; fixed schema; never freeform)
+  AGENTS.md              (instructions for running subsequent audits on this site)
+```
+
+**Plan self-tracking rule:** The `plan.md` file is the single source of truth. Check off `[x]` as steps complete. There is no `deployed.md` because the plan tracks its own state.
+
+**history.md schema (fixed, never change column order):**
+
+```markdown
+| Date | Mobile Score | Desktop Score | LCP Mobile | LCP Desktop | TBT | Indexed Pages | GSC Impressions | GSC Clicks | DR | Referring Domains | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+```
+
+**todos.md schema:**
+
+```markdown
+## P1 - Do in next plan
+
+- [ ] [Item] | Source: plan-YYYY-MM-DD | Blocked by: [reason or "nothing"]
+
+## P2 - Do when bandwidth allows
+
+- [ ] [Item] | Source: plan-YYYY-MM-DD
+
+## P3 - Watch / deferred
+
+- [ ] [Item] | Source: plan-YYYY-MM-DD | Deferred because: [reason]
+```
+
+## Code Access Rule
+
+The SEO Expert may not have access to the site's codebase. Apply these rules:
+
+- **With code access:** Create the `seo/` directory structure on first run. Save plan files and assets directly.
+- **Without code access:** Skip directory creation. Deliver the plan and assets as chat output. Note: "No code access detected. Save these files manually to your `seo/` directory."
+- Never error or halt because code access is missing. Continue the audit in full.
+
+## Site Repo Safety Rule
+
+**If a site repository is provided or accessible, treat every file edit as a surgical procedure requiring explicit consent.**
+
+- Never modify more than one file per confirmation. Show the exact change (what line, what it becomes) and wait for approval before writing it.
+- Never batch changes across files even when they are related (e.g., adding canonical to five pages is five separate confirmations, not one).
+- Before any edit: state the file path, the current value, and the proposed value. Ask "Make this change?" explicitly.
+- After each confirmed change: report what was done, then pause before proposing the next change.
+- If a step involves both a code change and a connector action (e.g., edit `layout.tsx` then submit sitemap), treat them as separate steps with separate confirmations.
+- Never infer consent from prior approval. Each change requires its own yes.
+
+This rule applies regardless of how many changes are pending or how small each one is.
+
 ## Operational Layers
 
-This tool operates across three layers depending on what the user needs:
+This tool operates across four layers depending on what the user needs:
 
-**Audit** - Systematic inspection across eight dimensions. Always runs.
+**Audit** - Systematic inspection across eight dimensions. Always runs on a fresh site.
 **Generate** - Produce ready-to-use assets: schema markup, title tags, meta descriptions, `llms.txt`, redirect maps, content briefs. Runs after the audit or on request.
 **Execute** - Submit sitemaps, request indexing, validate schema. Runs when the user confirms.
+**Plan** - Save the full audit output as a self-contained, executable plan file. The plan knows which tool and connectors to call, tracks completion with checkboxes, and can be resumed in any future session without re-auditing.
 
 ## Impact Measurement
 
@@ -74,14 +140,66 @@ Every connector is optional. The audit never stops or errors because a connector
 
 ## Process Overview
 
+0. **Phase 0: Plan State Detection** - Check if a plan file exists for this site. If yes, enter Continue Mode. If no, run fresh.
 1. **Phase 1: Site Analysis** - Visit the site, auto-detect purpose and current state
 2. **Phase 2: Tool Detection + Intake** - Silently check for GSC, ask two questions
 3. **Phases 3-10: Eight Audit Dimensions** - Systematic inspection, pulling live data where available
-4. **Phase 11: Todo List** - Synthesized output, prioritized by impact
+4. **Phase 11: Todo List + Save Plan** - Synthesized output, prioritized by impact, saved as a self-contained plan file
 5. **Phase 12: Generate (optional)** - Produce ready-to-use assets for flagged issues
-6. **Phase 13: Execute (optional)** - Submit sitemaps, resubmit for indexing, validate schema
+6. **Phase 13: Execute (optional)** - Submit sitemaps, resubmit for indexing, validate schema, update plan checkboxes
 
 Work through each phase completely before moving to the next. Do not rush to the todo list.
+
+---
+
+## Phase 0: Plan State Detection
+
+Run this before anything else.
+
+### Step 1: Locate the SEO directory
+
+Check for a `seo/` directory in the current project context (open files, @mentioned path, or visible workspace). If found, check for:
+- `seo/plans/` containing one or more `plan-YYYY-MM-DD/plan.md` files
+- `seo/todos.md`
+- `seo/history.md`
+
+### Step 2: Determine mode
+
+**Continuing an existing plan:**
+If a `plan.md` is visible or @mentioned:
+1. Read the file. Identify `[x]` (complete) and `[ ]` (pending) items.
+2. Report: "Found existing SEO plan for [domain]. X of Y steps complete. Next pending: [step title]."
+3. Ask: continue in order, jump to a specific step, or run a fresh audit?
+4. If continuing: skip Phases 1-11. Proceed to the next pending step.
+5. After each completed step: mark `[x]`, update `Last updated` in the header, remove connectors from the Required Connectors table when their last step is done.
+
+**Running a new audit (no plan exists or user requests fresh):**
+Proceed to Phase 0.5, then Phase 1.
+
+**First run for this site (no `seo/` directory):**
+If code access is available, create the directory structure defined in the SEO Directory Structure section before running the audit. If no code access, skip and note it at the end.
+
+---
+
+## Phase 0.5: History and Todos (every run)
+
+Run this at the start of every session, whether continuing a plan or starting fresh.
+
+### History update
+
+1. Run PageSpeed Insights on the homepage (mobile and desktop).
+2. If GSC is connected, pull impressions and clicks for the past 28 days.
+3. Append one row to `seo/history.md` using the fixed schema. Use "N/A" for any data not available (GSC not connected, Ahrefs not checked, etc.).
+4. Compare the new row to the most recent previous row. Report any changes: score improvements, LCP regressions, indexed page count changes, traffic deltas.
+5. If a metric has degraded since the last audit, flag it as a priority item in the new plan.
+
+### Todos check
+
+1. Read `seo/todos.md`.
+2. Surface all P1 items at the top of the session summary.
+3. Carry uncompleted P1 items into the new plan automatically as High Priority items.
+4. Ask the user to confirm any P2 items before including them.
+5. P3 items: mention them but do not include in the plan unless the user requests it.
 
 ---
 
@@ -245,6 +363,12 @@ Inspect the homepage, top 3-5 landing or service pages, and top 3-5 blog/content
 - Clean, readable URLs?
 - Primary keyword in URL?
 - Hyphens as word separators, not underscores?
+
+### Social Meta Tags (Open Graph)
+- `og:title`, `og:description`, `og:image`, `og:url` present on all key pages?
+- `og:image` is at least 1200x630px and not the site logo (use a page-specific featured image)?
+- `twitter:card` set to `summary_large_image`?
+- Missing OG tags mean link previews on LinkedIn, Slack, and iMessage show as blank or generic. For B2B sites where prospects validate via LinkedIn, this is a high-priority fix.
 
 ---
 
@@ -533,6 +657,7 @@ Tell the user: "To complete the backlink dimension, verify this site at `https:/
 | How-to guide | HowTo (steps, tools, total time) |
 | Author page | Person (name, credentials, social profiles) |
 | Event | Event (name, date, location, organizer) |
+| Book or published work | Book (name, author, publisher, ISBN, url) |
 
 ### Validation
 Run key pages through Google's Rich Results Test (`search.google.com/test/rich-results`). Errors prevent rich results entirely. Warnings reduce eligibility. Both are high-priority fixes.
@@ -638,14 +763,20 @@ LLMs extract and cite content with direct, attributable statements:
 - How-to pages with numbered steps and explicit outcomes?
 - Factual claims stated plainly, not buried in persuasion copy?
 - A concise "What is [brand/product]?" statement on the site?
+- **Homepage is the highest priority page for FAQ content.** It receives the most crawl attention, the most backlinks, and is the most likely page to be cited in AI-generated answers. If only one page gets an FAQ section, it should be the homepage.
 
 ### Brand Entity Consistency
 Check for consistency across: About page, LinkedIn company page, Crunchbase (if applicable), Wikipedia (if applicable), press coverage. Inconsistencies confuse LLMs and result in incorrect or absent brand representation in AI answers.
 
+### Google Business Profile
+- Does the brand have a Google Business Profile (`business.google.com`)?
+- If yes: is information accurate (name, URL, description, category)?
+- If no: flag as High Priority for any professional services or B2B site. A verified GBP produces a Knowledge Panel on branded searches and directly addresses low branded-query rankings. Setup takes 20 minutes and is free.
+
 ### Knowledge Panel
 - Search brand name on Google. Is there a Knowledge Panel?
 - If yes: is information accurate? Claim and verify via Search Console.
-- If no: build entity signals through Organization schema, consistent NAP data, and mentions on authoritative sites.
+- If no: build entity signals through Organization schema, GBP, consistent NAP data, and mentions on authoritative sites.
 
 ### Perplexity and ChatGPT Presence Test
 - Search brand name and primary service category on Perplexity.ai. Accurately represented?
@@ -733,6 +864,72 @@ X critical | X high | X medium | X quick wins | X long-term
 | LLM Findability | X | [brief] |
 ```
 
+### Save the Plan File
+
+After delivering the todo list, save it as `seo/plans/plan-[YYYY-MM-DD]/plan.md` where the date is today's date. Also create `seo/plans/plan-[YYYY-MM-DD]/assets/` as an empty directory (assets are placed here during Phase 12).
+
+If code access is not available, output the plan as a chat artifact and instruct the user to save it manually.
+
+After saving, update `seo/todos.md`: move any items from the new plan that are long-term or intentionally deferred into the appropriate P1/P2/P3 bucket with the source plan date.
+
+The plan file is self-contained. A future session must be able to open it and continue executing steps without re-running the audit. Follow this format exactly:
+
+```markdown
+# SEO Plan: [domain]
+
+**Tool:** `tools/SEO Expert/`
+**Audited:** [date]
+**Last updated:** [date]
+**Site type:** [detected type]
+**Audit goal:** [stated goals]
+
+> To continue: open this file and tell the SEO Expert (`tools/SEO Expert/`) to continue the plan.
+
+### Required Connectors
+
+List only connectors needed for steps that are still pending. Remove a connector from this table once all steps requiring it are marked `[x]`.
+
+| Connector | Path | Needed for |
+|---|---|---|
+| Google Search Console | `connectors/google/` | [step titles] |
+| Bing Webmaster Tools | `connectors/bing/` | [step titles] |
+| DataForSEO | `connectors/dataforseo/` | [step titles] |
+
+---
+
+## Checklist
+
+### Critical
+- [ ] [Step title] — [one-line fix summary] | [file or "off-site"]
+
+### High Priority
+- [ ] [Step title] — [one-line fix summary] | [file or "off-site"]
+
+### Medium Priority
+- [ ] [Step title] — [one-line fix summary] | [file or "off-site"]
+
+### Quick Wins
+- [ ] [Step title] — [one-line fix summary] | [file or "off-site"]
+
+### Long-Term
+- [ ] [Step title] — [one-line fix summary] | [file or "off-site"]
+
+---
+
+## Step Details
+
+Full implementation instructions for each step. Collapse or remove a section once its checkbox is marked `[x]`.
+
+### [Step title]
+**Problem:** ...
+**Impact:** ...
+**Fix:** ...
+**Effort:** ...
+**Connector needed:** [connector name or "none"]
+```
+
+Omit connectors from the Required Connectors table that are not needed for any step in this plan.
+
 ---
 
 ## Phase 12: Generate (On Request)
@@ -742,6 +939,8 @@ After delivering the todo list, proactively offer to generate ready-to-use asset
 > "I can generate any of the following ready-to-use assets based on this audit. What would you like first?"
 
 Then list only the asset types that are relevant to flagged issues. Do not list assets that are not applicable to this site. Generate one category at a time unless the user asks for multiple.
+
+**Save all generated assets to `seo/plans/plan-[YYYY-MM-DD]/assets/`.** Use descriptive filenames: `schema-organization.json`, `robots.txt`, `llms.txt`, `redirect-map.md`, `disavow.txt`. Content briefs go to `seo/content/briefs/[keyword-slug].md`.
 
 ---
 
@@ -964,6 +1163,27 @@ HowTo (for step-by-step instructional content):
       "text": "[Full step 2 instructions]"
     }
   ]
+}
+```
+
+Book (on any page featuring a published book; helps Google build entity associations between the site and the work):
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "[Book Title]",
+  "author": {
+    "@type": "Person",
+    "name": "[Author Full Name]"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "[Publisher Name]"
+  },
+  "datePublished": "[YYYY]",
+  "isbn": "[ISBN-13 if known]",
+  "url": "https://[domain.com]/[book-page]",
+  "description": "[2-3 sentence description of the book]"
 }
 ```
 
@@ -1240,7 +1460,52 @@ Generate structured content briefs for every content gap or cannibalization fix 
 
 After the user reviews the todo list, offer to execute available actions. Always confirm before running.
 
+**Deploy first.** If any steps involved code changes to the site, confirm they have been deployed to production before executing any indexing actions. Submitting a sitemap or requesting indexing before deployment sends crawlers to stale content.
+
 **Available execute actions:**
+
+IndexNow (no connector required):
+
+**Check if already in place before setting up:**
+- Look for a UUID `.txt` file in `public/` and a reference to `api.indexnow.org` in a build script or `package.json` postbuild hook. If found, it is already automated — mark done and skip setup.
+
+**Automated setup (Next.js / Vercel and other build-pipeline frameworks):**
+
+1. Generate a UUID key (`node -e "const {randomUUID}=require('crypto');console.log(randomUUID())"`)
+2. Create `public/[uuid].txt` with the UUID as its only content
+3. Create `scripts/indexnow.js`:
+```javascript
+// Pings IndexNow after every build for fast indexing across Bing, Yandex, Naver, Seznam, and Yep.
+// Google uses GSC sitemap submission instead (google.com/ping was deprecated Jan 2024).
+// Add new URLs to URLS when new pages are added to the site.
+const KEY = '[uuid]';
+const HOST = '[domain.com]';
+const URLS = [
+  `https://${HOST}/`,
+  // add all canonical pages here
+];
+
+fetch('https://api.indexnow.org/indexnow', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json; charset=utf-8' },
+  body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList: URLS }),
+})
+  .then(r => console.log(`IndexNow: ${URLS.length} URLs (status ${r.status})`))
+  .catch(e => console.warn('IndexNow failed (non-fatal):', e.message));
+```
+4. Add `"postbuild": "node scripts/indexnow.js"` to `package.json` scripts
+5. Deploy — IndexNow fires automatically on every production build going forward
+
+**Manual one-time submission (non-framework sites or no build pipeline):**
+```bash
+# Key file must already be hosted at https://[domain]/[uuid].txt
+curl -X POST "https://api.indexnow.org/indexnow" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{"host":"[domain.com]","key":"[uuid]","urlList":["https://[domain.com]/","https://[domain.com]/[page]"]}'
+```
+
+- IndexNow reaches Bing, Yandex, Naver, Seznam, and Yep within minutes to hours. Google does not participate.
+- **For Google:** there is no equivalent public ping. Google's sitemap ping endpoint (`google.com/ping`) was deprecated January 2024. The correct path for Google is GSC sitemap submission (connector command below) and accurate `lastmod` in the sitemap. Both are free and have no rate limits.
 
 Google Search Console (requires GSC connector configured):
 - Resubmit sitemap to Google: `node connectors/google/scripts/search-console.js submit-sitemap --site [domain] --sitemap [url] --account [email]`
@@ -1290,6 +1555,17 @@ Note: Cloudflare free plan is limited to 3 Page Rules. Users on free plan should
 - Updating robots.txt on the server (provide updated file content; user uploads it)
 - Creating or uploading llms.txt (provide the file content; user uploads it)
 - Meta descriptions when no SEO plugin is active (provide content; user pastes into plugin)
+
+### After Every Completed Action
+
+After the user confirms a step is done (deployed, validated, or manually completed):
+
+1. Update the plan file: change `[ ]` to `[x]` for that step's checklist entry.
+2. Update `Last updated` in the plan file header to today's date.
+3. If the completed step was the last one requiring a given connector, remove that connector from the Required Connectors table.
+4. Tell the user the updated status: "X of Y steps complete. Next up: [step title]."
+
+This applies whether the action was executed by a connector script or completed manually by the user.
 
 ---
 
