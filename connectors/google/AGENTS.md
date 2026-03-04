@@ -36,7 +36,7 @@ If you get "Cannot find module", run `npm install` first.
 | `search-console.js` | Search analytics, URL inspection, sitemaps |
 | `pagespeed.js` | Core Web Vitals, performance scores, opportunities |
 | `vision.js` | Image analysis: faces, labels, text, objects |
-| `analytics.js` | GA4 traffic, top pages, sources, conversions, realtime |
+| `analytics.js` | GA4 admin (accounts, properties, streams), reporting (run, pivot, batch, metadata, compatibility), shortcuts (top-pages, top-sources, overview, conversions, realtime), config (key events, custom dimensions/metrics, audiences) |
 | `ads.js` | Google Ads campaigns, keywords, ad groups, performance |
 | `speech.js` | Transcribe audio to text, speaker diarization |
 | `tts.js` | Synthesize text to speech, Neural2/Studio voices |
@@ -52,6 +52,26 @@ Run any script with `help` for full command syntax:
 ```bash
 node scripts/drive.js help
 node scripts/gmail.js help
+```
+
+## GCP Project Registry
+
+**ALWAYS check `/memory/connectors/google/gcp-projects.json` before running any `cloud.js` command.**
+
+This file maps aliases to real GCP project IDs. Two active workspaces share the same Google account:
+
+| Alias | Project ID | Purpose | Warning |
+|-------|-----------|---------|---------|
+| `cofounder-connector` | `local-axis-484016-n2` | CoFounder Google OAuth project | DO NOT deploy CoBuilder resources here |
+| `cofounder-tools` | `cofounder-tools` | CoFounder tooling | DO NOT deploy CoBuilder resources here |
+| `cobuilder-services` | `cobuilder-services` | CoBuilder backend (Cloud Run, Artifact Registry, Secret Manager) | CoBuilder ONLY |
+
+**Rule:** Always print which project you're targeting before running any mutating `cloud.js` command. Never infer the project from context — always look it up in `gcp-projects.json`.
+
+```bash
+# Always use explicit --project flag
+node scripts/cloud.js run list --project cobuilder-services --account anthony@francoinc.com
+node scripts/cloud.js apis list --project cobuilder-services --account anthony@francoinc.com
 ```
 
 ## Search Console Site Registry

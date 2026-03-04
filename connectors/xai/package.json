@@ -1,0 +1,15 @@
+{
+  "name": "xai-connector",
+  "version": "1.0.0",
+  "description": "xAI Grok connector — chat completions, model listing",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/models.js list"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

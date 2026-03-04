@@ -48,6 +48,21 @@ async function getResourceManagerApi(email) {
 }
 
 /**
+ * Get Cloud Resource Manager v1 API instance (needed for IAM policy methods)
+ */
+async function getResourceManagerV1Api(email) {
+  const auth = await getAuthClient(email);
+  return google.cloudresourcemanager({ version: 'v1', auth });
+}
+
+/**
+ * Get raw auth client for direct REST calls (WIF, etc.)
+ */
+async function getRawAuthClient(email) {
+  return getAuthClient(email);
+}
+
+/**
  * Get Service Usage API instance
  */
 async function getServiceUsageApi(email) {
@@ -344,6 +359,168 @@ async function createServiceAccountKey(email, serviceAccountEmail) {
   };
 }
 
+// ==================== IAM POLICY BINDINGS ====================
+
+/**
+ * Get the current IAM policy for a project (v1 API).
+ */
+async function getProjectIamPolicy(email, projectId) {
+  const rm = await getResourceManagerV1Api(email);
+  const response = await rm.projects.getIamPolicy({
+    resource: projectId,
+    requestBody: {}
+  });
+  return response.data;
+}
+
+/**
+ * Add a role binding for a member to a project.
+ * Uses read-modify-write: gets current policy, adds the binding, sets it back.
+ * member format: "serviceAccount:email@project.iam.gserviceaccount.com"
+ */
+async function addProjectRoleBinding(email, projectId, member, role) {
+  const rm = await getResourceManagerV1Api(email);
+
+  // Read current policy
+  const policyResponse = await rm.projects.getIamPolicy({
+    resource: projectId,
+    requestBody: {}
+  });
+  const policy = policyResponse.data;
+
+  // Find or create the binding for this role
+  const bindings = policy.bindings || [];
+  let binding = bindings.find(b => b.role === role);
+  if (binding) {
+    if (binding.members.includes(member)) {
+      return { alreadyExists: true, role, member };
+    }
+    binding.members.push(member);
+  } else {
+    bindings.push({ role, members: [member] });
+    policy.bindings = bindings;
+  }
+
+  // Write updated policy
+  await rm.projects.setIamPolicy({
+    resource: projectId,
+    requestBody: { policy }
+  });
+
+  return { added: true, role, member };
+}
+
+/**
+ * Add a role binding to a service account's own IAM policy.
+ * Used for WIF: allows a WIF principal to impersonate the SA.
+ * member format: "principalSet://iam.googleapis.com/projects/.../attribute.repository/org/repo"
+ */
+async function addServiceAccountIamBinding(email, serviceAccountEmail, member, role) {
+  const iam = await getIamApi(email);
+
+  // Read current SA IAM policy
+  const policyResponse = await iam.projects.serviceAccounts.getIamPolicy({
+    resource: `projects/-/serviceAccounts/${serviceAccountEmail}`
+  });
+  const policy = policyResponse.data;
+
+  const bindings = policy.bindings || [];
+  let binding = bindings.find(b => b.role === role);
+  if (binding) {
+    if (binding.members.includes(member)) {
+      return { alreadyExists: true, role, member };
+    }
+    binding.members.push(member);
+  } else {
+    bindings.push({ role, members: [member] });
+    policy.bindings = bindings;
+  }
+
+  await iam.projects.serviceAccounts.setIamPolicy({
+    resource: `projects/-/serviceAccounts/${serviceAccountEmail}`,
+    requestBody: { policy }
+  });
+
+  return { added: true, role, member };
+}
+
+// ==================== WORKLOAD IDENTITY FEDERATION ====================
+
+/**
+ * Create a Workload Identity Pool.
+ */
+async function createWorkloadIdentityPool(email, projectId, poolId, displayName) {
+  const auth = await getRawAuthClient(email);
+  const token = await auth.getAccessToken();
+  const url = `https://iam.googleapis.com/v1/projects/${projectId}/locations/global/workloadIdentityPools?workloadIdentityPoolId=${poolId}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token.token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ displayName, description: displayName })
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    // Pool already exists is fine
+    if (data.error?.status === 'ALREADY_EXISTS') return { alreadyExists: true, poolId };
+    throw new Error(`[${response.status}] ${data.error?.message || JSON.stringify(data)}`);
+  }
+  return { created: true, operation: data.name, poolId };
+}
+
+/**
+ * Create an OIDC Workload Identity Provider inside a pool.
+ */
+async function createWorkloadIdentityProvider(email, projectId, poolId, providerId, issuerUri, attributeMapping, attributeCondition) {
+  const auth = await getRawAuthClient(email);
+  const token = await auth.getAccessToken();
+  const url = `https://iam.googleapis.com/v1/projects/${projectId}/locations/global/workloadIdentityPools/${poolId}/providers?workloadIdentityPoolProviderId=${providerId}`;
+
+  const body = {
+    displayName: providerId,
+    oidc: { issuerUri },
+    attributeMapping
+  };
+  if (attributeCondition) body.attributeCondition = attributeCondition;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token.token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    if (data.error?.status === 'ALREADY_EXISTS') return { alreadyExists: true, providerId };
+    throw new Error(`[${response.status}] ${data.error?.message || JSON.stringify(data)}`);
+  }
+  return { created: true, operation: data.name, providerId };
+}
+
+/**
+ * Get a Workload Identity Pool by ID.
+ */
+async function getWorkloadIdentityPool(email, projectId, poolId) {
+  const auth = await getRawAuthClient(email);
+  const token = await auth.getAccessToken();
+  const url = `https://iam.googleapis.com/v1/projects/${projectId}/locations/global/workloadIdentityPools/${poolId}`;
+
+  const response = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${token.token}` }
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(`[${response.status}] ${data.error?.message || JSON.stringify(data)}`);
+  return data;
+}
+
 // ==================== CLOUD RUN ====================
 
 /**
@@ -445,7 +622,11 @@ function printHelp() {
     'IAM Commands': [
       'service-accounts            List service accounts',
       'create-sa ID NAME           Create service account',
-      'create-sa-key EMAIL         Create service account key'
+      'create-sa-key EMAIL         Create service account key',
+      'get-iam-policy              Get project IAM policy',
+      'bind-role MEMBER ROLE       Add role binding to project',
+      'bind-sa-role SA MEMBER ROLE Add role binding to service account IAM',
+      'setup-wif REPO              Full WIF setup for GitHub repo (e.g. org/repo)'
     ],
     'Cloud Run': [
       'run list                    List Cloud Run services',
@@ -656,6 +837,113 @@ async function main() {
         console.log(`\n✓ Key created: ${key.keyId}`);
         console.log(`\nKey data (save this securely, it cannot be retrieved again):`);
         output(key.keyData);
+        break;
+      }
+
+      case 'get-iam-policy': {
+        if (!projectId) throw new Error('--project is required');
+        const policy = await getProjectIamPolicy(email, projectId);
+        output(policy);
+        break;
+      }
+
+      case 'bind-role': {
+        if (!projectId) throw new Error('--project is required');
+        if (!args[0]) throw new Error('MEMBER required (e.g. serviceAccount:sa@project.iam.gserviceaccount.com)');
+        if (!args[1]) throw new Error('ROLE required (e.g. roles/artifactregistry.writer)');
+        const result = await addProjectRoleBinding(email, projectId, args[0], args[1]);
+        if (result.alreadyExists) {
+          console.log(`\n✓ Binding already exists: ${args[1]} → ${args[0]}`);
+        } else {
+          console.log(`\n✓ Role binding added: ${args[1]} → ${args[0]}`);
+        }
+        output(result);
+        break;
+      }
+
+      case 'bind-sa-role': {
+        if (!args[0]) throw new Error('SA_EMAIL required');
+        if (!args[1]) throw new Error('MEMBER required');
+        if (!args[2]) throw new Error('ROLE required');
+        const result = await addServiceAccountIamBinding(email, args[0], args[1], args[2]);
+        if (result.alreadyExists) {
+          console.log(`\n✓ Binding already exists`);
+        } else {
+          console.log(`\n✓ SA IAM binding added`);
+        }
+        output(result);
+        break;
+      }
+
+      case 'setup-wif': {
+        // Full Workload Identity Federation setup for GitHub Actions
+        // Usage: setup-wif ORG/REPO --project PROJECT --account EMAIL
+        if (!projectId) throw new Error('--project is required');
+        if (!args[0]) throw new Error('REPO required (e.g. BadGuyFranco/cobuilder-infrastructure)');
+        const repo = args[0];
+        const saEmail = flags.sa || `cobuilder-run@${projectId}.iam.gserviceaccount.com`;
+        const poolId = 'github-actions';
+        const providerId = 'github-actions-provider';
+        const projectNumber = flags['project-number'];
+        if (!projectNumber) throw new Error('--project-number is required (find in GCP Console or gcp-projects.json)');
+
+        console.log(`\nSetting up Workload Identity Federation for GitHub Actions`);
+        console.log(`  Project:        ${projectId} (${projectNumber})`);
+        console.log(`  Repo:           ${repo}`);
+        console.log(`  Service account: ${saEmail}`);
+        console.log(`  Pool:           ${poolId}`);
+        console.log(`  Provider:       ${providerId}\n`);
+
+        // 1. Create WIF pool
+        process.stdout.write('1. Creating WIF pool... ');
+        const poolResult = await createWorkloadIdentityPool(email, projectId, poolId, 'GitHub Actions Pool');
+        console.log(poolResult.alreadyExists ? 'already exists ✓' : 'created ✓');
+
+        // 2. Create OIDC provider
+        process.stdout.write('2. Creating OIDC provider... ');
+        const repoOwner = repo.split('/')[0];
+        const providerResult = await createWorkloadIdentityProvider(
+          email, projectId, poolId, providerId,
+          'https://token.actions.githubusercontent.com',
+          {
+            'google.subject': 'assertion.sub',
+            'attribute.actor': 'assertion.actor',
+            'attribute.repository': 'assertion.repository',
+            'attribute.repository_owner': 'assertion.repository_owner'
+          },
+          `assertion.repository_owner == '${repoOwner}'`
+        );
+        console.log(providerResult.alreadyExists ? 'already exists ✓' : 'created ✓');
+
+        // 3. Bind SA to WIF provider (allow GitHub repo to impersonate SA)
+        const wifMember = `principalSet://iam.googleapis.com/projects/${projectNumber}/locations/global/workloadIdentityPools/${poolId}/attribute.repository/${repo}`;
+        process.stdout.write(`3. Binding ${repo} → SA impersonation... `);
+        const bindResult = await addServiceAccountIamBinding(
+          email, saEmail, wifMember, 'roles/iam.workloadIdentityUser'
+        );
+        console.log(bindResult.alreadyExists ? 'already exists ✓' : 'added ✓');
+
+        // 4. Add roles/artifactregistry.writer to SA
+        process.stdout.write('4. Adding roles/artifactregistry.writer to SA... ');
+        const r1 = await addProjectRoleBinding(
+          email, projectId, `serviceAccount:${saEmail}`, 'roles/artifactregistry.writer'
+        );
+        console.log(r1.alreadyExists ? 'already exists ✓' : 'added ✓');
+
+        // 5. Add roles/run.developer to SA
+        process.stdout.write('5. Adding roles/run.developer to SA... ');
+        const r2 = await addProjectRoleBinding(
+          email, projectId, `serviceAccount:${saEmail}`, 'roles/run.developer'
+        );
+        console.log(r2.alreadyExists ? 'already exists ✓' : 'added ✓');
+
+        const providerFullPath = `projects/${projectNumber}/locations/global/workloadIdentityPools/${poolId}/providers/${providerId}`;
+        console.log(`\n✓ WIF setup complete!\n`);
+        console.log(`GitHub Actions secrets to add:`);
+        console.log(`  GCP_WORKLOAD_IDENTITY_PROVIDER = ${providerFullPath}`);
+        console.log(`  GCP_SERVICE_ACCOUNT            = ${saEmail}`);
+        console.log(`  GCP_PROJECT_ID                 = ${projectId}`);
+        output({ providerFullPath, saEmail, projectId });
         break;
       }
       

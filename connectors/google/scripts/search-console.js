@@ -25,6 +25,7 @@ const { google } = await import('googleapis');
 // Built-in Node.js modules
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 // Local modules
 import { getAuthClient } from './auth.js';

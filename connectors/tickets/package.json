@@ -1,0 +1,12 @@
+{
+  "name": "tickets-connector",
+  "version": "1.0.0",
+  "description": "CoBuilder ticketing system connector - file, list, update, and comment on bugs",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/list.js help"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

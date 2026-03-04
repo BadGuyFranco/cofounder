@@ -26,11 +26,16 @@ Commands:
   get <bucket> <key> [outfile]    Download an object from a bucket
   delete <bucket> <key>           Delete an object from a bucket
   head <bucket> <key>             Get object metadata
+  list-tokens                     List R2 API tokens (S3-compatible credentials)
+  create-token <bucket>           Create R2 API token scoped to a bucket
+  delete-token <token-id>         Delete an R2 API token
   help                            Show this help
 
 Options:
   --prefix <prefix>       Filter objects by prefix (for list)
   --limit <n>             Limit number of results (for list)
+  --permission <perm>     Token permission: object-read, object-read-write (default), admin-read-write
+  --ttl <seconds>         Token TTL in seconds (0 = no expiry, default)
 
 Examples:
   node scripts/r2.js buckets
@@ -41,6 +46,9 @@ Examples:
   node scripts/r2.js get my-bucket files/doc.pdf ./downloaded.pdf
   node scripts/r2.js delete my-bucket files/doc.pdf
   node scripts/r2.js delete-bucket my-bucket
+  node scripts/r2.js list-tokens
+  node scripts/r2.js create-token cobuilder-uploads
+  node scripts/r2.js create-token cobuilder-uploads --permission object-read-write
 
 Note: Requires Account-level token with Workers R2 Storage Edit permission.
 `);
@@ -246,6 +254,67 @@ async function headObject(bucket, key) {
   output(metadata);
 }
 
+async function listTokens() {
+  const accountId = await getAccountId();
+  const data = await apiRequest(`/accounts/${accountId}/r2/tokens`);
+  const tokens = (data.result || []).map(t => ({
+    id: t.id,
+    name: t.name,
+    status: t.status,
+    buckets: t.buckets?.map(b => `${b.bucketName} (${b.permission})`).join(', '),
+    created: t.createdOn,
+    expires: t.expiresOn || 'never'
+  }));
+  output(tokens);
+}
+
+async function createToken(bucket, flags) {
+  if (!bucket) {
+    throw new Error('Bucket name required. Usage: create-token <bucket> [--permission object-read-write]');
+  }
+
+  const permission = flags.permission || 'object-read-write';
+  const validPermissions = ['object-read', 'object-read-write', 'admin-read', 'admin-read-write'];
+  if (!validPermissions.includes(permission)) {
+    throw new Error(`Invalid permission "${permission}". Valid: ${validPermissions.join(', ')}`);
+  }
+
+  const accountId = await getAccountId();
+  const ttl = flags.ttl !== undefined ? parseInt(flags.ttl) : 0;
+
+  const body = {
+    buckets: [{ bucketName: bucket, permission }]
+  };
+  if (ttl > 0) body.ttlSeconds = ttl;
+
+  const data = await apiRequest(`/accounts/${accountId}/r2/tokens`, {
+    method: 'POST',
+    body
+  });
+
+  const token = data.result;
+  console.log(`\n✓ R2 API token created for bucket: ${bucket}`);
+  console.log(`  Permission: ${permission}`);
+  console.log(`\n  Access Key ID:     ${token.accessKeyId}`);
+  console.log(`  Secret Access Key: ${token.secretAccessKey}`);
+  console.log(`  Token ID:          ${token.id}`);
+  console.log(`\n  Endpoint: https://${accountId}.r2.cloudflarestorage.com`);
+  console.log(`\n  ⚠  Save the Secret Access Key now — it will not be shown again.`);
+}
+
+async function deleteToken(tokenId) {
+  if (!tokenId) {
+    throw new Error('Token ID required. Usage: delete-token <token-id>');
+  }
+
+  const accountId = await getAccountId();
+  await apiRequest(`/accounts/${accountId}/r2/tokens/${tokenId}`, {
+    method: 'DELETE'
+  });
+
+  console.log(`✓ Deleted R2 API token: ${tokenId}`);
+}
+
 function getContentType(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const types = {
@@ -307,6 +376,18 @@ async function main() {
 
       case 'head':
         await headObject(args._[1], args._[2]);
+        break;
+
+      case 'list-tokens':
+        await listTokens();
+        break;
+
+      case 'create-token':
+        await createToken(args._[1], args);
+        break;
+
+      case 'delete-token':
+        await deleteToken(args._[1]);
         break;
 
       default:

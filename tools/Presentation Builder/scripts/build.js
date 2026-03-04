@@ -49,6 +49,10 @@ Options:
   --output <name> Output filename without extension
   --timeout <ms>  Page load timeout (default: 30000)
   --help          Show this help
+
+Output:
+  PDF saves next to the HTML file in the project folder.
+  PNG saves in a slides/ subfolder (one image per slide).
 `);
   process.exit(0);
 }
@@ -93,11 +97,7 @@ const heightMatch = htmlContent.match(/name="presentation-height"\s+content="(\d
 const presWidth = widthMatch ? parseInt(widthMatch[1], 10) : 1920;
 const presHeight = heightMatch ? parseInt(heightMatch[1], 10) : 1080;
 
-// Create dist directory
-const distPath = join(projectPath, 'dist');
-if (!existsSync(distPath)) {
-  mkdirSync(distPath, { recursive: true });
-}
+// PDF goes next to the HTML. PNGs go in a slides/ subfolder.
 
 console.log('Presentation Builder - Export');
 console.log('============================');
@@ -144,7 +144,7 @@ async function exportPdf(browser) {
   // Extra wait for fonts and CSS to fully render
   await page.waitForTimeout(2000);
 
-  const outputPath = join(distPath, `${outputName}.pdf`);
+  const outputPath = join(projectPath, `${outputName}.pdf`);
 
   await page.pdf({
     path: outputPath,
@@ -202,7 +202,7 @@ async function exportPng(browser) {
 
   console.log(`Found ${slideIndices.length} slide(s)`);
 
-  const pngDir = join(distPath, 'png');
+  const pngDir = join(projectPath, 'slides');
   if (!existsSync(pngDir)) {
     mkdirSync(pngDir, { recursive: true });
   }

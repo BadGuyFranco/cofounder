@@ -111,6 +111,12 @@ node scripts/build.js --path "{path}" --pdf   # PDF
 node scripts/build.js --path "{path}" --png   # PNG per slide
 ```
 
+**Where exports save:**
+- **PDF** saves next to the HTML file in the project folder (not a subfolder)
+- **PNG** saves in a `slides/` subfolder (one image per slide)
+
+When exporting, tell the user exactly where the file was saved.
+
 ## Slide Types
 
 | Type | HTML |

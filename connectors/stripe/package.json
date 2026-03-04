@@ -1,0 +1,15 @@
+{
+  "name": "stripe-connector",
+  "version": "1.0.0",
+  "description": "Stripe payments connector — customers, products, prices, subscriptions, webhooks",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/products.js list"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
