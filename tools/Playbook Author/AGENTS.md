@@ -4,6 +4,14 @@ Create Playbooks using the WISER Method for agentic execution with human oversig
 
 **Key distinction:** Playbook Author creates Playbooks (living documents that evolve with the work). Play Author creates Plays (repeatable patterns for specific outcomes). If the user needs a task list without learning capture or decision tracking, they don't need Playbook Author.
 
+## Critical Directives
+
+1. **Token budget:** Target 2000-2500 words total. Dense > verbose. Context: 2-3 sentences. Each task: one line with a verifiable action. No filler phrases, no restating section headers. Risks deserve full detail; don't cut corners there.
+2. **Risk-first:** Identify execution risks in Interrogate BEFORE designing the plan. Risks drive the Solve choice. Each risk needs a concrete, specific mitigation, not vague hedging. Skimpy risk work is the #1 failure mode.
+3. **Questions with defaults:** Only ask what genuinely cannot be inferred or researched. Frame questions with proposed options (e.g., "Personal profile or company page? Recommend personal."). Never ask open-ended questions that stall execution.
+4. **Measurable completion:** Every task needs an unambiguous done-state. Every Checkpoint needs explicit pass/fail thresholds. An agent should never stall wondering "am I done?"
+5. **Cognitive ordering:** Authority/constraints first, then objective, then risks/unknowns, then plan, then tracking. This is the order an LLM needs to process instructions.
+
 ## Activation
 
 Only activate when the user explicitly requests a plan:
@@ -14,38 +22,45 @@ Only activate when the user explicitly requests a plan:
 - "Create a playbook for..."
 - "Make a playbook to..."
 
-When invoked, follow the methodology below.
+When invoked, ask:
 
-## The WISER Framework for Planning
+> "Is this a **one-time** plan (execute once, archive when done) or a **template** (a repeatable process you'll run multiple times)?"
 
-Every Playbook follows the W-I-S-E-R structure:
+- **One-time:** Create a standard Playbook. It executes, completes, and archives.
+- **Template:** Create a Playbook marked with `**Type:** Template`. It stays clean as a master copy. Each time it's run, copy it to a new instance (`YYYY-MM-DD-[slug].plan.md`), reset all checkboxes and Progress, then execute the instance. The template itself is never executed directly.
 
-| Canon | Purpose | Playbook Output |
-|-------|---------|-----------------|
-| **Witness** | Ground ourselves in what exists and what we're building | Objective, Scope, Current State, Deliverable |
-| **Interrogate** | Surface unknowns and challenge assumptions | Research needed, assumptions to validate |
-| **Solve** | Build the riskiest piece first to prove feasibility | Highest-risk task, validation criteria |
-| **Expand** | Build out the full task to meet the objective | Remaining tasks organized by dependency |
-| **Refine** | User stress-tests; AI iterates | Feedback loop, iteration tasks |
+Then follow the methodology below.
 
-**Preconditions** come before W-I-S-E-R. These are prerequisites that must be true before the work begins. Examples: archive before refactoring, ensure API access before integration, backup before migration.
+## The WISER Framework
 
-**Checkpoints** appear at the end of each Canon. A Checkpoint is not complete until the agent can answer: "What evidence do I have that this Canon is done?" If the answer is vague or missing, the Canon isn't done.
+Every Playbook follows the W-I-S-E-R structure. Each step is called a **Canon** (a phase of the planning and execution cycle):
+
+| Canon | Purpose |
+|-------|---------|
+| **Witness** | Verify current state; ground in what exists and what we're building |
+| **Interrogate** | Surface unknowns, risks, and assumptions |
+| **Solve** | Build the riskiest piece first to prove feasibility |
+| **Expand** | Build out the full task to meet the objective |
+| **Refine** | User stress-tests; AI iterates |
+
+**Preconditions** come before W-I-S-E-R. Prerequisites that must be true before the work begins (e.g., archive before refactoring, ensure API access before integration, backup before migration).
+
+**Checkpoints** end each Canon. Not done until you can cite evidence:
 
 | Canon | Checkpoint Evidence |
 |-------|---------------------|
-| Witness | Objective is specific and measurable; scope boundaries are explicit; current state is documented |
-| Interrogate | Key unknowns are listed; assumptions are stated; riskiest piece is identified; existing tools/Plays reviewed |
-| Solve | Riskiest piece was built; it works (or we learned why it doesn't and pivoted) |
-| Expand | All tasks complete; milestones verified |
+| Witness | Key files/code/docs verified against reality; divergences documented; objective is specific and measurable; scope boundaries explicit; current state grounded in evidence |
+| Interrogate | Unknowns listed; assumptions stated; execution risks identified with mitigations; riskiest piece identified; existing tools/Plays reviewed |
+| Solve | Riskiest piece built; it works (or we learned why it doesn't and pivoted) |
+| Expand | All tasks complete; milestones verified; documentation impact addressed |
 | Refine | User has tested; feedback incorporated; success criteria met |
 
 ## Playbook Storage
 
 **Choose a logical location based on context:**
-- If the Playbook is for a specific project, store it in that project's directory (e.g., `/project/plans/` or `/project/docs/`)
-- If the Playbook is for workspace-level work, store it in the relevant workspace
-- If no logical location exists, default to `/memory/plans/`
+- Project-specific work: store in that project's directory (e.g., `/project/plans/`)
+- Workspace-level work: store in the relevant workspace
+- No logical location: default to `/memory/plans/`
 
 **Confirm with an assumptive suggestion:**
 > "I'll save this Playbook to `[logical-location]`. Want a different location?"
@@ -54,184 +69,110 @@ Every Playbook follows the W-I-S-E-R structure:
 
 ## Collaboration Style
 
-After completing Witness (objective, scope, current state established), ask the user:
+After completing Witness, ask the user:
 
 > "Would you like this Playbook to collaborate WITH you through execution (pause at checkpoints for your input), or run autonomously (execute fully, you review at the end)?"
 
-### Collaborative Mode
+**Collaborative:** Pauses at every Checkpoint for human confirmation. Discusses decisions as they arise. Best for: uncertain territory, high-stakes decisions, learning together.
 
-The agent works interactively with the human:
-- Pauses at every Checkpoint for human confirmation before proceeding
-- Discusses decisions as they arise
-- Incorporates human feedback in real-time
-- Best for: uncertain territory, learning together, high-stakes decisions
+**Autonomous:** Runs through all Canons without pausing. Logs all decisions with rationale and alternatives. Human reviews completed work and Decision Log at the end. Best for: well-understood work, trusted patterns, time-sensitive execution.
 
-### Autonomous Mode
+**Default:** Collaborative (safer; human stays in the loop).
 
-The agent executes the full Playbook independently:
-- Runs through all Canons without pausing
-- Logs all decisions with rationale and alternatives
-- Records learnings as work progresses
-- Human reviews the completed work and Decision Log at the end
-- Best for: well-understood work, trusted patterns, time-sensitive execution
-
-**Default:** Collaborative (safer; human stays in the loop)
-
-### Mode Signals
-
-**Collaborative signals:**
-- User wants to learn or understand the process
-- Approach isn't certain
-- High-stakes or irreversible changes
-- User says "work with me" or "let's figure this out"
-
-**Autonomous signals:**
-- User trusts the agent to execute
-- Pattern is well-established
-- User is busy and wants results
-- User says "just do it" or "run this"
+**Mode signals.** Collaborative: "work with me," "let's figure this out," uncertain approach, irreversible changes. Autonomous: "just do it," "run this," established pattern, user is busy.
 
 ## Context Window Resilience
 
-**All Playbooks may be executed across multiple context windows.** A new agent session might pick up the Playbook mid-execution with no memory of prior work. The Playbook must be self-contained: everything needed to resume is in the file.
+All Playbooks may be executed across multiple context windows. A new agent session might pick up the Playbook mid-execution with no memory of prior work. The Playbook must be self-contained.
 
-**Required sections for every Playbook:**
+**Required sections:** Context (why this matters), Resume Instructions (how to get up to speed), Progress (current Canon, next action, summary table).
 
-- **Context:** Why this work matters. Problem being solved. Background a new context needs to understand the work.
-- **Resume Instructions:** Explicit steps for a new context to get up to speed and continue.
-- **Progress:** Last worked date, current Canon, next action.
-
-**Before ending any session:**
-1. Update all task checkboxes to reflect current state
-2. Update Progress section with current Canon and specific next action
-3. Update Decision Log if any decisions were made
-4. Update Learnings if anything was validated/invalidated
-5. Update Risk status if any risks changed
-
-**When resuming in a new context:**
-1. Read the entire Playbook first (it contains everything needed)
-2. Follow Resume Instructions explicitly
-3. Verify Progress section matches actual file state
-4. Continue from the documented next action
+**When resuming:** Follow the Resume Instructions section in the Playbook.
 
 ## Live Progress Tracking
 
-**During execution, use `todo_write` to show progress in Cursor's UI.**
+During execution, use `todo_write` to show progress in Cursor's UI.
 
 - Create one todo per Canon as you enter it
 - Mark `in_progress` when working on a Canon
 - Mark `completed` when moving to the next
 
-Example:
-```
-Witness: Establish objective and scope     [completed]
-Interrogate: Surface unknowns              [completed]
-Solve: Build riskiest piece                [in_progress]
-Expand: Build remaining tasks              [pending]
-Refine: User testing and iteration         [pending]
-```
-
 ## Task Decomposition
 
-**Tasks must be atomic, verifiable, and properly scoped.** A common failure mode is writing vague, high-level tasks like "Build the feature" or "Fix the problem" instead of breaking work into executable steps.
-
-**Every task must pass these tests:**
+Tasks must be atomic, verifiable, and properly scoped. Every task must pass these tests:
 
 1. **Atomic:** One action, not multiple actions joined by "and" or "then"
-   - Bad: "Create the endpoint and add validation"
-   - Good: "Create POST /users endpoint" then "Add email format validation to POST /users"
-
-2. **Verifiable:** Clear done state that can be checked
-   - Bad: "Improve performance"
-   - Good: "Reduce API response time to under 200ms"
-
-3. **Right-sized:** Completable in a reasonable work unit (not days of work in one task)
-   - Bad: "Implement user authentication system"
-   - Good: Break into: "Add password hashing utility" → "Create login endpoint" → "Add session management" → "Create logout endpoint" → "Add auth middleware"
-
+2. **Verifiable:** Clear done state that can be checked (measurable where possible)
+3. **Right-sized:** Completable in a reasonable work unit
 4. **Independent where possible:** Minimize dependencies between tasks within a milestone
-   - If Task B requires Task A, they should be in sequence or Task A should be in an earlier milestone
 
-**When decomposing complex work:**
-
-1. Identify the major components or phases
-2. For each component, list the concrete steps to complete it
-3. For each step, verify it passes the four tests above
-4. If a step fails a test, break it down further
-
-**Warning signs:** Vague verbs ("Handle," "Address"), unclear done state, tasks over an hour, milestones with only 1-2 tasks.
+**Warning signs:** Vague verbs ("Handle," "Address"), unclear done state, tasks that would take hours, milestones with only 1-2 tasks.
 
 ## Quality Checks
 
 Before delivering a Playbook:
 - [ ] WISER Playbook acknowledgement present (Method field)
+- [ ] Witness includes audit; current state verified, not assumed
 - [ ] Collaboration style confirmed with user
 - [ ] Preconditions identified (or explicitly "None")
-- [ ] Witness section complete (objective, scope, current state, deliverable)
-- [ ] Risks section populated with initial risks
+- [ ] Authority boundaries defined
+- [ ] Execution risks populated with specific mitigations in Interrogate
 - [ ] Every task passes decomposition tests (atomic, verifiable, right-sized)
-- [ ] No vague tasks like "implement the feature" or "fix the problem"
-- [ ] Solve section identifies the riskiest piece
-- [ ] Success criteria are evaluable
+- [ ] Solve identifies the riskiest piece (driven by Interrogate risks)
+- [ ] Success criteria are measurable
+- [ ] Documentation impact assessed
 - [ ] File saved with proper naming convention
-- [ ] Context, Resume Instructions, and Progress sections included (required for all Playbooks)
-- [ ] Key files/artifacts listed so new context knows what to read
+- [ ] Context, Resume Instructions, and Progress sections included
+- [ ] Key files/artifacts listed for new context
 
 ## Playbook Structure
 
 ```markdown
 # [Playbook Title]
 
-**Created:** YYYY-MM-DD
-**Last Updated:** YYYY-MM-DD
+**Created:** YYYY-MM-DD | **Updated:** YYYY-MM-DD
+**Type:** One-time | Template
 **Collaboration:** Collaborative | Autonomous
-**Status:** Draft | Active (Canon) | Paused | Complete
+**Status:** Draft | Active (Canon) | Final Check | Paused | Complete | Template
 **Method:** WISER Playbook
 
 ## Context
 
-[Why this work matters. Problem being solved. Background a new context window needs to understand the work.]
+[Why this work matters. Problem being solved. Background a new context window needs.]
 
-**Key files:** [List files a new context should read to get up to speed, e.g., source files being modified, reference docs, prior Playbooks]
+**Key files:** [Files a new context should read]
 
 ## Preconditions
 
 [Prerequisites that must be met, or "None"]
 
+## Authority
+
+**Autonomous:** [What the agent can execute freely]
+**Needs human input:** [What requires confirmation]
+
 ---
 
 ## Witness
 
-*Ground ourselves in what exists and what we're trying to accomplish.*
+*Verify before planning; plans built on stale assumptions fail.*
+
+**Audit:** Read key files, code, and docs relevant to this work. Note where reality differs from what was assumed or documented.
+
+**Findings:**
+- [Key findings from the audit]
+- [Divergences between documentation/assumptions and actual state]
+- [Dependencies or blockers discovered]
 
 **Objective:** [End state we're working toward]
 
-**Scope:**
-- In: [What's included]
-- Out: [What's explicitly excluded]
-- Dependencies: [What must exist or happen first]
+**Scope:** [What's in] | **Not in scope:** [What's out] | **Depends on:** [Prerequisites]
 
-**Current State:** [Snapshot of starting point]
+**Current State:** [Verified starting point, drawn from audit findings]
 
-**Deliverable:** [What this Playbook produces: markdown file, web page, tool, feature, etc.]
+**Deliverable:** [What this Playbook produces]
 
-**Checkpoint:** Shared understanding established.
-
----
-
-## Risks
-
-*What could derail this work? Track risk status throughout execution.*
-
-| Risk | Status | Mitigation | Notes |
-|------|--------|------------|-------|
-| [What could go wrong] | Active / Mitigated / Realized / Retired | [How we address it] | [Updates as work progresses] |
-
-**Risk status definitions:**
-- **Active:** Risk is present and being monitored
-- **Mitigated:** Actions taken have reduced the risk
-- **Realized:** Risk occurred; document impact and response
-- **Retired:** Risk no longer applies (scope changed, work completed, etc.)
+**Checkpoint:** Current state verified. Shared understanding established.
 
 ---
 
@@ -239,15 +180,18 @@ Before delivering a Playbook:
 
 *Surface unknowns and challenge assumptions before committing.*
 
-[Generate questions specific to this Playbook's domain. Consider: What could we be wrong about? What do we not know yet? What assumptions are we making? What external factors could affect this?]
+**Questions for user** (each with a recommended default):
+- [ ] [Question — "Option A or B? Recommend A because..."]
 
-- [ ] [Question or research item]
-- [ ] [Assumption to validate]
+**Execution risks:**
+| Risk | Status | Mitigation | Notes |
+|------|--------|------------|-------|
+| [What could go wrong] | Active / Mitigated / Realized / Retired | [Specific countermeasure] | [Updates as work progresses] |
 
-**Reuse check:** Can existing tools, connectors, or Plays handle parts of this work?
-- [ ] Review `/cofounder/tools/` and `/cofounder/connectors/` for relevant capabilities
-- [ ] Check `/memory/my tools/` and `/memory/my connectors/` for custom solutions
-- [ ] Note which existing resources to leverage in the Expand phase
+**Status definitions:** Active (monitoring), Mitigated (reduced), Realized (occurred; document impact), Retired (no longer applies).
+
+**Reuse check:**
+- [ ] [Existing tools, patterns, or prior work to leverage]
 
 **Checkpoint:** Unknowns surfaced. Riskiest piece identified. Existing tools/Plays reviewed.
 
@@ -257,10 +201,10 @@ Before delivering a Playbook:
 
 *Build the riskiest piece first. Prove it works before expanding.*
 
-**Riskiest piece:** [What carries the most uncertainty?]
+**Riskiest piece:** [Highest-severity risk from Interrogate]
 
 - [ ] [Task to prove feasibility]
-- [ ] [Validation step]
+- [ ] [Validation step with pass/fail threshold]
 
 **Checkpoint:** Solution proven viable.
 
@@ -268,7 +212,7 @@ Before delivering a Playbook:
 
 ## Expand
 
-*Build out the full task to meet the objective.*
+*Build out the full task. Each milestone: 3-5 tasks max.*
 
 ### Milestone 1: [Name]
 - [ ] [Task]
@@ -278,7 +222,10 @@ Before delivering a Playbook:
 - [ ] [Task]
 - [ ] [Task]
 
-**Checkpoint:** All milestones complete.
+### Documentation Updates
+- [ ] [Doc/reference to update, or "None; no documentation affected"]
+
+**Checkpoint:** All milestones complete. Documentation impact addressed.
 
 ---
 
@@ -293,10 +240,22 @@ Before delivering a Playbook:
 
 ---
 
+## Final Check
+
+*Refine confirmed the solution works; Final Check confirms nothing was left inconsistent.*
+
+- [ ] Documentation Updates from Expand are done (spot-check)
+- [ ] No stale references in docs or code
+- [ ] Tests pass for touched components (if applicable)
+- [ ] All checkboxes reflect actual state
+- [ ] Decision Log and Learnings are current
+
+---
+
 ## Decision Log
 
-| Date | Decision | Rationale | Alternatives Considered |
-|------|----------|-----------|-------------------------|
+| Date | Decision | Rationale | Alternatives |
+|------|----------|-----------|--------------|
 | YYYY-MM-DD | [What was decided] | [Why] | [Other options evaluated] |
 
 ## Learnings
@@ -317,8 +276,18 @@ When a new context window picks up this Playbook:
 ## Progress
 
 **Last worked:** YYYY-MM-DD
-**Current Canon:** [Witness | Interrogate | Solve | Expand | Refine]
+**Current Canon:** [Witness | Interrogate | Solve | Expand | Refine | Final Check]
 **Next action:** [Specific next step]
+
+| Canon | Items | Done | Status |
+|-------|-------|------|--------|
+| Witness | 0 | 0 | Not started |
+| Interrogate | 0 | 0 | Not started |
+| Solve | 0 | 0 | Not started |
+| Expand | 0 | 0 | Not started |
+| Refine | 0 | 0 | Not started |
+| Final Check | 5 | 0 | Not started |
+| **Total** | **5** | **0** | **Not started** |
 
 ---
 
@@ -331,26 +300,29 @@ When a new context window picks up this Playbook:
 
 Playbooks are living documents. The agent self-updates during execution.
 
-**During execution, the agent must:**
+**During execution:**
 - Update task checkboxes as work completes
 - Update Status when transitioning between Canons
-- Update Risk status as risks evolve (mitigated, realized, retired)
-- Log decisions immediately with rationale and alternatives considered
+- Update Risk Tracker as risks evolve (mitigated, realized, retired)
+- Log decisions immediately with rationale and alternatives
 - Record learnings when experiments conclude or assumptions are tested
 - Update Progress section before any Checkpoint
 - Update Last Updated date after any change
+- Do not mark Status as Complete until Final Check passes
 
-**In Collaborative mode:**
-- Wait for human confirmation at Checkpoints before proceeding
-- Discuss significant decisions before logging them
-- Surface new risks as they're identified
+**Before ending any session:**
+1. Update all task checkboxes to reflect current state
+2. Update Progress section with current Canon and specific next action
+3. Update Decision Log if any decisions were made
+4. Update Learnings if anything was validated/invalidated
+5. Update Risk Tracker if any risks changed
 
-**In Autonomous mode:**
-- Proceed through Checkpoints without pausing
-- Log all decisions for human review
-- Complete the full Playbook, then present results
+**Collaborative mode:** Wait for human confirmation at Checkpoints. Discuss significant decisions before logging them. Surface new risks as identified.
 
-**Autonomous mode guardrails (stop and notify human if):**
+**Autonomous mode:** Proceed through Checkpoints without pausing. Log all decisions for human review. Complete the full Playbook, then present results.
+
+**Autonomous guardrails (stop and notify human if):**
+- A task falls under "Needs human input" in Authority
 - A risk realizes with significant impact
 - A task fails twice
 - Scope change is needed
@@ -358,46 +330,36 @@ Playbooks are living documents. The agent self-updates during execution.
 - New high-severity risk emerges
 - Work would take significantly longer than expected
 
-**If scope changes:**
-- Log the change in Decision Log with rationale
-- Update Scope section
-- Update Risks section if new risks emerged or existing risks changed
-- Re-evaluate Solve: does riskiest piece change?
+**Scope changes:** Log in Decision Log with rationale. Update Scope and Risks sections. Re-evaluate whether the riskiest piece changes.
 
 **When things go wrong:**
 
-*Task failure:*
-1. Log the failure in Learnings (what happened, what we learned)
-2. Attempt one recovery if a clear fix exists
-3. If recovery fails: In Collaborative mode, stop and discuss. In Autonomous mode, document the blocker and stop.
+*Task failure:* Log in Learnings. Attempt one recovery if a clear fix exists. If recovery fails: Collaborative stops and discusses; Autonomous documents the blocker and stops.
 
-*Risk realized:*
-1. Update Risk status to "Realized"
-2. Document impact in the Notes column
-3. Log response in Decision Log
-4. In Collaborative mode: stop and discuss next steps
-5. In Autonomous mode: if impact is contained, continue with mitigation; if impact blocks progress, stop and notify
+*Risk realized:* Update Risk Tracker to "Realized." Document impact. Log response in Decision Log. Collaborative: stop and discuss. Autonomous: continue if impact is contained; stop and notify if it blocks progress.
 
-*Solve proves approach won't work:*
-1. Log the finding in Learnings
-2. Document what we tried and why it failed
-3. Stop execution (both modes). This requires human decision on whether to pivot, descope, or abandon.
+*Solve proves approach won't work:* Log in Learnings. Document what was tried and why it failed. Stop execution (both modes). This requires human decision on whether to pivot, descope, or abandon.
 
-**Version tracking:**
-- Before major direction changes, archive the current Playbook to `zArchive/`
-- Naming: `YY-MM-DD V[N] - [playbook-name].plan.md`
-- Old versions matter for after-action reviews
+**Version tracking:** Before major direction changes, archive the current Playbook to `zArchive/`. Naming: `YY-MM-DD V[N] - [playbook-name].plan.md`.
+
+**Completion protocol (after Final Check passes):**
+1. Update Status to Complete
+2. Identify project artifacts affected by this work's completion
+3. Update or prompt the user to update those artifacts
+4. Archive the Playbook per version tracking rules
 
 ## Handoffs
 
 **From other tools:** Problem Solver, Researcher, or Content Author may recommend creating a Playbook for complex work.
 
-**To Play Author:** If a pattern emerges that should become repeatable, extract it as a Play. Plays are stable; Playbooks evolve.
+**To Play Author:** If a pattern emerges that should become a lightweight repeatable, extract it as a Play.
+
+**To Template:** If a completed one-time Playbook represents a process you'll repeat, promote it to a Template: reset checkboxes and Progress, set Type to Template and Status to Template, keep the structure and learnings from the first run.
 
 ## Limitations
 
 - Playbooks require user judgment; they don't replace thinking
-- Playbook overhead is justified for complex work; for simple tasks, just execute without a Playbook
+- Playbook overhead is justified for complex work; for simple tasks, just execute
 - Playbooks in `/memory/` persist but aren't version-controlled
 - Stale Playbooks need verification before resuming
 - Autonomous mode requires trust; use Collaborative for uncertain territory

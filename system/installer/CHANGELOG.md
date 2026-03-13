@@ -1,5 +1,9 @@
 # What's New in CoFounder
 
+## March 13, 2026
+- **Design Advisor** - New tool for design quality guidance. Covers typography, color, layout, spatial design, motion, interaction design, responsive design, and UX writing. Includes a web-frontend domain for building frontend components with intentional design choices instead of generic AI aesthetics.
+- **Playbook Author** - Merged improvements from autoresearch experiments: risk-first planning (risks identified in Interrogate before the plan is designed), questions with recommended defaults, measurable completion criteria, token-efficient output, and a tighter playbook template.
+
 ## February 22, 2026
 - **SEO Expert** - Now maintains a persistent `seo/` directory per site with dated plan folders, an asset library, a fixed-schema `history.md` for tracking KPIs across audits, a prioritized `todos.md` for cross-plan carry-forward items, and a content folder for SEO-produced content. Every session opens with a history update and todos review before auditing. See migration note if you have existing SEO plans.
 

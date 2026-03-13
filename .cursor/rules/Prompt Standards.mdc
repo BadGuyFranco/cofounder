@@ -71,6 +71,10 @@ Separate instructions from user content.
 | Pitfalls without responses | Add specific response for each |
 | No clarification path | Add "ask if unclear" |
 
+## After Editing
+
+When modifying an existing prompt, re-read the full result. Check that new content doesn't conflict with or restate what's already there. If it does, propose the fix — which to keep, which to cut, and why — and confirm before making broader changes. Apply the threshold test to the whole prompt, not just what you changed.
+
 ## Clarification Over Guessing
 
 Include in prompts: "If the request is ambiguous, ask for clarification before proceeding."

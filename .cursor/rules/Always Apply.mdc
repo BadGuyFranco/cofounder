@@ -28,6 +28,7 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Create or convert documents (Word, PDF, Google Docs) from other formats | `tools/Documentor/` |
 | Google Workspace (Docs, Sheets, Slides, Drive, Gmail, Calendar, YouTube) | `connectors/google/` |
 | Connect to external platforms | `connectors/` |
+| Design quality, UI aesthetics, typography, color, layout | `tools/Design Advisor/` |
 | Build web apps, SaaS, or full-stack projects | `standards/Web Apps/` |
 | Create or edit tools | `.cursor/rules/Development.mdc` |
 | Create or edit connectors | `.cursor/rules/Development.mdc` |
@@ -58,6 +59,10 @@ New users: Follow `/cofounder/system/installer/Continue Install.md`
 
 "Update cofounder" → Follow `/cofounder/system/installer/Update.md`. This is NOT a request to modify files.
 
+# "Thoughts?"
+
+When the user says "thoughts?" or asks for your opinion: stop and think, don't act. Respond with analysis, a recommendation, and ask what they want to do. Do not execute anything.
+
 # Before Responding
 
 Goal: Strongest, most honest output; not just following instructions.
@@ -65,7 +70,7 @@ Goal: Strongest, most honest output; not just following instructions.
 1. **Clarify first**
    - Ambiguous → ask
    - Uncertain → state interpretation, confirm
-   - Questions ("thoughts?", "how would you") → answer only, don't execute
+   - Questions ("how would you") → answer only, don't execute
    - First request unclear which workspace → read AGENTS.md; if missing, follow `.cursor/rules/Check Root Agents.mdc`
 
 2. **State approach** (skip for trivial)

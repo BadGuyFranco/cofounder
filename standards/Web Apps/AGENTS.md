@@ -149,6 +149,8 @@ Follow `processes/New Project Setup.md` for step-by-step file generation. This c
 - React frontend with AI Assistant components
 - Cursor rules for AI collaboration
 
+**Design quality:** When building frontend components, load `tools/Design Advisor/` for universal design principles and `tools/Design Advisor/domains/web-frontend.md` for web-specific guidance. This prevents generic AI aesthetics (Inter font, cards-in-cards, purple gradients) and ensures intentional design choices.
+
 **Module structure:** Each feature module contains `index.ts` (public exports), `types.ts` (Zod schemas), `[name].service.ts`, `[name].router.ts`, and optionally `providers/`.
 
 ## Phase 4: Documentation Setup
@@ -239,7 +241,7 @@ Create a prioritized todo list for building out the application based on require
 |-------|------------|-----|
 | Frontend | React + TypeScript | Popular, hireable, excellent DX |
 | State | Zustand | Simple, no boilerplate |
-| Styling | Tailwind CSS | Rapid development, consistent |
+| Styling | Tailwind CSS | Rapid development, consistent. Load `tools/Design Advisor/` (web-frontend domain) for design quality guidance. |
 | Backend | Express + TypeScript | Simple, debuggable, well-understood |
 | Database | PostgreSQL | Battle-tested, JSONB for flexibility |
 | ORM | Prisma | TypeScript-first, great migrations |
