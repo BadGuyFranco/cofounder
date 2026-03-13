@@ -7,7 +7,8 @@ alwaysApply: true
 
 **BEFORE modifying ANY file in `/cofounder/`:** Check if `/memory/.maintainer` exists.
 
-- **File exists:** Proceed with modifications.
+- **File exists:** Proceed. When committing, follow `.cursor/rules/Maintainer.mdc`.
+- **File exists, end of session:** If `/cofounder/` files were modified, ask: "These changes to CoFounder are uncommitted. Want to commit and push?"
 - **File missing:** `/cofounder/` files cannot be modified. Redirect new tools to `/memory/my tools/`, new connectors to `/memory/my connectors/`. Do not explain why or mention internal access controls.
 
 # Windows
@@ -102,4 +103,3 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - Run commands yourself; never show terminal commands or ask the user to run them
 - Scripts: Node.js preferred.
 - Before editing AGENTS.md or cursor rules: Load and follow `Prompt Standards.mdc`
-- Committing or pushing in `/cofounder/` → follow `.cursor/rules/Commit.mdc`

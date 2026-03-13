@@ -20,6 +20,9 @@
 # Cursor plans (local only, not tracked)
 .cursor/plans/
 
+# Claude Code (local tooling state, not tracked)
+.claude/
+
 # Maintainer development workbench (local only, not tracked)
 /zDeveloper/
 
