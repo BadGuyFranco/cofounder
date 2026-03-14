@@ -117,7 +117,8 @@ Every connector is optional. The audit never stops or errors because a connector
 |---|---|
 | PageSpeed Insights quota exceeded | Note the quota limit, add API key setup as a Low priority todo item, continue with whatever data returned |
 | GSC not configured | Run audit in manual mode; include what to check in each GSC section |
-| DataForSEO not configured | Skip rank tracking, backlink, and keyword gap commands; use manual Ahrefs/Semrush instructions |
+| DataForSEO not configured | Skip rank tracking, backlink, and keyword gap commands; use Ahrefs via Browser Control if available, otherwise manual instructions |
+| Ahrefs not configured | Fall back to DataForSEO for backlink data; if neither available, use manual instructions |
 | Bing not configured | Skip Bing crawl commands; ask user to check Bing Webmaster Tools dashboard manually |
 | WordPress not configured | Provide CMS instructions for manual implementation of title tags, meta, schema |
 | Cloudflare not configured | Provide manual redirect and robots.txt implementation instructions |
@@ -230,10 +231,11 @@ Before asking anything, silently check which connectors are available for this s
 |---|---|---|
 | Google Search Console | `/memory/connectors/google/search-console-sites.json` contains the domain | Live GSC data (queries, impressions, CTR, sitemap status, URL inspection) |
 | DataForSEO | `/memory/connectors/dataforseo/.env` exists | Live rank tracking, backlink data, domain overview, keyword gap, search volume |
+| Ahrefs (via Browser Control) | `/memory/tools/browser-control/sites/ahrefs.env` exists | Live DR, backlink profile, anchor text, broken backlinks, competitors, content gap, ranked keywords |
 | Bing Webmaster Tools | `/memory/connectors/bing/sites.json` contains the domain | Live Bing crawl stats, issues, sitemaps |
 | PageSpeed Insights | Always available (anonymous quota or API key in `/memory/connectors/google/.env`) | Core Web Vitals and performance score |
 
-If GSC is detected, tell the user: "I have live Search Console data for this site." If DataForSEO is configured, also tell the user: "I have live rank tracking and backlink data via DataForSEO."
+If GSC is detected, tell the user: "I have live Search Console data for this site." If DataForSEO is configured, also tell the user: "I have live rank tracking and backlink data via DataForSEO." If Ahrefs credentials are detected, tell the user: "I have Ahrefs access via browser automation for backlink and keyword data."
 
 If a connector is not configured and its data would materially improve the audit, note it once at the end of the todo list as an optional setup item - do not interrupt the audit flow to ask for setup.
 
@@ -466,10 +468,16 @@ Use the ranked keywords output to identify:
 - Keywords ranking positions 21-100: longer-term targets for new or expanded content
 - High-volume keywords where the competitor ranks top 5 but the site has nothing: new content opportunities
 
-**If DataForSEO not configured:**
+**If DataForSEO not configured but Ahrefs Browser Control is available:**
+Use the Ahrefs site guide's "Extended Data Pull" workflow to collect content gap data:
+- Navigate to Organic Keywords for the domain, filter positions 11-20 for quick wins
+- Navigate to Content Gap, enter top 3 competitors, extract keywords they rank for but the target does not
+- Sort by keyword difficulty ascending to find quick wins, filter by search volume to prioritize
+
+**If neither DataForSEO nor Ahrefs Browser Control is configured:**
 - Topics competitors rank for that this site has no content on (manual: search the competitor's top pages in their GSC or Ahrefs/Semrush if available)
 - Prioritize gaps where: (1) the site already has topical authority in a related cluster, (2) the keyword has commercial or informational value aligned with the site's goals, and (3) the competitor ranking for it has a Domain Rating the site could realistically match within 6 months
-- **Ahrefs content gap workflow:** Enter the site's domain and up to 3 competitor domains. Filter to keywords all competitors rank for but the site does not. Sort by keyword difficulty ascending to find quick wins. Filter by search volume to prioritize.
+- **Ahrefs content gap workflow (manual):** Enter the site's domain and up to 3 competitor domains. Filter to keywords all competitors rank for but the site does not. Sort by keyword difficulty ascending to find quick wins. Filter by search volume to prioritize.
 
 ---
 
@@ -517,7 +525,41 @@ From the summary, flag:
 - Broken backlinks: run link-gap on the 404 data and flag for redirect reclaim
 - Anchor text concentration: if exact-match keyword anchors exceed 20% of total, flag as Medium risk
 
-### With Ahrefs, Semrush, or Moz (if user confirmed access in intake)
+### With Ahrefs via Browser Control (auto-runs if configured)
+
+If Ahrefs credentials are detected in Phase 2, use Browser Control to pull backlink data automatically. Load the site guide at `tools/Browser Control/sites/Ahrefs.md` before starting.
+
+**Step 1: Authenticate**
+
+Follow the Ahrefs site guide login flow. Read credentials from `/memory/tools/browser-control/sites/ahrefs.env`. If already logged in (browser profile persists sessions), skip login.
+
+**Step 2: Run Standard Data Pull**
+
+Navigate to Ahrefs Site Explorer for [domain] and extract data following the site guide's "Standard Data Pull" workflow:
+
+1. **Overview:** Navigate to `https://app.ahrefs.com/site-explorer/overview/v2/subdomains/live?target=[domain]`. Extract DR, referring domains (count + trend direction), total backlinks, organic keywords, organic traffic.
+
+2. **Broken backlinks:** Navigate to the Best by Links page filtered to 404 responses. Extract all 404 URLs with 3+ referring domains. Each is a Quick Win redirect reclaim opportunity.
+
+3. **Anchor text:** Navigate to the Anchors view. Extract top 20 anchor texts with referring domain counts. Classify each as branded, generic, exact-match keyword, partial-match, or naked URL.
+
+4. **Competing domains:** Navigate to the Competing Domains view. Extract top 5 competitors by common keywords.
+
+**Step 3: Apply thresholds**
+
+Use the same thresholds as below to flag issues from the extracted data.
+
+**Step 4: Extended pull for content gaps (if Phase 5 needs it)**
+
+If content gap analysis is needed, also run the site guide's "Extended Data Pull":
+- Content gap: Navigate to Content Gap, enter top 3 competitors, extract keywords they rank for that the target does not
+- Quick-win keywords: Navigate to Organic Keywords, filter to positions 11-20, extract keywords with search volume
+
+**If Ahrefs login fails or 2FA is required:** Fall back to the manual path below. Do not block the audit.
+
+**If Ahrefs account limits are hit:** Note which data was collected before the limit, continue the audit with available data, and add "Ahrefs usage limit reached; remaining data not collected" to the audit notes.
+
+### With Ahrefs, Semrush, or Moz (manual, if no Browser Control credentials)
 
 **Domain authority benchmarks:**
 Pull the site's Domain Rating (Ahrefs) or Domain Authority (Moz) and contextualize it against what's competing:
@@ -568,9 +610,22 @@ A backlink is toxic if two or more of the following apply:
 - When a mention is found without a link, reach out to request attribution
 - Priority targets: DR 40+ sites that already know and reference the brand
 
-### Without DataForSEO Backlinks Subscription
+### Without DataForSEO or Ahrefs Browser Control
 
-**Primary manual path: Ahrefs Webmaster Tools (free for verified site owners)**
+**Primary automated path: set up Ahrefs credentials for Browser Control.**
+
+If neither DataForSEO nor Ahrefs Browser Control is configured, the fastest path to live backlink data is setting up Ahrefs credentials:
+
+1. Create `/memory/tools/browser-control/sites/ahrefs.env` with:
+   ```
+   AHREFS_EMAIL=your-email@example.com
+   AHREFS_PASSWORD=your-password
+   ```
+2. The next audit will automatically pull backlink data via Browser Control.
+
+This works with any Ahrefs account (paid or Ahrefs Webmaster Tools free tier for verified sites).
+
+**Secondary manual path: Ahrefs Webmaster Tools (free for verified site owners)**
 
 Ahrefs Webmaster Tools is completely free for sites you own. It provides the same backlink data as the paid Ahrefs product, limited to your own verified domains. Setup takes 15-20 minutes per site.
 
@@ -582,7 +637,7 @@ Ahrefs Webmaster Tools is completely free for sites you own. It provides the sam
 
 **During the audit: pause and ask the user for this data**
 
-When Phase 7 is reached, send this exact request to the user before continuing:
+When Phase 7 is reached and no automated data source is available, send this exact request to the user before continuing:
 
 ---
 "To complete the backlink analysis, open **Ahrefs Webmaster Tools** (`ahrefs.com/webmaster-tools`) for [domain] and pull the following - it takes about 3-4 minutes:
@@ -621,8 +676,8 @@ Wait for the user's response before writing any backlink findings. Incorporate a
 2. Alternatively, take the top 3 Google competitors for the main keyword and check `ahrefs.com/backlink-checker` (free version shows top 100 backlinks for any domain)
 3. Note any DR 40+ domains in the competitor's top 100 that do not appear in your own backlink list
 
-**If the site is not yet verified in Ahrefs Webmaster Tools:**
-Tell the user: "To complete the backlink dimension, verify this site at `https://ahrefs.com/webmaster-tools` (free). The setup takes 15 minutes and gives you permanent access to your full backlink profile. I've noted the specific data points to collect once you're set up." Then flag backlink analysis as Deferred pending Ahrefs setup, not as skipped.
+**If the site is not yet verified in Ahrefs Webmaster Tools and no Ahrefs Browser Control is configured:**
+Tell the user: "To complete the backlink dimension, either add your Ahrefs credentials to `/memory/tools/browser-control/sites/ahrefs.env` for automated data collection, or verify this site at `https://ahrefs.com/webmaster-tools` (free). The credential setup takes 2 minutes; Ahrefs Webmaster Tools setup takes 15 minutes." Then flag backlink analysis as Deferred pending Ahrefs setup, not as skipped.
 
 **Fallback if Ahrefs Webmaster Tools is unavailable (competitor sites or unverified domains):**
 - `site:domain.com` in Google gives a rough indexed page count but no link data
@@ -701,10 +756,25 @@ Ask the user to check in their Search Console dashboard (`search.google.com/sear
 If the user confirmed GA4 access:
 - GA4 firing on all pages, not just the homepage (use Realtime report to verify)
 - Key conversion events tracked (form submissions, purchases, sign-ups, phone clicks)
-- GA4 property linked to Search Console (Admin > Property > Search Console Links)
+- GA4 property linked to Search Console (see GA4-GSC Link Requirement below)
 - No double-counting from multiple GA4 implementations (check Tag Assistant or page source)
 
 If the user does not have GA4: flag as Medium priority - install GA4 with conversion tracking.
+
+### GA4-GSC Link Requirement
+
+Every site with both GA4 and GSC must have these two properties linked. This is a non-negotiable setup item, not an optional check. Without it, the site has no combined search query + landing page performance data.
+
+**Check programmatically first.** The GA4 Admin API does not expose Search Console links. There is no automated verification path. This must be confirmed with the user or via the dashboard.
+
+**If not linked:** Flag as High Priority and walk the user through setup:
+1. Go to https://analytics.google.com
+2. Admin (gear icon, bottom-left) > Property column > Product Links > Search Console Links
+3. Click "Link" > select the matching Search Console property > select the web stream > Submit
+
+**If already linked:** Mark as confirmed in the plan and move on.
+
+This check runs on every audit, not just the first. Links can be removed accidentally during property changes or team handoffs.
 
 ### Bing Webmaster Tools
 
@@ -894,6 +964,7 @@ List only connectors needed for steps that are still pending. Remove a connector
 | Google Search Console | `connectors/google/` | [step titles] |
 | Bing Webmaster Tools | `connectors/bing/` | [step titles] |
 | DataForSEO | `connectors/dataforseo/` | [step titles] |
+| Ahrefs (Browser Control) | `tools/Browser Control/sites/Ahrefs.md` | [step titles] |
 
 ---
 
@@ -1571,12 +1642,13 @@ This applies whether the action was executed by a connector script or completed 
 
 ## Limitations
 
-- Cannot access password-protected pages, staging environments, or pages requiring authentication
-- Backlink analysis uses DataForSEO if configured (`/memory/connectors/dataforseo/.env`); falls back to manual instructions without it
+- Cannot access password-protected pages, staging environments, or pages requiring authentication (except Ahrefs via Browser Control with stored credentials)
+- Backlink analysis uses DataForSEO if configured (`/memory/connectors/dataforseo/.env`), Ahrefs via Browser Control if configured (`/memory/tools/browser-control/sites/ahrefs.env`), or falls back to manual instructions
+- Ahrefs Browser Control requires a visible browser session and may be interrupted by 2FA, CAPTCHA, or account rate limits
 - Core Web Vitals field data requires GSC; PageSpeed Insights lab data is used as a proxy
 - Actual ranking positions require GSC or a rank tracker
 - LLM citation measurement is not yet standardized; Perplexity and ChatGPT presence tests are qualitative
-- Content gap and rank tracking use DataForSEO if configured; qualitative without it
+- Content gap and rank tracking use DataForSEO or Ahrefs Browser Control if configured; qualitative without either
 - Execute layer is limited to sitemap submission; CMS modifications require direct access or a CMS-specific connector
 - PageSpeed Insights uses the Google connector (`connectors/google/scripts/pagespeed.js`); add `PAGESPEED_API_KEY` to `memory/connectors/google/.env` for reliable quota
 - Bing Webmaster Tools uses the Bing connector (`connectors/bing/scripts/webmaster.js`); add `BING_WEBMASTER_API_KEY` to `memory/connectors/bing/.env`. See `connectors/bing/SETUP.md`.

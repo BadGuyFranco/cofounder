@@ -73,21 +73,8 @@ If user confirms:
 
 **4a. Install FFmpeg (system package, not pip)**
 
-**Mac:**
 ```bash
-brew install ffmpeg
-```
-
-**Windows:**
-1. Go to https://www.gyan.dev/ffmpeg/builds/
-2. Download "ffmpeg-release-essentials.zip"
-3. Extract to `C:\ffmpeg`
-4. Add `C:\ffmpeg\bin` to your system PATH
-5. Restart Git Bash
-
-**Linux:**
-```bash
-sudo apt install ffmpeg
+conda install -y ffmpeg
 ```
 
 Verify with: `ffmpeg -version`

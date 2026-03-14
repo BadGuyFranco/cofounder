@@ -4,17 +4,15 @@ Site-specific patterns for automating PodMatch interactions.
 
 **Base URL patterns:** `podmatch.com/guestdetailpreview/*`, `podmatch.com/hostdetailpreview/*`, `podmatch.com/member/*`, `podmatch.com/podcast/*`
 
-**Script options:** Run `node scripts/<name>.js help` for detailed options.
-
 ## Capabilities
 
 | Task | Capability |
 |------|------------|
 | Navigate to profiles | Yes |
 | Read visible profile text | Yes (snapshot) |
-| Extract profile photo URLs | Yes (execute.js) |
-| Download high-res profile photos | Yes (click modal + download.js) |
-| Extract structured data | Yes (execute.js) |
+| Extract profile photo URLs | Yes (run_code) |
+| Download high-res profile photos | Yes (click modal + run_code) |
+| Extract structured data | Yes (run_code) |
 
 ## Authentication
 
@@ -29,19 +27,13 @@ PodMatch may require login for some content.
 
 ### Guest profile (public preview)
 
-```bash
-node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
-node scripts/wait.js --time 2000
-node scripts/snapshot.js
-```
+1. `browser_navigate` to `https://podmatch.com/guestdetailpreview/[profile-id]`
+2. `browser_snapshot` to read the profile
 
 ### Host/podcast profile (public preview)
 
-```bash
-node scripts/navigate.js https://podmatch.com/hostdetailpreview/[slug]
-node scripts/wait.js --time 2000
-node scripts/snapshot.js
-```
+1. `browser_navigate` to `https://podmatch.com/hostdetailpreview/[slug]`
+2. `browser_snapshot` to read the profile
 
 ## What's Visible in Snapshots
 
@@ -64,17 +56,11 @@ PodMatch guest profile snapshots typically contain:
 
 PodMatch shows 400x400 thumbnails on the page. The full-resolution image is in a modal.
 
-```bash
-# 1. Click on a photo in "Guest's Approved Images" section
-node scripts/click.js --selector "img[alt='Guest HD Photo 2']"
-
-# 2. Wait for modal, extract full-res image URL
-node scripts/wait.js --time 1500
-node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
-
-# 3. Download the full-res image
-node scripts/download.js --url "<url-from-step-2>" --output ~/profile-photo.png
-```
+1. `browser_snapshot` to find the HD photo in "Guest's Approved Images" section
+2. `browser_click` the photo ref (e.g., img with alt "Guest HD Photo 2")
+3. `browser_snapshot` to see the modal
+4. `browser_run_code` with: `document.querySelector('[role="dialog"] img')?.src`
+5. Use the returned URL to download the full-resolution image
 
 **URL pattern insight:** Thumbnails use `sm_...sm_...jpg` pattern. Full-res images drop the `sm_` prefixes and are typically PNG.
 
@@ -84,54 +70,46 @@ node scripts/download.js --url "<url-from-step-2>" --output ~/profile-photo.png
 
 For a quick 400x400 thumbnail without opening the modal:
 
-```bash
-node scripts/execute.js --code "document.querySelector('img[alt=\"Guest\\'s Main Profile Pic\"]')?.src"
-```
+`browser_run_code` with: `document.querySelector('img[alt="Guest\'s Main Profile Pic"]')?.src`
 
 ## Extracting Profile Data
 
-```bash
-# Get name
-node scripts/execute.js --code "document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim()"
+Use `browser_run_code` with JavaScript:
 
-# Get tagline
-node scripts/execute.js --code "document.querySelector('h1 + p')?.innerText"
+```javascript
+// Get name
+document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim()
 
-# Get introduction
-node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText === 'Introduction')?.nextElementSibling?.innerText"
+// Get tagline
+document.querySelector('h1 + p')?.innerText
 
-# Get about text
-node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText.includes('About'))?.nextElementSibling?.innerText"
+// Get introduction
+Array.from(document.querySelectorAll('h2')).find(h => h.innerText === 'Introduction')?.nextElementSibling?.innerText
 
-# Get guest tags
-node scripts/execute.js --code "Array.from(document.querySelectorAll('h2')).find(h => h.innerText === 'Guest Tags')?.parentElement?.querySelectorAll('p').forEach(p => console.log(p.innerText))"
+// Get about text
+Array.from(document.querySelectorAll('h2')).find(h => h.innerText.includes('About'))?.nextElementSibling?.innerText
 ```
 
 ## Interacting with Profile Elements
 
 ### Message guest (requires login)
 
-```bash
-node scripts/click.js --text "Send This Guest A Message"
-node scripts/wait.js --time 1000
-node scripts/snapshot.js
-```
+1. `browser_snapshot` to find the "Send This Guest A Message" button
+2. `browser_click` its ref
+3. `browser_snapshot` to see the message form
 
 ### View all reviews
 
-```bash
-node scripts/click.js --text "See All Reviews"
-node scripts/wait.js --time 1000
-node scripts/snapshot.js
-```
+1. `browser_click` the "See All Reviews" ref from snapshot
+2. `browser_snapshot` to read reviews
 
 ## Known Quirks
 
 **Thumbnails on page:** Profile images visible on the page are 400x400 thumbnails with `sm_` prefix in URL. Click to open modal for full resolution.
 
-**Modal structure:** When image modal opens, use `[role="dialog"]` to query modal-specific selectors.
+**Modal structure:** When image modal opens, snapshot will include modal content. Use `[role="dialog"]` in run_code selectors for modal-specific queries.
 
-**Dynamic content:** Profile sections load asynchronously. Wait 2+ seconds after navigation.
+**Dynamic content:** Profile sections load asynchronously. If snapshot is missing sections, re-snapshot after a moment.
 
 **Guest vs Host profiles:** URL patterns differ. Guest profiles use `guestdetailpreview`, host profiles use `hostdetailpreview`.
 
@@ -140,46 +118,28 @@ node scripts/snapshot.js
 | Failure | Cause | Fix |
 |---------|-------|-----|
 | Profile not found | Wrong URL pattern | Use `guestdetailpreview` or `hostdetailpreview` |
-| Content missing | Still loading | Use `wait.js --time 2000` after navigation |
+| Content missing | Still loading | Re-snapshot |
 | No modal image | Modal didn't open | Click on HD photo in approved images section |
 | Low-res image | Used thumbnail | Open modal, extract from `[role="dialog"] img` |
 | Login required | Session expired | User must log in |
 
 ## Example: Full Profile Extraction
 
-```bash
-# 1. Navigate
-node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
-
-# 2. Wait for content
-node scripts/wait.js --time 2000
-
-# 3. Extract basic data via JavaScript
-node scripts/execute.js --code "({
-  name: document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim(),
-  tagline: document.querySelector('h1 + p')?.innerText
-})"
-
-# 4. Screenshot for reference
-node scripts/screenshot.js --output ./podmatch-profile.png
-```
+1. `browser_navigate` to `https://podmatch.com/guestdetailpreview/[profile-id]`
+2. `browser_snapshot` to read the profile
+3. `browser_run_code` to extract structured data:
+   ```javascript
+   ({
+     name: document.querySelector('h1')?.innerText.replace(/Professional Badge|Elite Badge/g, '').trim(),
+     tagline: document.querySelector('h1 + p')?.innerText
+   })
+   ```
+4. `browser_take_screenshot` for visual reference
 
 ## Example: Download High-Res Profile Photo
 
-```bash
-# 1. Navigate to profile
-node scripts/navigate.js https://podmatch.com/guestdetailpreview/[profile-id]
-node scripts/wait.js --time 2000
-
-# 2. Open photo modal (click HD photo in approved images)
-node scripts/click.js --selector "img[alt='Guest HD Photo 2']"
-node scripts/wait.js --time 1500
-
-# 3. Extract full-res URL from modal
-node scripts/execute.js --code "document.querySelector('[role=\"dialog\"] img')?.src"
-
-# 4. Download the file (use URL from step 3)
-node scripts/download.js --url "<url-from-step-3>" --output ./profile-photo.png
-```
-
-This downloads the full-resolution PNG, not the 400x400 thumbnail.
+1. `browser_navigate` to `https://podmatch.com/guestdetailpreview/[profile-id]`
+2. `browser_snapshot` to find the HD photo
+3. `browser_click` the HD photo ref (alt "Guest HD Photo 2")
+4. `browser_run_code` with: `document.querySelector('[role="dialog"] img')?.src`
+5. Use the returned URL to download the full-resolution PNG

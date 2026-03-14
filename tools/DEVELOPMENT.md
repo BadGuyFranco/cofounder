@@ -250,6 +250,12 @@ Only proceed with non-JS after user acknowledgment.
 
 If a Python library offers 5x+ performance advantage via GPU/native code, present the trade-off to the user before defaulting to Node.js. Document exceptions in tool's AGENTS.md.
 
+### Runtime Environment
+
+- System dependencies via `conda install` (Miniforge). Never `brew install` or `apt install`.
+- Python packages via `pip`. Node packages via `npm install`.
+- See `system/installer/dependencies/` for per-dependency guides.
+
 ## Adding New Tools
 
 1. Choose template: Behavior, Script, or Composite

@@ -15,20 +15,22 @@ Automate web browsers programmatically using Playwright.
 
 ## How It Works
 
-Browser Control runs a local server managing a Chromium instance. Scripts send commands to the server. The browser stays open between commands so you can watch automation in real-time.
+Browser Control has two interfaces that share the same browser and profile:
+
+**MCP (preferred in IDE):** Runs as an MCP server inside Cursor or Claude Code. The AI gets native `browser_*` tools with smart waiting, retry, and element refs. No session management needed.
+
+**CLI scripts (universal):** Run from any terminal. A local HTTP server manages a Chromium instance. Scripts send commands to the server.
 
 ```
-session.js start  →  Launches browser + server
-navigate.js       →  Browser navigates
-click.js          →  Browser clicks
-session.js stop   →  Closes browser + server
+MCP:     IDE starts server  ->  AI calls browser_*  ->  Browser acts
+CLI:     session.js start   ->  navigate.js, click.js, etc.  ->  session.js stop
 ```
 
 ## Limitations
 
 - Cannot solve CAPTCHAs (user must intervene)
 - Cannot bypass login walls (user must authenticate)
-- Chromium only (Firefox/WebKit not supported)
+- Chromium by default (Firefox/WebKit available via MCP config)
 
 ## Documentation
 

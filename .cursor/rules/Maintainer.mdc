@@ -31,7 +31,7 @@ If a migration is required:
 2. Add the entry to the Version History table in `system/migrations/README.md`
 
 ### 5. Leak check
-Scan the diff for real email addresses or personal identifiers. Replace with placeholders before staging. Do not commit files that contain secrets (.env, credentials, API keys).
+Scan the diff for real email addresses or personal identifiers. Replace with placeholders before staging. Do not commit files containing secrets (.env, credentials, API keys).
 
 ### 6. Commit and push
 Stage all changes including CHANGELOG.md, system/version.txt, and any migration files. Commit with a clear, descriptive message. Push.

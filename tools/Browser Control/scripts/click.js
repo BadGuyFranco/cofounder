@@ -2,12 +2,13 @@
 
 /**
  * Browser Control - Click
- * 
+ *
  * Click elements on the page.
- * 
+ *
  * Usage:
  *   node scripts/click.js --selector <css-selector>
  *   node scripts/click.js --text <visible-text>
+ *   node scripts/click.js --index <n>
  *   node scripts/click.js --coords <x,y>
  *   node scripts/click.js help
  */
@@ -19,11 +20,13 @@ function printHelp() {
     'Usage': [
       'node scripts/click.js --selector <css-selector>',
       'node scripts/click.js --text <visible-text>',
+      'node scripts/click.js --index <n>',
       'node scripts/click.js --coords <x,y>'
     ],
     'Options': [
       '--selector <sel>   CSS selector to click',
       '--text <text>      Visible text to click (partial match)',
+      '--index <n>        Element index from snapshot --interactive',
       '--coords <x,y>     Click at coordinates (e.g., 100,200)',
       '--button <btn>     Mouse button: left, right, middle (default: left)',
       '--count <n>        Click count, 2 for double-click (default: 1)',
@@ -33,10 +36,9 @@ function printHelp() {
       '--port <n>         Server port (default: 9222)'
     ],
     'Examples': [
+      'node scripts/click.js --index 5',
       'node scripts/click.js --selector "button.submit"',
-      'node scripts/click.js --selector "#login-btn"',
       'node scripts/click.js --text "Sign In"',
-      'node scripts/click.js --text "Accept" --timeout 10000',
       'node scripts/click.js --coords 100,200',
       'node scripts/click.js --selector ".menu" --button right'
     ]
@@ -46,7 +48,7 @@ function printHelp() {
 async function main() {
   const { command, flags } = parseArgs();
 
-  const hasTarget = flags.selector || flags.text || flags.coords;
+  const hasTarget = flags.selector || flags.text || flags.coords || flags.index !== undefined;
 
   // Show help if explicitly requested OR if no valid arguments provided
   if ((command === 'help' && !hasTarget) || !hasTarget) {
@@ -58,6 +60,7 @@ async function main() {
   const port = getPort(flags);
   const params = {
     selector: flags.selector,
+    index: flags.index !== undefined ? parseInt(flags.index, 10) : undefined,
     text: flags.text,
     coords: flags.coords,
     button: flags.button || 'left',

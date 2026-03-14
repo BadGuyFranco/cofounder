@@ -27,17 +27,10 @@ node --version
 
 ## Step 1: Install Dependencies
 
-Navigate to the Browser Control directory and install:
+Navigate to the tools directory and install:
 
 ```bash
-cd "$(dirname "$(find ~ -path '*/cofounder/tools/Browser Control' -type d 2>/dev/null | head -1)")/cofounder/tools/Browser Control"
-npm install
-```
-
-Or if you know your cofounder path:
-
-```bash
-cd /path/to/cofounder/tools/Browser\ Control
+cd /path/to/cofounder/tools
 npm install
 ```
 
@@ -51,15 +44,16 @@ Playwright needs its own Chromium browser:
 npx playwright install chromium
 ```
 
-This downloads Chromium to `~/.cache/ms-playwright/`. It's separate from any Chrome you have installed.
+This downloads Chromium to `~/.cache/ms-playwright/`. It is separate from any Chrome you have installed.
 
 **Tell the AI when done.**
 
-## Verify Setup
+## Step 3: Verify CLI Scripts
 
 Start a browser session:
 
 ```bash
+cd /path/to/cofounder/tools/Browser\ Control
 node scripts/session.js start
 ```
 
@@ -77,7 +71,32 @@ node scripts/snapshot.js
 
 You should see structured page content in the terminal.
 
-**Setup complete.** Browser Control is ready to use. The browser window will remain open for your use.
+**CLI setup complete.**
+
+## Step 4: Enable MCP (IDE Integration)
+
+MCP gives the AI native `browser_*` tools inside Cursor and Claude Code. This step is optional but recommended.
+
+Check that the MCP config exists in the project:
+
+**For Cursor:** `.cursor/mcp.json` should contain a `playwright` server entry.
+
+**For Claude Code:** `.mcp.json` should contain a `playwright` server entry.
+
+Both files ship with the project. If they are missing, create them with:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": ["tools/Browser Control/start-mcp.js"]
+    }
+  }
+}
+```
+
+Restart your IDE to load the MCP server. After restart, the AI will have `browser_*` tools available alongside the CLI scripts.
 
 ## Troubleshooting
 
@@ -89,19 +108,23 @@ Quick fix: Run `conda activate` first, then retry the command.
 
 ### "Cannot find module 'playwright'"
 
-Run `npm install` in the Browser Control directory.
+Run `npm install` in the `/cofounder/tools/` directory.
 
 ### "Executable doesn't exist" or browser not found
 
 Run `npx playwright install chromium` to download the browser.
 
-### "Browser session not running"
+### "Browser session not running" (CLI)
 
 Start a session first with `node scripts/session.js start`.
 
-### "ECONNREFUSED" errors
+### "ECONNREFUSED" errors (CLI)
 
 The session server isn't running. Start it with `node scripts/session.js start`.
+
+### browser_* tools not available (MCP)
+
+The MCP server is not loaded. Restart your IDE. If that does not help, check the MCP config file exists and contains the playwright entry.
 
 ### Browser opens but scripts timeout
 
@@ -111,7 +134,7 @@ The page may be slow to load. Try increasing timeout:
 node scripts/navigate.js https://example.com --timeout 60000
 ```
 
-### Port already in use
+### Port already in use (CLI)
 
 Another process is using port 9222. Either stop it or use a different port:
 

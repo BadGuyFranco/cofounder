@@ -2,11 +2,12 @@
 
 /**
  * Browser Control - Type
- * 
+ *
  * Type text into elements or press keyboard keys.
- * 
+ *
  * Usage:
  *   node scripts/type.js --selector <sel> --text <text>
+ *   node scripts/type.js --index <n> --text <text>
  *   node scripts/type.js --key <key>
  *   node scripts/type.js help
  */
@@ -17,14 +18,16 @@ function printHelp() {
   showHelp('Browser Control - Type', {
     'Usage': [
       'node scripts/type.js --selector <sel> --text <text>',
+      'node scripts/type.js --index <n> --text <text>',
       'node scripts/type.js --key <key>'
     ],
     'Options': [
       '--selector <sel>   CSS selector of input element',
+      '--index <n>        Element index from snapshot --interactive',
       '--text <text>      Text to type',
       '--key <key>        Single key to press (Enter, Tab, Escape, etc.)',
       '--clear            Clear field before typing',
-      '--delay <ms>       Delay between keystrokes in milliseconds',
+      '--delay <ms>       Delay between keystrokes (types character by character)',
       '--submit           Press Enter after typing',
       '--timeout <ms>     Timeout in milliseconds (default: 5000)',
       '--port <n>         Server port (default: 9222)'
@@ -36,12 +39,12 @@ function printHelp() {
       'F1-F12, Control, Shift, Alt, Meta'
     ],
     'Examples': [
+      'node scripts/type.js --index 3 --text "user@example.com"',
       'node scripts/type.js --selector "#email" --text "user@example.com"',
       'node scripts/type.js --selector "#search" --text "query" --submit',
       'node scripts/type.js --selector "#name" --text "John" --clear',
       'node scripts/type.js --key Enter',
-      'node scripts/type.js --key Tab',
-      'node scripts/type.js --key Escape'
+      'node scripts/type.js --key Tab'
     ]
   });
 }
@@ -51,7 +54,8 @@ async function main() {
 
   // Validate arguments
   const hasKey = flags.key !== undefined;
-  const hasText = flags.selector !== undefined && flags.text !== undefined;
+  const hasTarget = flags.selector !== undefined || flags.index !== undefined;
+  const hasText = hasTarget && flags.text !== undefined;
 
   // Show help if explicitly requested OR if no valid arguments provided
   if (command === 'help' && !hasKey && !hasText) {
@@ -67,6 +71,7 @@ async function main() {
   const port = getPort(flags);
   const params = {
     selector: flags.selector,
+    index: flags.index !== undefined ? parseInt(flags.index, 10) : undefined,
     text: flags.text,
     key: flags.key,
     clear: flags.clear === true,

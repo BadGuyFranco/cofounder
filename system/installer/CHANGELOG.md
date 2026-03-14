@@ -1,5 +1,11 @@
 # What's New in CoFounder
 
+## March 14, 2026
+- **Browser Control** - MCP server mode, snapshot and click reliability improvements, new Ahrefs site guide, updated LinkedIn/PodMatch/Google Sheets site guides.
+- **SEO Expert** - Ahrefs integration via Browser Control for automated backlink and keyword gap analysis when configured.
+- **Transcriber** - Fixed FFmpeg install instruction to use conda instead of Homebrew.
+- **Development standards** - Added runtime environment policy (Miniforge/conda for all system dependencies).
+
 ## March 13, 2026
 - **Design Advisor** - New tool for design quality guidance. Covers typography, color, layout, spatial design, motion, interaction design, responsive design, and UX writing. Includes a web-frontend domain for building frontend components with intentional design choices instead of generic AI aesthetics.
 - **Playbook Author** - Merged improvements from autoresearch experiments: risk-first planning (risks identified in Interrogate before the plan is designed), questions with recommended defaults, measurable completion criteria, token-efficient output, and a tighter playbook template.

@@ -36,6 +36,161 @@ let currentFrame = null; // null = main page, otherwise frame reference
 let dialogMode = 'off'; // 'off', 'accept', 'dismiss', 'prompt'
 let dialogPromptText = '';
 
+// Interactive element index (browser-use inspired)
+let interactiveElements = [];
+
+// Tracked listeners for cleanup
+let networkRequestListener = null;
+let networkResponseListener = null;
+let consoleMessageListener = null;
+let consoleErrorListener = null;
+let dialogListener = null;
+
+/**
+ * Retry wrapper for transient failures (animations, overlays, timing)
+ */
+async function withRetry(fn, { retries = 2, delayMs = 500, label = 'action' } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      const transient = /timeout|intercepted|detached|not visible|target closed/i.test(error.message);
+      if (!transient || attempt === retries) throw error;
+      await new Promise(r => setTimeout(r, delayMs * (attempt + 1)));
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * Check if browser/page is still alive, attempt recovery
+ */
+async function ensurePage() {
+  if (!context) throw new Error('Browser not initialized');
+  try {
+    // Quick health check
+    await page.evaluate(() => true);
+  } catch {
+    // Page is dead, try to recover
+    const pages = context.pages();
+    if (pages.length > 0) {
+      page = pages[pages.length - 1];
+      try {
+        await page.evaluate(() => true);
+        return; // recovered
+      } catch { /* fall through */ }
+    }
+    // Create fresh page
+    page = await context.newPage();
+  }
+}
+
+/**
+ * Extract interactive elements with indices (browser-use inspired)
+ * Returns numbered list of clickable/typeable elements for AI consumption.
+ */
+const INTERACTIVE_EXTRACTION_JS = `(() => {
+  const results = [];
+  const seen = new WeakSet();
+  const QUERY = 'a[href], button, input, textarea, select, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="tab"], [role="menuitem"], [role="switch"], [contenteditable="true"], [tabindex]:not([tabindex="-1"])';
+
+  function addElement(el) {
+    if (seen.has(el)) return;
+    seen.add(el);
+
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 5 || rect.height < 5) return;
+
+    const style = getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') return;
+    if (parseFloat(style.opacity) < 0.1) return;
+
+    const tag = el.tagName.toLowerCase();
+    const rawText = (el.textContent || '').trim().slice(0, 80);
+    const label = el.getAttribute('aria-label') || el.getAttribute('title') || '';
+    const placeholder = el.placeholder || '';
+    const value = (tag === 'input' || tag === 'textarea') ? (el.value || '') : '';
+    const role = el.getAttribute('role') || '';
+
+    let desc = label || rawText || placeholder || value || tag;
+    if (el.type && el.type !== 'submit') desc = '[' + el.type + '] ' + desc;
+    if (tag === 'a' && el.href) {
+      try { desc += ' -> ' + new URL(el.href).pathname; } catch {}
+    }
+
+    // Build selector. Playwright's CSS engine pierces open shadow DOM,
+    // so id/aria-label/name/href selectors work even for shadow DOM elements.
+    let selector;
+    if (el.id) {
+      selector = '#' + CSS.escape(el.id);
+    } else if (el.name && tag !== 'a') {
+      selector = tag + '[name="' + CSS.escape(el.name) + '"]';
+    } else if (label) {
+      selector = '[aria-label="' + CSS.escape(label) + '"]';
+    } else if (tag === 'a' && el.getAttribute('href')) {
+      // Links: use href for reliable targeting
+      const href = el.getAttribute('href');
+      selector = 'a[href="' + CSS.escape(href) + '"]';
+    } else if (rawText && rawText.length > 2 && rawText.length < 60) {
+      // Buttons/elements with unique text: use Playwright's text selector
+      const cleanText = rawText.replace(/"/g, '\\\\"');
+      selector = tag + ':has-text("' + cleanText + '")';
+    } else {
+      const parent = el.parentElement;
+      if (parent) {
+        const sameTag = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+        const nth = sameTag.indexOf(el) + 1;
+        const prefix = parent.id ? '#' + CSS.escape(parent.id) + ' > ' : '';
+        selector = sameTag.length === 1
+          ? prefix + tag
+          : prefix + tag + ':nth-of-type(' + nth + ')';
+      } else {
+        selector = tag;
+      }
+    }
+
+    results.push({
+      index: results.length,
+      tag,
+      type: el.type || role || '',
+      description: desc.slice(0, 120),
+      selector,
+      bbox: { x: Math.round(rect.x), y: Math.round(rect.y), w: Math.round(rect.width), h: Math.round(rect.height) }
+    });
+  }
+
+  // Recursively traverse DOM including open shadow roots
+  function traverse(root) {
+    try {
+      for (const el of root.querySelectorAll(QUERY)) {
+        addElement(el);
+      }
+      // Descend into shadow roots
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) traverse(el.shadowRoot);
+      }
+    } catch {}
+  }
+
+  traverse(document);
+  return results;
+})()`;
+
+/**
+ * Resolve element target from selector or interactive element index
+ */
+function resolveTarget(selector, index) {
+  if (selector) return selector;
+  if (index !== undefined && index !== null) {
+    const el = interactiveElements[index];
+    if (!el) throw new Error(`Element index ${index} not found. Run snapshot --interactive to refresh.`);
+    return el.selector;
+  }
+  return null;
+}
+
 function expandUserPath(filePath) {
   const home = process.env.HOME || process.env.USERPROFILE || homedir();
   if (filePath === '~') {
@@ -71,9 +226,7 @@ async function initBrowser(options = {}) {
  * Handle incoming commands
  */
 async function handleCommand(action, params) {
-  if (!context || !page) {
-    throw new Error('Browser not initialized');
-  }
+  await ensurePage();
 
   switch (action) {
     case 'navigate':
@@ -102,6 +255,8 @@ async function handleCommand(action, params) {
       return await handleConsole(params);
     case 'video':
       return await handleVideo(params);
+    case 'trace':
+      return await handleTrace(params);
     case 'emulate':
       return await handleEmulate(params);
     case 'frame':
@@ -133,6 +288,9 @@ async function handleCommand(action, params) {
 async function handleNavigate(params) {
   const { url, direction, waitUntil = 'load', timeout = 30000 } = params;
 
+  // Clear interactive element index on navigation (elements will change)
+  interactiveElements = [];
+
   if (direction === 'back') {
     await page.goBack({ waitUntil, timeout });
   } else if (direction === 'forward') {
@@ -152,19 +310,24 @@ async function handleNavigate(params) {
  * Click element
  */
 async function handleClick(params) {
-  const { selector, text, coords, button = 'left', clickCount = 1, delay, force = false, timeout = 5000 } = params;
+  const { selector, index, text, coords, button = 'left', clickCount = 1, delay, force = false, timeout = 5000 } = params;
   const frame = getActiveFrame();
 
-  if (selector) {
-    await frame.click(selector, { button, clickCount, delay, force, timeout });
-  } else if (text) {
-    await frame.getByText(text, { exact: false }).click({ button, clickCount, delay, force, timeout });
-  } else if (coords) {
-    const [x, y] = coords.split(',').map(Number);
-    await page.mouse.click(x, y, { button, clickCount, delay });
-  } else {
-    throw new Error('Selector, text, or coords required');
-  }
+  // Resolve target: index, selector, text, or coords
+  const target = resolveTarget(selector, index);
+
+  await withRetry(async () => {
+    if (target) {
+      await frame.click(target, { button, clickCount, delay, force, timeout });
+    } else if (text) {
+      await frame.getByText(text, { exact: false }).click({ button, clickCount, delay, force, timeout });
+    } else if (coords) {
+      const [x, y] = coords.split(',').map(Number);
+      await page.mouse.click(x, y, { button, clickCount, delay });
+    } else {
+      throw new Error('Selector, index, text, or coords required');
+    }
+  }, { label: 'click' });
 
   return await getPageInfo();
 }
@@ -173,28 +336,39 @@ async function handleClick(params) {
  * Type text or press key
  */
 async function handleType(params) {
-  const { selector, text, key, clear = false, delay, submit = false, timeout = 5000 } = params;
+  const { selector, index, text, key, clear = false, delay, submit = false, timeout = 5000 } = params;
   const frame = getActiveFrame();
 
   if (key) {
     await page.keyboard.press(key);
-  } else if (selector && text !== undefined) {
-    if (clear) {
-      await frame.fill(selector, '', { timeout });
-    }
-    await frame.type(selector, text, { delay, timeout });
-    if (submit) {
-      await page.keyboard.press('Enter');
-    }
   } else {
-    throw new Error('Selector and text, or key required');
+    // Resolve target: by index or by selector
+    const target = resolveTarget(selector, index);
+    if (!target || text === undefined) {
+      throw new Error('Selector/index and text, or key required');
+    }
+
+    const locator = frame.locator(target);
+    await withRetry(async () => {
+      if (clear) {
+        await locator.fill('', { timeout });
+      }
+      if (delay) {
+        await locator.pressSequentially(text, { delay, timeout });
+      } else {
+        await locator.fill(text, { timeout });
+      }
+      if (submit) {
+        await page.keyboard.press('Enter');
+      }
+    }, { label: 'type' });
   }
 
   return await getPageInfo();
 }
 
 /**
- * Get page snapshot (accessibility tree or HTML)
+ * Get page snapshot (accessibility tree, HTML, text, or interactive elements)
  */
 async function handleSnapshot(params) {
   const { format = 'accessibility', selector } = params;
@@ -203,13 +377,25 @@ async function handleSnapshot(params) {
   let content;
   try {
     if (format === 'html') {
-      content = selector 
+      content = selector
         ? await frame.locator(selector).innerHTML()
         : await frame.content();
     } else if (format === 'text') {
       content = selector
         ? await frame.locator(selector).innerText()
         : await frame.locator('body').innerText();
+    } else if (format === 'interactive') {
+      // Browser-use inspired: extract interactive elements with indices
+      const elements = await frame.evaluate(INTERACTIVE_EXTRACTION_JS);
+      interactiveElements = elements; // Store for click-by-index / type-by-index
+      const lines = elements.map(el =>
+        `[${el.index}] <${el.tag}> ${el.type ? '(' + el.type + ') ' : ''}${el.description}`
+      );
+      content = lines.length > 0
+        ? lines.join('\n')
+        : '(no interactive elements found)';
+      const info = await getPageInfo();
+      return { ...info, content, elementCount: elements.length };
     } else {
       // Accessibility tree - use ariaSnapshot for structured output
       content = await frame.locator('body').ariaSnapshot();
@@ -447,10 +633,14 @@ async function handleNetwork(params) {
 
   switch (action) {
     case 'start': {
+      // Clean up previous listeners to prevent leaks
+      if (networkRequestListener) page.removeListener('request', networkRequestListener);
+      if (networkResponseListener) page.removeListener('response', networkResponseListener);
+
       networkLog = [];
       isCapturingNetwork = true;
-      
-      page.on('request', (request) => {
+
+      networkRequestListener = (request) => {
         if (isCapturingNetwork) {
           networkLog.push({
             type: 'request',
@@ -459,9 +649,9 @@ async function handleNetwork(params) {
             timestamp: new Date().toISOString()
           });
         }
-      });
-      
-      page.on('response', (response) => {
+      };
+
+      networkResponseListener = (response) => {
         if (isCapturingNetwork) {
           networkLog.push({
             type: 'response',
@@ -470,13 +660,18 @@ async function handleNetwork(params) {
             timestamp: new Date().toISOString()
           });
         }
-      });
-      
+      };
+
+      page.on('request', networkRequestListener);
+      page.on('response', networkResponseListener);
+
       return { message: 'Network capture started', capturing: true };
     }
-    
+
     case 'stop': {
       isCapturingNetwork = false;
+      if (networkRequestListener) { page.removeListener('request', networkRequestListener); networkRequestListener = null; }
+      if (networkResponseListener) { page.removeListener('response', networkResponseListener); networkResponseListener = null; }
       const log = [...networkLog];
       networkLog = [];
       return { message: 'Network capture stopped', requests: log };
@@ -507,10 +702,14 @@ async function handleConsole(params) {
 
   switch (action) {
     case 'start': {
+      // Clean up previous listeners to prevent leaks
+      if (consoleMessageListener) page.removeListener('console', consoleMessageListener);
+      if (consoleErrorListener) page.removeListener('pageerror', consoleErrorListener);
+
       consoleLog = [];
       isCapturingConsole = true;
-      
-      page.on('console', (msg) => {
+
+      consoleMessageListener = (msg) => {
         if (isCapturingConsole) {
           consoleLog.push({
             type: msg.type(),
@@ -518,9 +717,9 @@ async function handleConsole(params) {
             timestamp: new Date().toISOString()
           });
         }
-      });
-      
-      page.on('pageerror', (error) => {
+      };
+
+      consoleErrorListener = (error) => {
         if (isCapturingConsole) {
           consoleLog.push({
             type: 'error',
@@ -528,13 +727,18 @@ async function handleConsole(params) {
             timestamp: new Date().toISOString()
           });
         }
-      });
-      
+      };
+
+      page.on('console', consoleMessageListener);
+      page.on('pageerror', consoleErrorListener);
+
       return { message: 'Console capture started', capturing: true };
     }
-    
+
     case 'stop': {
       isCapturingConsole = false;
+      if (consoleMessageListener) { page.removeListener('console', consoleMessageListener); consoleMessageListener = null; }
+      if (consoleErrorListener) { page.removeListener('pageerror', consoleErrorListener); consoleErrorListener = null; }
       const log = [...consoleLog];
       consoleLog = [];
       return { message: 'Console capture stopped', messages: log };
@@ -547,29 +751,60 @@ async function handleConsole(params) {
 
 /**
  * Video recording
+ * Note: Video requires context-level configuration at launch time.
+ * For session recording, use tracing instead (trace action).
  */
 async function handleVideo(params) {
   const { action, outputDir } = params;
 
-  // Note: Video recording requires context-level configuration
-  // This is a simplified implementation that provides guidance
-  
   if (action === 'start') {
-    return { 
-      message: 'Video recording requires restarting session with video enabled.',
-      hint: 'Use: node scripts/session.js restart --video-dir ' + outputDir,
-      supported: false
-    };
-  }
-  
-  if (action === 'stop') {
     return {
-      message: 'No recording in progress.',
-      supported: false
+      message: 'Video recording requires restarting session with video enabled. For session recording, use the trace action instead.',
+      hint: 'Trace: node scripts/session.js (then use trace start/stop)',
+      alternative: 'trace'
     };
   }
-  
+
+  if (action === 'stop') {
+    return { message: 'No recording in progress. Use trace action for session recording.' };
+  }
+
   throw new Error(`Unknown video action: ${action}`);
+}
+
+/**
+ * Playwright tracing (session recording for debugging)
+ */
+let isTracing = false;
+async function handleTrace(params) {
+  const { action, output: outputPath } = params;
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  if (action === 'start') {
+    if (isTracing) return { message: 'Tracing already active' };
+    await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
+    isTracing = true;
+    return { message: 'Tracing started. Actions will be recorded.' };
+  }
+
+  if (action === 'stop') {
+    if (!isTracing) return { message: 'No tracing active' };
+    const tracePath = outputPath
+      ? expandUserPath(outputPath)
+      : path.join(process.cwd(), `trace-${Date.now()}.zip`);
+    const dir = path.dirname(tracePath);
+    await fs.mkdir(dir, { recursive: true });
+    await context.tracing.stop({ path: tracePath });
+    isTracing = false;
+    return { message: 'Trace saved', file: tracePath, hint: 'View with: npx playwright show-trace ' + tracePath };
+  }
+
+  if (action === 'status') {
+    return { tracing: isTracing };
+  }
+
+  throw new Error(`Unknown trace action: ${action}. Use start, stop, or status.`);
 }
 
 /**
@@ -938,45 +1173,45 @@ async function handleDialog(params) {
   const { mode, text } = params;
 
   if (mode === 'status') {
-    return { 
-      mode: dialogMode, 
-      promptText: dialogMode === 'prompt' ? dialogPromptText : undefined 
+    return {
+      mode: dialogMode,
+      promptText: dialogMode === 'prompt' ? dialogPromptText : undefined
     };
   }
 
-  // Remove existing listener if any
-  page.removeAllListeners('dialog');
+  // Remove only our tracked listener (not all dialog listeners)
+  if (dialogListener) {
+    page.removeListener('dialog', dialogListener);
+    dialogListener = null;
+  }
 
   if (mode === 'accept') {
     dialogMode = 'accept';
-    page.on('dialog', async dialog => {
-      await dialog.accept();
-    });
+    dialogListener = async dialog => { await dialog.accept(); };
+    page.on('dialog', dialogListener);
     return { message: 'Auto-accepting all dialogs', mode: dialogMode };
   }
-  
+
   if (mode === 'dismiss') {
     dialogMode = 'dismiss';
-    page.on('dialog', async dialog => {
-      await dialog.dismiss();
-    });
+    dialogListener = async dialog => { await dialog.dismiss(); };
+    page.on('dialog', dialogListener);
     return { message: 'Auto-dismissing all dialogs', mode: dialogMode };
   }
-  
+
   if (mode === 'prompt') {
     dialogMode = 'prompt';
     dialogPromptText = text || '';
-    page.on('dialog', async dialog => {
-      await dialog.accept(dialogPromptText);
-    });
+    dialogListener = async dialog => { await dialog.accept(dialogPromptText); };
+    page.on('dialog', dialogListener);
     return { message: `Auto-accepting dialogs with text: "${dialogPromptText}"`, mode: dialogMode };
   }
-  
+
   if (mode === 'off') {
     dialogMode = 'off';
     return { message: 'Dialog auto-handling disabled', mode: dialogMode };
   }
-  
+
   throw new Error(`Unknown dialog mode: ${mode}`);
 }
 
