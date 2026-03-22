@@ -16,7 +16,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname, extname } from 'path';
 
 const { marked } = await import('marked');
-const puppeteer = (await import('puppeteer')).default;
+const { chromium } = await import('playwright');
 
 // html-docx-js is CommonJS, need dynamic import
 const htmlDocx = await import('html-docx-js').then(m => m.default || m);
@@ -83,14 +83,14 @@ async function createWord(html, outputPath) {
 }
 
 /**
- * Create PDF from HTML using Puppeteer
+ * Create PDF from HTML using Playwright (chromium)
  */
 async function createPdf(html, outputPath) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await chromium.launch();
   const page = await browser.newPage();
-  
-  await page.setContent(html, { waitUntil: 'networkidle0' });
-  
+
+  await page.setContent(html, { waitUntil: 'networkidle' });
+
   await page.pdf({
     path: outputPath,
     format: 'Letter',
@@ -102,7 +102,7 @@ async function createPdf(html, outputPath) {
     },
     printBackground: true
   });
-  
+
   await browser.close();
 }
 

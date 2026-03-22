@@ -262,7 +262,7 @@ async function updateField(moduleName, fieldName, args) {
   }
   
   const endpoint = `/settings/fields/${existingField.id}?module=${moduleName}`;
-  const data = await apiRequest('PUT', endpoint, token, body, { region: config.region });
+  const data = await apiRequest('PATCH', endpoint, token, body, { region: config.region });
   
   if (args.verbose) {
     console.log(JSON.stringify(data, null, 2));

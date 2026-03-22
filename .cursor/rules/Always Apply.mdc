@@ -29,11 +29,15 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Create or convert documents (Word, PDF, Google Docs) from other formats | `tools/Documentor/` |
 | Google Workspace (Docs, Sheets, Slides, Drive, Gmail, Calendar, YouTube) | `connectors/google/` |
 | Connect to external platforms | `connectors/` |
-| Design quality, UI aesthetics, typography, color, layout | `tools/Design Advisor/` |
+| Create visual designs, design systems, color palettes, components, wireframes | `tools/Designer/` |
+| Review design quality, audit UI aesthetics, critique typography, color, layout | `tools/Design Advisor/` |
 | Build web apps, SaaS, or full-stack projects | `standards/Web Apps/` |
 | Create or edit tools | `.cursor/rules/Development.mdc` |
 | Create or edit connectors | `.cursor/rules/Development.mdc` |
 | Set up a secondary voice | `tools/Content Author/VoiceSetup.md` |
+| Build or improve CoFounder itself | `infrastructure/AGENTS.md` |
+| What should we work on next? | `infrastructure/build/PRIORITIES.md` |
+| Architecture decisions or ADRs | `infrastructure/decisions/README.md` |
 
 ### Invoke by name only
 
@@ -103,3 +107,11 @@ Before deleting content, major rewrites, or restructuring directories, archive f
 - Run commands yourself; never show terminal commands or ask the user to run them
 - Scripts: Node.js preferred.
 - Before editing AGENTS.md or cursor rules: Load and follow `Prompt Standards.mdc`
+
+**Guard rails:**
+- Never modify working code to make a test pass. If a test fails, it found a problem. Report it; don't "fix" it by simplifying the thing being tested.
+- Direction-of-fix checkpoint: before applying any fix, ask "Am I changing the thing that is broken, or changing something correct to accommodate a problem elsewhere?" Fixes flow toward the root cause, not away from it.
+- Blast radius check: before modifying any type, interface, dependency, export, or behavior, identify what consumes it. If you cannot name the consumers, you have not looked hard enough.
+- Distinguish bugs from missing infrastructure. A bug is code that exists but behaves incorrectly. Missing infrastructure is code that does not exist yet. Report gaps; do not bridge them by degrading a component.
+
+**Build sessions:** For CoFounder development sessions, read `infrastructure/build/AGENTS.md` for the full operational playbook (session instincts, session modes, startup/end protocols, dispatch rules).

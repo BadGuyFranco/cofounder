@@ -1,4 +1,4 @@
-import { loadConfig, apiRequest, paginate, parseArgs, output, outputError } from './utils.js';
+import { initScript, apiRequest, paginate, output, outputError } from './utils.js';
 
 function showHelp() {
   console.log(`
@@ -12,9 +12,12 @@ Commands:
   create                      Create a new customer
   update <id>                 Update a customer
   delete <id>                 Delete a customer
+  accounts                    List configured Stripe accounts
   help                        Show this help
 
 Options:
+  --account <name>            Use specific Stripe account
+  --mode <test|live>          Use test or live keys (default: test)
   --email <email>             Customer email
   --name <name>               Customer name
   --description <text>        Customer description
@@ -23,20 +26,22 @@ Options:
 
 Examples:
   node scripts/customers.js list
+  node scripts/customers.js list --mode live
   node scripts/customers.js get cus_abc123
   node scripts/customers.js get --email user@example.com
   node scripts/customers.js create --email user@example.com --name "Jane Doe"
   node scripts/customers.js update cus_abc123 --name "Jane Smith"
   node scripts/customers.js delete cus_abc123
+  node scripts/customers.js list --account business --mode live
 `);
 }
 
-async function list(flags, cfg) {
+async function list(args, cfg) {
   const params = {};
-  if (flags.email) params.email = flags.email;
-  if (flags.limit) params.limit = flags.limit;
+  if (args.email) params.email = args.email;
+  if (args.limit) params.limit = args.limit;
 
-  if (flags.limit) {
+  if (args.limit) {
     const data = await apiRequest('/customers', { params }, cfg);
     output(data.data);
   } else {
@@ -45,59 +50,57 @@ async function list(flags, cfg) {
   }
 }
 
-async function get(idOrFlags, flags, cfg) {
-  if (flags.email) {
-    const data = await apiRequest('/customers', { params: { email: flags.email, limit: 1 } }, cfg);
+async function get(id, args, cfg) {
+  if (args.email) {
+    const data = await apiRequest('/customers', { params: { email: args.email, limit: 1 } }, cfg);
     const customer = data.data[0];
-    if (!customer) throw new Error(`No customer found with email: ${flags.email}`);
+    if (!customer) throw new Error(`No customer found with email: ${args.email}`);
     output(customer);
   } else {
-    if (!idOrFlags) throw new Error('Customer ID required. Usage: get <id>');
-    const data = await apiRequest(`/customers/${idOrFlags}`, {}, cfg);
+    if (!id) throw new Error('Customer ID required. Usage: get <id>');
+    const data = await apiRequest(`/customers/${id}`, {}, cfg);
     output(data);
   }
 }
 
-async function create(flags, cfg) {
-  if (!flags.email) throw new Error('--email required');
+async function create(args, cfg) {
+  if (!args.email) throw new Error('--email required');
   const body = {};
-  if (flags.email) body.email = flags.email;
-  if (flags.name) body.name = flags.name;
-  if (flags.description) body.description = flags.description;
-  if (flags.phone) body.phone = flags.phone;
+  if (args.email) body.email = args.email;
+  if (args.name) body.name = args.name;
+  if (args.description) body.description = args.description;
+  if (args.phone) body.phone = args.phone;
 
   const data = await apiRequest('/customers', { method: 'POST', body }, cfg);
-  console.log(`✓ Customer created: ${data.id}`);
+  console.log(`Customer created: ${data.id}`);
   output(data);
 }
 
-async function update(id, flags, cfg) {
+async function update(id, args, cfg) {
   if (!id) throw new Error('Customer ID required. Usage: update <id>');
   const body = {};
-  if (flags.email) body.email = flags.email;
-  if (flags.name) body.name = flags.name;
-  if (flags.description) body.description = flags.description;
-  if (flags.phone) body.phone = flags.phone;
+  if (args.email) body.email = args.email;
+  if (args.name) body.name = args.name;
+  if (args.description) body.description = args.description;
+  if (args.phone) body.phone = args.phone;
 
   const data = await apiRequest(`/customers/${id}`, { method: 'POST', body }, cfg);
-  console.log(`✓ Customer updated: ${data.id}`);
+  console.log(`Customer updated: ${data.id}`);
   output(data);
 }
 
 async function del(id, cfg) {
   if (!id) throw new Error('Customer ID required. Usage: delete <id>');
   const data = await apiRequest(`/customers/${id}`, { method: 'DELETE' }, cfg);
-  console.log(`✓ Customer deleted: ${id}`);
+  console.log(`Customer deleted: ${id}`);
   output(data);
 }
 
 async function main() {
-  const args = parseArgs();
-  const command = args._[0] || 'help';
+  const init = initScript(showHelp);
+  if (!init) return;
 
-  if (command === 'help') { showHelp(); return; }
-
-  const cfg = loadConfig();
+  const { config: cfg, args, command } = init;
 
   try {
     switch (command) {

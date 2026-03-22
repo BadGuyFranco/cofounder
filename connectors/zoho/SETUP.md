@@ -150,6 +150,18 @@ node scripts/auth.js flow --org subsidiary
 - Copy the URL from the terminal
 - Paste it into your browser manually
 
+## Adding Mail and Calendar Access
+
+The default OAuth flow requests CRM scopes only. To also access Zoho Mail and Calendar, re-run the flow with additional scopes:
+
+```bash
+node scripts/auth.js flow --org <name> --scopes "ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.org.ALL,ZohoCRM.users.ALL,ZohoCRM.bulk.ALL,ZohoCRM.coql.READ,ZohoMail.messages.ALL,ZohoMail.folders.READ,ZohoMail.accounts.READ,ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL"
+```
+
+This replaces the existing token with one that has access to all three products. The refresh token will also cover the new scopes going forward.
+
+**Note:** The Zoho API Console client must have the correct scopes allowed. If you get a scope error, edit the client in api-console.zoho.com and add the required scopes.
+
 ## Notes
 
 - Access tokens expire after 60 minutes but auto-refresh
@@ -157,3 +169,4 @@ node scripts/auth.js flow --org subsidiary
 - Each Zoho organization requires separate authentication
 - Client ID/Secret are shared; tokens are per-organization
 - Edition is stored per organization and used to guide available tooling
+- CRM, Mail, and Calendar share the same OAuth token when scopes are combined

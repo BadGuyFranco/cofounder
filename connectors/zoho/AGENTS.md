@@ -1,11 +1,13 @@
-# Zoho CRM Connector
+# Zoho Connector
 
-Comprehensive access to Zoho CRM: records, automation, pipelines, and organization management.
+Comprehensive access to Zoho CRM, Mail, and Calendar via shared OAuth authentication.
 
 ## Quick Start
 
 ```bash
-node scripts/auth.js test --org mycompany  # Test connection
+node scripts/auth.js test --org mycompany  # Test CRM connection
+node scripts/mail.js accounts              # List mail accounts
+node scripts/calendar.js calendars         # List calendars
 ```
 
 If you get "Cannot find module", run `npm install` first.
@@ -23,6 +25,8 @@ If you get "Cannot find module", run `npm install` first.
 
 ## Scripts
 
+### CRM
+
 | Script | Purpose |
 |--------|---------|
 | `auth.js` | OAuth setup, token management, multi-org |
@@ -39,6 +43,18 @@ If you get "Cannot find module", run `npm install` first.
 | `org.js` | Organization details and settings |
 | `tags.js` | Tag management |
 | `bulk.js` | Bulk import/export operations |
+
+### Mail
+
+| Script | Purpose |
+|--------|---------|
+| `mail.js` | Accounts, folders, messages, send, search, labels |
+
+### Calendar
+
+| Script | Purpose |
+|--------|---------|
+| `calendar.js` | Calendars, events, create/update/delete |
 
 Run any script with `help` for full command syntax:
 ```bash

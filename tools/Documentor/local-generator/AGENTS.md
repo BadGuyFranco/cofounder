@@ -32,7 +32,7 @@ cd local-generator
 npm install
 ```
 
-**Note:** Puppeteer downloads Chromium (~300MB) on first install.
+**Note:** Playwright downloads browser binaries (~300MB) on first install. Run `npx playwright install chromium` to install only Chromium.
 
 See **`requirements.txt`** for system dependencies (pandoc for format conversion).
 
@@ -147,7 +147,7 @@ The HTML intermediate format is not exposed; it's used internally for consistent
 |---------|---------|
 | `marked` | Markdown to HTML conversion |
 | `html-docx-js` | HTML to Word conversion |
-| `puppeteer` | HTML to PDF rendering |
+| `playwright` | HTML to PDF rendering (Chromium) |
 | `mammoth` | Word text extraction |
 | `pdf-parse` | PDF text extraction |
 
@@ -179,10 +179,10 @@ For complex document requirements, use Google Workspace or Microsoft 365 sub-too
 cd local-generator && npm install
 ```
 
-**Puppeteer/Chromium issues:**
+**Playwright/Chromium issues:**
 - Ensure sufficient disk space (~300MB)
-- On Linux, may need additional system dependencies
-- Try: `npx puppeteer browsers install chrome`
+- On Linux, may need additional system dependencies: `npx playwright install-deps chromium`
+- Try: `npx playwright install chromium`
 
 **Empty or corrupted output:**
 - Verify input markdown is valid
@@ -190,6 +190,6 @@ cd local-generator && npm install
 - Try a simpler test document first
 
 **PDF rendering issues:**
-- Puppeteer uses headless Chrome; complex CSS may render differently
+- Playwright uses headless Chromium; complex CSS may render differently
 - Tables and code blocks should work; complex layouts may not
 

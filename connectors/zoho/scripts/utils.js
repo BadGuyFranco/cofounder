@@ -61,6 +61,27 @@ const ZOHO_REGIONS = {
   }
 };
 
+// Product-specific API base URLs by region
+const ZOHO_MAIL_HOSTS = {
+  'us': 'https://mail.zoho.com',
+  'eu': 'https://mail.zoho.eu',
+  'in': 'https://mail.zoho.in',
+  'au': 'https://mail.zoho.com.au',
+  'jp': 'https://mail.zoho.jp',
+  'cn': 'https://mail.zoho.com.cn',
+  'ca': 'https://mail.zohocloud.ca'
+};
+
+const ZOHO_CALENDAR_HOSTS = {
+  'us': 'https://calendar.zoho.com',
+  'eu': 'https://calendar.zoho.eu',
+  'in': 'https://calendar.zoho.in',
+  'au': 'https://calendar.zoho.com.au',
+  'jp': 'https://calendar.zoho.jp',
+  'cn': 'https://calendar.zoho.com.cn',
+  'ca': 'https://calendar.zohocloud.ca'
+};
+
 const DEFAULT_REGION = 'us';
 const API_VERSION = 'v8';
 const SUPPORTED_EDITIONS = ['standard', 'professional', 'enterprise', 'ultimate'];
@@ -640,10 +661,35 @@ export function outputError(error) {
   process.exit(1);
 }
 
-export { 
-  MEMORY_DIR, 
-  ZOHO_REGIONS, 
-  DEFAULT_REGION, 
+/**
+ * Get product-specific API base URL for a region.
+ * @param {'mail'|'calendar'} product - Zoho product
+ * @param {string} region - Region code
+ * @returns {string} Base URL (no trailing slash)
+ */
+export function getProductBaseUrl(product, region = DEFAULT_REGION) {
+  const hosts = { mail: ZOHO_MAIL_HOSTS, calendar: ZOHO_CALENDAR_HOSTS };
+  const map = hosts[product];
+  if (!map) {
+    console.error(`Error: Unknown product "${product}".`);
+    console.error('Valid products: ' + Object.keys(hosts).join(', '));
+    process.exit(1);
+  }
+  const url = map[region.toLowerCase()];
+  if (!url) {
+    console.error(`Error: Unknown region "${region}" for ${product}.`);
+    console.error('Valid regions: ' + Object.keys(map).join(', '));
+    process.exit(1);
+  }
+  return url;
+}
+
+export {
+  MEMORY_DIR,
+  ZOHO_REGIONS,
+  ZOHO_MAIL_HOSTS,
+  ZOHO_CALENDAR_HOSTS,
+  DEFAULT_REGION,
   API_VERSION,
   SUPPORTED_EDITIONS,
   DEFAULT_EDITION

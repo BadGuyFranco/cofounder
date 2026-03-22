@@ -1,4 +1,4 @@
-import { loadConfig, apiRequest, paginate, parseArgs, output, outputError } from './utils.js';
+import { initScript, apiRequest, paginate, output, outputError } from './utils.js';
 
 function showHelp() {
   console.log(`
@@ -19,9 +19,12 @@ Commands:
   create-price                Create a price for a product
   archive-price <price-id>    Archive a price
 
+  accounts                    List configured Stripe accounts
   help                        Show this help
 
 Options:
+  --account <name>            Use specific Stripe account
+  --mode <test|live>          Use test or live keys (default: test)
   --name <name>               Product name
   --description <text>        Product description
   --product <id>              Product ID (for create-price)
@@ -33,6 +36,7 @@ Options:
 
 Examples:
   node scripts/products.js list
+  node scripts/products.js list --mode live
   node scripts/products.js create --name "Pro Plan" --description "For professionals"
   node scripts/products.js prices
   node scripts/products.js create-price --product prod_abc --amount 2000 --interval month
@@ -40,8 +44,8 @@ Examples:
 `);
 }
 
-async function listProducts(flags, cfg) {
-  const params = { active: flags.inactive ? undefined : 'true' };
+async function listProducts(args, cfg) {
+  const params = { active: args.inactive ? undefined : 'true' };
   const products = await paginate('/products', params, cfg);
   const simplified = products.map(p => ({
     id: p.id,
@@ -59,36 +63,36 @@ async function getProduct(id, cfg) {
   output(data);
 }
 
-async function createProduct(flags, cfg) {
-  if (!flags.name) throw new Error('--name required');
-  const body = { name: flags.name };
-  if (flags.description) body.description = flags.description;
+async function createProduct(args, cfg) {
+  if (!args.name) throw new Error('--name required');
+  const body = { name: args.name };
+  if (args.description) body.description = args.description;
 
   const data = await apiRequest('/products', { method: 'POST', body }, cfg);
-  console.log(`✓ Product created: ${data.id} (${data.name})`);
+  console.log(`Product created: ${data.id} (${data.name})`);
   output(data);
 }
 
-async function updateProduct(id, flags, cfg) {
+async function updateProduct(id, args, cfg) {
   if (!id) throw new Error('Product ID required. Usage: update <id>');
   const body = {};
-  if (flags.name) body.name = flags.name;
-  if (flags.description) body.description = flags.description;
+  if (args.name) body.name = args.name;
+  if (args.description) body.description = args.description;
 
   const data = await apiRequest(`/products/${id}`, { method: 'POST', body }, cfg);
-  console.log(`✓ Product updated: ${data.id}`);
+  console.log(`Product updated: ${data.id}`);
   output(data);
 }
 
 async function archiveProduct(id, cfg) {
   if (!id) throw new Error('Product ID required. Usage: archive <id>');
   const data = await apiRequest(`/products/${id}`, { method: 'POST', body: { active: 'false' } }, cfg);
-  console.log(`✓ Product archived: ${id}`);
+  console.log(`Product archived: ${id}`);
   output(data);
 }
 
-async function listPrices(productId, flags, cfg) {
-  const params = { active: flags.inactive ? undefined : 'true' };
+async function listPrices(productId, args, cfg) {
+  const params = { active: args.inactive ? undefined : 'true' };
   if (productId) params.product = productId;
   const prices = await paginate('/prices', params, cfg);
   const simplified = prices.map(p => ({
@@ -110,48 +114,46 @@ async function getPrice(id, cfg) {
   output(data);
 }
 
-async function createPrice(flags, cfg) {
-  if (!flags.product) throw new Error('--product required');
-  if (flags.amount === undefined) throw new Error('--amount required (in cents, e.g. 2000 for $20)');
+async function createPrice(args, cfg) {
+  if (!args.product) throw new Error('--product required');
+  if (args.amount === undefined) throw new Error('--amount required (in cents, e.g. 2000 for $20)');
 
   const body = {
-    product: flags.product,
-    unit_amount: flags.amount,
-    currency: flags.currency || 'usd',
+    product: args.product,
+    unit_amount: args.amount,
+    currency: args.currency || 'usd',
   };
 
-  if (flags.interval) {
-    body['recurring[interval]'] = flags.interval;
+  if (args.interval) {
+    body['recurring[interval]'] = args.interval;
   }
 
-  if (flags['lookup-key']) {
-    body.lookup_key = flags['lookup-key'];
+  if (args['lookup-key']) {
+    body.lookup_key = args['lookup-key'];
     body.transfer_lookup_key = 'true';
   }
 
-  if (flags.nickname) body.nickname = flags.nickname;
+  if (args.nickname) body.nickname = args.nickname;
 
   const data = await apiRequest('/prices', { method: 'POST', body }, cfg);
   const amount = data.unit_amount ? `$${(data.unit_amount / 100).toFixed(2)}` : '$0.00';
   const recur = data.recurring ? `/${data.recurring.interval}` : '';
-  console.log(`✓ Price created: ${data.id} (${amount}${recur})`);
+  console.log(`Price created: ${data.id} (${amount}${recur})`);
   output(data);
 }
 
 async function archivePrice(id, cfg) {
   if (!id) throw new Error('Price ID required. Usage: archive-price <id>');
   const data = await apiRequest(`/prices/${id}`, { method: 'POST', body: { active: 'false' } }, cfg);
-  console.log(`✓ Price archived: ${id}`);
+  console.log(`Price archived: ${id}`);
   output(data);
 }
 
 async function main() {
-  const args = parseArgs();
-  const command = args._[0] || 'help';
+  const init = initScript(showHelp);
+  if (!init) return;
 
-  if (command === 'help') { showHelp(); return; }
-
-  const cfg = loadConfig();
+  const { config: cfg, args, command } = init;
 
   try {
     switch (command) {

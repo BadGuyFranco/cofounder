@@ -1,19 +1,16 @@
-# Zoho CRM Connector
+# Zoho Connector
 
-Connect to Zoho CRM via their v8 REST API.
+Connect to Zoho CRM, Mail, and Calendar via their REST APIs.
 
 ## Status
 
-Active - Full CRM functionality including records, automation, pipelines, and organization management.
+Active - CRM (v8), Mail, and Calendar functionality with shared OAuth authentication.
 
 ## Features
 
-- Complete CRUD operations for all CRM modules
-- Workflow and blueprint automation
-- Deal pipeline management
-- Lead/contact scoring rules
-- Webhook integrations
-- Custom fields and modules
+- **CRM:** Complete CRUD for all modules, workflow automation, blueprints, pipelines, scoring, webhooks, custom fields/modules
+- **Mail:** List accounts, browse folders, read/send/search/move/trash messages, manage labels
+- **Calendar:** List calendars, browse/create/update/delete events, date range queries
 - Multi-organization support
 - All Zoho data center regions
 
@@ -25,6 +22,8 @@ See `SETUP.md` for configuration instructions.
 
 See `AGENTS.md` for AI agent instructions.
 
-## API Reference
+## API References
 
-https://www.zoho.com/crm/developer/docs/api/v8/
+- CRM API v8: https://www.zoho.com/crm/developer/docs/api/v8/
+- Mail API: https://www.zoho.com/mail/help/api/
+- Calendar API: https://www.zoho.com/calendar/help/api/

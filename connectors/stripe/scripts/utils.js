@@ -3,44 +3,96 @@ import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 ensureDeps(import.meta.url);
 
 import { join, dirname } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync, statSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 const dotenv = (await import('dotenv')).default;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const memoryEnvPath = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'stripe', '.env');
-const localEnvPath = join(__dirname, '..', '.env');
-
+const MEMORY_DIR = join(__dirname, '..', '..', '..', '..', 'memory', 'connectors', 'stripe');
+const LOCAL_DIR = join(__dirname, '..');
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export function loadConfig() {
-  if (existsSync(memoryEnvPath)) {
-    dotenv.config({ path: memoryEnvPath });
-  } else if (existsSync(localEnvPath)) {
-    dotenv.config({ path: localEnvPath });
-  } else {
-    console.error('Error: No .env file found.');
-    console.error('Create /memory/connectors/stripe/.env with your credentials.');
-    console.error('See SETUP.md for instructions.');
+function findEnvPath(account) {
+  if (account) {
+    const memAcct = join(MEMORY_DIR, account, '.env');
+    if (existsSync(memAcct)) return memAcct;
+    const localAcct = join(LOCAL_DIR, account, '.env');
+    if (existsSync(localAcct)) return localAcct;
+    console.error(`Error: No .env found for account "${account}".`);
+    const available = listAccounts();
+    if (available.length) console.error(`Available accounts: ${available.join(', ')}`);
     process.exit(1);
   }
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('Error: STRIPE_SECRET_KEY not found in .env');
+  const memDefault = join(MEMORY_DIR, '.env');
+  if (existsSync(memDefault)) return memDefault;
+  const localDefault = join(LOCAL_DIR, '.env');
+  if (existsSync(localDefault)) return localDefault;
+
+  const accounts = listAccounts();
+  if (accounts.length === 1) {
+    return findEnvPath(accounts[0]);
+  }
+  if (accounts.length > 1) {
+    console.error('Error: Multiple accounts found. Use --account <name> to select one.');
+    console.error(`Available accounts: ${accounts.join(', ')}`);
+    process.exit(1);
+  }
+
+  console.error('Error: No .env file found.');
+  console.error('Create /memory/connectors/stripe/.env with your credentials.');
+  console.error('See SETUP.md for instructions.');
+  process.exit(1);
+}
+
+export function listAccounts() {
+  const accounts = [];
+  for (const dir of [MEMORY_DIR, LOCAL_DIR]) {
+    if (!existsSync(dir)) continue;
+    for (const entry of readdirSync(dir)) {
+      if (entry.startsWith('.') || entry === 'node_modules' || entry === 'scripts') continue;
+      const full = join(dir, entry);
+      if (statSync(full).isDirectory() && existsSync(join(full, '.env'))) {
+        if (!accounts.includes(entry)) accounts.push(entry);
+      }
+    }
+  }
+  return accounts;
+}
+
+export function loadConfig(account, mode) {
+  const envPath = findEnvPath(account);
+  dotenv.config({ path: envPath, override: true });
+
+  const resolvedMode = mode || process.env.STRIPE_DEFAULT_MODE || 'test';
+  const isLive = resolvedMode === 'live';
+
+  const secretKey = isLive
+    ? (process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY)
+    : (process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_SECRET_KEY);
+
+  const publishableKey = isLive
+    ? (process.env.STRIPE_LIVE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY)
+    : (process.env.STRIPE_TEST_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY);
+
+  if (!secretKey) {
+    const prefix = isLive ? 'STRIPE_LIVE_SECRET_KEY' : 'STRIPE_TEST_SECRET_KEY';
+    console.error(`Error: No secret key found for ${resolvedMode} mode.`);
+    console.error(`Set ${prefix} (or STRIPE_SECRET_KEY) in your .env file.`);
     process.exit(1);
   }
 
   return {
-    secretKey: process.env.STRIPE_SECRET_KEY,
-    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
+    secretKey,
+    publishableKey: publishableKey || null,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
+    mode: resolvedMode,
+    account: account || 'default',
   };
 }
 
-// Flatten nested object to Stripe's form-encoded format
-// e.g. { metadata: { key: 'val' } } -> { 'metadata[key]': 'val' }
 export function flattenParams(obj, prefix = '') {
   const result = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -143,6 +195,31 @@ export function parseArgs(argv = process.argv.slice(2)) {
   }
 
   return { _: positional, ...flags };
+}
+
+export function initScript(showHelp) {
+  const args = parseArgs();
+  const command = args._[0] || 'help';
+
+  if (command === 'help') {
+    showHelp();
+    return null;
+  }
+
+  if (command === 'accounts') {
+    const accounts = listAccounts();
+    if (!accounts.length) {
+      console.log('No named accounts configured.');
+      console.log('Using default .env at /memory/connectors/stripe/.env');
+    } else {
+      console.log('Configured accounts:');
+      accounts.forEach(a => console.log(`  ${a}`));
+    }
+    return null;
+  }
+
+  const cfg = loadConfig(args.account, args.mode);
+  return { config: cfg, args, command };
 }
 
 export function output(data) {

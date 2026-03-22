@@ -57,7 +57,26 @@ const AVAILABLE_SCOPES = {
   // Other
   'ZohoCRM.notifications.ALL': 'Notification access',
   'ZohoCRM.mass_update.ALL': 'Mass update operations',
-  'ZohoCRM.files.ALL': 'File attachments access'
+  'ZohoCRM.files.ALL': 'File attachments access',
+
+  // Zoho Mail — User
+  'ZohoMail.messages.ALL': 'Full access to mail messages (read, send, move, delete)',
+  'ZohoMail.folders.ALL': 'Full access to mail folders (create, rename, delete)',
+  'ZohoMail.accounts.ALL': 'Full access to mail account settings',
+  'ZohoMail.tags.ALL': 'Full access to mail labels/tags',
+
+  // Zoho Mail — Admin
+  'ZohoMail.organization.accounts.ALL': 'Admin: manage users, aliases, passwords',
+  'ZohoMail.organization.domains.ALL': 'Admin: manage domains',
+  'ZohoMail.organization.groups.ALL': 'Admin: manage groups and mailing lists',
+  'ZohoMail.organization.policy.ALL': 'Admin: manage mail policies',
+  'ZohoMail.organization.subscriptions.ALL': 'Admin: view storage and subscription details',
+  'ZohoMail.organization.spam.ALL': 'Admin: manage spam settings',
+  'ZohoMail.organization.audit.ALL': 'Admin: view audit logs',
+
+  // Zoho Calendar
+  'ZohoCalendar.calendar.ALL': 'Full access to calendars',
+  'ZohoCalendar.event.ALL': 'Full access to calendar events'
 };
 
 // Default scopes for full CRM access

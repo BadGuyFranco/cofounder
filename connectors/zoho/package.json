@@ -1,7 +1,7 @@
 {
   "name": "zoho-connector",
   "version": "1.0.0",
-  "description": "Zoho CRM connector for CoFounder",
+  "description": "Zoho CRM, Mail, and Calendar connector for CoFounder",
   "type": "module",
   "scripts": {
     "test": "node scripts/auth.js status"

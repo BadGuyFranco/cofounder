@@ -10,7 +10,7 @@
   "dependencies": {
     "marked": "^12.0.0",
     "html-docx-js": "^0.3.1",
-    "puppeteer": "^22.0.0",
+    "playwright": "^1.50.0",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1"
   }

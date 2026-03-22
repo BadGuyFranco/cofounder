@@ -1,4 +1,4 @@
-# Zoho CRM Connector Capabilities
+# Zoho Connector Capabilities
 
 What this connector can do for you.
 
@@ -243,6 +243,51 @@ The v8 API returns and expects `status` as an object, not a string:
 
 The `delete_schedule_action` field is required when deactivating a workflow. Set to `false` to preserve scheduled actions, `true` to cancel pending scheduled actions.
 
+## Zoho Mail
+
+All mail operations use `mail.js`. Requires OAuth scopes: `ZohoMail.messages.ALL`, `ZohoMail.folders.READ`, `ZohoMail.accounts.READ`.
+
+### Mail Accounts
+
+- List all mail accounts linked to the authenticated user
+- Get account IDs required by all other mail commands
+
+### Folders
+
+- List all folders for a mail account (Inbox, Sent, Drafts, Trash, custom folders)
+- View folder IDs, paths, unread counts, and total message counts
+
+### Messages
+
+- List messages in a folder with pagination (limit, start offset)
+- Read full message content (subject, from, to, cc, body text)
+- Send emails with to, cc, bcc, subject, and content
+- Search messages by keyword across the mailbox
+- Move messages between folders
+- Move messages to trash
+
+### Labels
+
+- List all labels for a mail account
+
+## Zoho Calendar
+
+All calendar operations use `calendar.js`. Requires OAuth scopes: `ZohoCalendar.calendar.ALL`, `ZohoCalendar.event.ALL`.
+
+### Calendars
+
+- List all calendars with UIDs, descriptions, timezones, and privileges
+- Calendar UIDs are required by all event commands
+
+### Events
+
+- List events in a calendar within a date range (defaults to current month)
+- Get full event details: title, time, timezone, location, description, attendees, organizer
+- Create events with title, start/end time, timezone, location, description, all-day flag
+- Update event fields individually (title, time, location, description)
+- Delete events (with confirmation prompt)
+- Accepts human-friendly date formats (YYYY-MM-DD, ISO 8601)
+
 ## Limitations
 
 - Organization settings are read-only (modify via Zoho web UI)
@@ -251,3 +296,7 @@ The `delete_schedule_action` field is required when deactivating a workflow. Set
 - Real-time notifications require external webhook server
 - Bulk operations limited by Zoho plan quotas
 - API rate limits based on Zoho edition (5,000 to unlimited credits/day)
+- Mail: attachment upload/download not yet supported
+- Mail: draft management not yet supported
+- Calendar: recurring event creation not yet supported
+- Calendar: attendee management on create/update not yet supported

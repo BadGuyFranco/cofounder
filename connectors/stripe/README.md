@@ -1,17 +1,30 @@
 # Stripe Connector
 
-Connect to Stripe via their API for payments, subscriptions, and billing management.
+Connect to Stripe via their API for payments, billing, subscriptions, and more.
 
 ## Status
 
-Active — customers, products, prices, subscriptions, webhooks.
+Active. Full Stripe API coverage with 26 scripts across payments, billing, checkout, balance, connect, issuing, terminal, treasury, and identity.
 
 ## Features
 
-- Manage subscription products and pricing plans
-- Customer CRUD (create, lookup by email, update, delete)
-- Subscription lifecycle (list, cancel, upgrade/downgrade)
-- Webhook endpoint management with event scoping
+- Multi-account support (connect multiple Stripe accounts)
+- Test and live mode switching per command
+- Payment intents, charges, refunds
+- Products, prices, subscriptions, subscription schedules
+- Invoices, credit notes, coupons, promotion codes
+- Checkout sessions and payment links
+- Balance, payouts, and transaction history
+- Webhook management
+- Disputes and evidence submission
+- File uploads and file links
+- Quotes, billing meters, tax rates, shipping rates
+- Customer billing portal
+- Stripe Connect (platform accounts, transfers, fees)
+- Stripe Issuing (cardholders, cards, authorizations)
+- Stripe Terminal (readers, locations)
+- Stripe Treasury (financial accounts, transfers, payments)
+- Stripe Identity (verification sessions, reports)
 
 ## Setup
 
@@ -19,7 +32,7 @@ See `SETUP.md` for configuration instructions.
 
 ## Usage
 
-See `AGENTS.md` for AI agent instructions and `CAPABILITIES.md` for what it can do.
+See `AGENTS.md` for AI agent instructions.
 
 ## API Reference
 

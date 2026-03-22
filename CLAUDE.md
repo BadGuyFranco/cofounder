@@ -1,4 +1,6 @@
-Read and always follow `.cursor/rules/Always Apply.mdc`
+**If `CoBuilder/AGENTS.md` exists in this workspace (check all workspace roots):** CoBuilder has its own instruction chain. Skip the rules below. Read `CoBuilder/AGENTS.md` BEFORE responding to the user's first message. It defines project personas and routing.
+
+**Otherwise:** Read and always follow `.cursor/rules/Always Apply.mdc`
 
 ## AGENTS.md Convention
 

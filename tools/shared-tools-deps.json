@@ -28,7 +28,6 @@
     "Documentor/local-generator": [
       "marked",
       "html-docx-js",
-      "puppeteer",
       "mammoth",
       "pdf-parse"
     ]

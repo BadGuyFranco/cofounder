@@ -1,5 +1,11 @@
 # What's New in CoFounder
 
+## March 22, 2026
+- **Stripe connector** - Full Stripe API coverage with 26 scripts (up from 4). Now supports multi-account credentials, test/live mode switching per command, and every Stripe API domain: payments, billing, checkout, balance, coupons, disputes, files, quotes, meters, shipping, customer portal, Connect, Issuing, Terminal, Treasury, and Identity.
+- **Zoho connector** - Calendar and mail scripts, updated auth and field utilities.
+- **Designer tool** - New design tool for visual designs, design systems, color palettes, wireframes, and components.
+- **Documentor** - Updated local generator scripts and dependencies.
+
 ## March 14, 2026
 - **Browser Control** - MCP server mode, snapshot and click reliability improvements, new Ahrefs site guide, updated LinkedIn/PodMatch/Google Sheets site guides.
 - **SEO Expert** - Ahrefs integration via Browser Control for automated backlink and keyword gap analysis when configured.

@@ -1,4 +1,4 @@
-import { loadConfig, apiRequest, paginate, parseArgs, output, outputError } from './utils.js';
+import { initScript, apiRequest, paginate, output, outputError } from './utils.js';
 
 function showHelp() {
   console.log(`
@@ -11,9 +11,12 @@ Commands:
   get <id>                    Get subscription by ID
   cancel <id>                 Cancel a subscription
   update <id>                 Update a subscription
+  accounts                    List configured Stripe accounts
   help                        Show this help
 
 Options:
+  --account <name>            Use specific Stripe account
+  --mode <test|live>          Use test or live keys (default: test)
   --customer <id>             Filter by customer ID
   --status <status>           Filter by status: active, past_due, canceled, trialing, all
   --price <id>                New price ID (for update)
@@ -30,10 +33,10 @@ Examples:
 `);
 }
 
-async function list(flags, cfg) {
+async function list(args, cfg) {
   const params = {};
-  if (flags.customer) params.customer = flags.customer;
-  if (flags.status) params.status = flags.status;
+  if (args.customer) params.customer = args.customer;
+  if (args.status) params.status = args.status;
   else params.status = 'all';
 
   const subs = await paginate('/subscriptions', params, cfg);
@@ -55,52 +58,50 @@ async function get(id, cfg) {
   output(data);
 }
 
-async function cancel(id, flags, cfg) {
+async function cancel(id, args, cfg) {
   if (!id) throw new Error('Subscription ID required. Usage: cancel <id>');
 
-  if (flags['cancel-at-period-end']) {
+  if (args['cancel-at-period-end']) {
     const data = await apiRequest(`/subscriptions/${id}`, {
       method: 'POST',
       body: { cancel_at_period_end: 'true' },
     }, cfg);
-    console.log(`✓ Subscription set to cancel at period end: ${id}`);
+    console.log(`Subscription set to cancel at period end: ${id}`);
     output(data);
   } else {
     const data = await apiRequest(`/subscriptions/${id}`, { method: 'DELETE' }, cfg);
-    console.log(`✓ Subscription canceled: ${id}`);
+    console.log(`Subscription canceled: ${id}`);
     output(data);
   }
 }
 
-async function update(id, flags, cfg) {
+async function update(id, args, cfg) {
   if (!id) throw new Error('Subscription ID required. Usage: update <id>');
   const body = {};
 
-  if (flags.price) {
+  if (args.price) {
     const sub = await apiRequest(`/subscriptions/${id}`, {}, cfg);
     const itemId = sub.items?.data?.[0]?.id;
     if (!itemId) throw new Error('Could not find subscription item to update');
-    body[`items[0][id]`] = itemId;
-    body[`items[0][price]`] = flags.price;
+    body['items[0][id]'] = itemId;
+    body['items[0][price]'] = args.price;
     body['proration_behavior'] = 'create_prorations';
   }
 
-  if (flags['cancel-at-period-end'] !== undefined) {
-    body.cancel_at_period_end = flags['cancel-at-period-end'] ? 'true' : 'false';
+  if (args['cancel-at-period-end'] !== undefined) {
+    body.cancel_at_period_end = args['cancel-at-period-end'] ? 'true' : 'false';
   }
 
   const data = await apiRequest(`/subscriptions/${id}`, { method: 'POST', body }, cfg);
-  console.log(`✓ Subscription updated: ${id}`);
+  console.log(`Subscription updated: ${id}`);
   output(data);
 }
 
 async function main() {
-  const args = parseArgs();
-  const command = args._[0] || 'help';
+  const init = initScript(showHelp);
+  if (!init) return;
 
-  if (command === 'help') { showHelp(); return; }
-
-  const cfg = loadConfig();
+  const { config: cfg, args, command } = init;
 
   try {
     switch (command) {
