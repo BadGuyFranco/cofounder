@@ -6,17 +6,33 @@
 const DEFAULT_LOCAL = 'http://localhost:3000';
 const DEFAULT_STAGING = 'https://api-staging.cobuilder.me';
 
+/** Well-known UUID for the CoBuilder HQ org (seeded by migration 0023). */
+const DEFAULT_ORG_ID = '00000000-0000-4000-a000-000000000002';
+
+/**
+ * Default service account UUID for staging API calls.
+ * Staging runs in dev-bypass mode (NODE_ENV=development), which passes the
+ * X-User-Id header directly as the internal user ID — no clerk_id resolution.
+ * Must be a valid UUID (the admin user's internal DB ID), not a clerk_id string.
+ * DB user: admin@cobuilder.me (00000000-0000-4000-a000-000000000003).
+ */
+const STAGING_USER_ID = '00000000-0000-4000-a000-000000000003';
+const LOCAL_USER_ID = '00000000-0000-4000-a000-000000000001';
+
 /**
  * Load config from environment or flags.
- * --target staging|local (default: local)
- * --user-id <uuid> (default: v0-anonymous)
+ * --target staging|local (default: staging)
+ * --user-id <id> (default: CoBuilder HQ admin service account)
+ * --org <uuid> (default: CoBuilder HQ org)
  */
 export function loadConfig(flags = {}) {
-  const target = flags.target || process.env.TICKETS_TARGET || 'local';
-  const baseUrl = target === 'staging' ? DEFAULT_STAGING : DEFAULT_LOCAL;
-  const userId = flags['user-id'] || process.env.TICKETS_USER_ID || 'v0-anonymous';
+  const target = flags.target || process.env.TICKETS_TARGET || 'staging';
+  const baseUrl = target === 'local' ? DEFAULT_LOCAL : DEFAULT_STAGING;
+  const defaultUserId = target === 'local' ? LOCAL_USER_ID : STAGING_USER_ID;
+  const userId = flags['user-id'] || process.env.TICKETS_USER_ID || defaultUserId;
+  const orgId = flags.org || process.env.COBUILDER_ORG_ID || DEFAULT_ORG_ID;
 
-  return { baseUrl, userId, target };
+  return { baseUrl, userId, target, orgId };
 }
 
 /**

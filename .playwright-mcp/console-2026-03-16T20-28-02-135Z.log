@@ -1,0 +1,70 @@
+[     180ms] TypeError: Cannot read properties of undefined (reading 'onMenuEvent')
+    at http://localhost:5173/src/context/WorkspaceContext.tsx:475:18
+    at commitHookEffectListMount (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:16904:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18152:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18125:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18115:15)
+    at commitPassiveMountEffects (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18105:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19486:11)
+    at flushPassiveEffects (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19443:22)
+    at http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19324:17
+    at workLoop (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:197:42)
+[     183ms] TypeError: Cannot read properties of undefined (reading 'onMenuEvent')
+    at http://localhost:5173/src/context/WorkspaceContext.tsx:475:18
+    at commitHookEffectListMount (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:16904:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18320:19)
+    at invokeEffectsInDev (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19697:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19682:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19499:13)
+    at flushPassiveEffects (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19443:22)
+    at http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19324:17
+    at workLoop (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:197:42)
+    at flushWork (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:176:22)
+[     175ms] [ERROR] The above error occurred in the <WorkspaceProvider> component:
+
+    at WorkspaceProvider (http://localhost:5173/src/context/WorkspaceContext.tsx:36:37)
+    at ClerkAuthInner (http://localhost:5173/src/context/AuthContext.tsx:36:27)
+    at __experimental_CheckoutProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2115:42)
+    at SWRConfig (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:1122:11)
+    at SWRConfigCompat (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2106:28)
+    at OrganizationProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2119:31)
+    at ClerkContextProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:7028:11)
+    at ClerkProviderBase (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:7118:11)
+    at Hoc (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:3916:5)
+    at AuthProvider (http://localhost:5173/src/context/AuthContext.tsx:176:32)
+    at DevConsoleProvider (http://localhost:5173/src/context/DevConsoleContext.tsx:70:38)
+    at ThemeProvider (http://localhost:5173/src/context/ThemeContext.tsx:65:33)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:14035
+[     175ms] [ERROR] The above error occurred in the <WorkspaceProvider> component:
+
+    at WorkspaceProvider (http://localhost:5173/src/context/WorkspaceContext.tsx:36:37)
+    at ClerkAuthInner (http://localhost:5173/src/context/AuthContext.tsx:36:27)
+    at __experimental_CheckoutProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2115:42)
+    at SWRConfig (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:1122:11)
+    at SWRConfigCompat (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2106:28)
+    at OrganizationProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:2119:31)
+    at ClerkContextProvider (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:7028:11)
+    at ClerkProviderBase (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:7118:11)
+    at Hoc (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/@clerk_clerk-react.js?v=89d92cfd:3916:5)
+    at AuthProvider (http://localhost:5173/src/context/AuthContext.tsx:176:32)
+    at DevConsoleProvider (http://localhost:5173/src/context/DevConsoleContext.tsx:70:38)
+    at ThemeProvider (http://localhost:5173/src/context/ThemeContext.tsx:65:33)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:14035
+[     183ms] TypeError: Cannot read properties of undefined (reading 'onMenuEvent')
+    at http://localhost:5173/src/context/WorkspaceContext.tsx:475:18
+    at commitHookEffectListMount (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:16904:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18152:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18125:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18115:15)
+    at commitPassiveMountEffects (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:18105:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19486:11)
+    at flushPassiveEffects (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19443:22)
+    at http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:19324:17
+    at workLoop (http://localhost:5173/@fs/Volumes/NAS%20LOCAL/CoBuilder/infrastructure/cobuilder-ide/node_modules/.vite/deps/chunk-CSUT4CYC.js?v=66faa245:197:42)
+[     186ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/favicon.ico:0

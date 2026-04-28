@@ -10,10 +10,16 @@
  *
  * Optional:
  *   --reporter-type  developer|agent|user (default: developer)
+ *   --type           bug|feature|support|task (default: bug)
  *   --severity       critical|high|medium|low (default: medium)
+ *   --visibility     private|team|internal|customer (default: internal)
+ *   --team-id        Team UUID (required when visibility=team)
+ *   --assigned-to    User UUID to assign the ticket to
+ *   --tags           Comma-separated tags (e.g. "regression,ide-bugs-session")
  *   --environment    local|staging|production (default: null)
  *   --context        JSON string with packages, files, adrs, dependencies, related_tickets
  *   --metadata       JSON string with trace IDs, error stacks, etc.
+ *   --org            Org UUID (default: CoBuilder HQ)
  *   --target         local|staging (default: local)
  *   --user-id        Override user ID
  */
@@ -33,16 +39,23 @@ Required:
 
 Optional:
   --reporter-type   developer|agent|user (default: developer)
+  --type            bug|feature|support|task (default: bug)
   --severity        critical|high|medium|low (default: medium)
+  --visibility      private|team|internal|customer (default: internal)
+  --team-id         Team UUID (required when visibility=team)
+  --assigned-to     User UUID to assign the ticket to
+  --tags            Comma-separated tags (e.g. "regression,ide-bugs-session")
   --environment     local|staging|production
   --context         JSON: {"packages":[],"files":[],"adrs":[],"dependencies":[],"related_tickets":[]}
   --metadata        JSON: {"traceId":"...","errorStack":"..."}
+  --org             Org UUID (default: CoBuilder HQ)
   --target          local|staging (default: local)
   --user-id         Override user ID
 
 Examples:
   node scripts/create.js --title "Login fails" --description "Steps..." --component server --severity high
-  node scripts/create.js --title "Type error" --description "..." --component ide --context '{"files":["ide/src/foo.ts"]}'
+  node scripts/create.js --title "Type error" --description "..." --component ide --type bug --visibility internal
+  node scripts/create.js --title "Add dark mode" --description "..." --component ide --type feature --tags "ui,theme"
 `);
 }
 
@@ -62,9 +75,15 @@ async function main() {
     description: args.description,
     component: args.component,
     reporterType: args['reporter-type'] || 'developer',
+    type: args.type || 'bug',
     severity: args.severity || 'medium',
+    visibility: args.visibility || 'internal',
+    orgId: cfg.orgId,
   };
 
+  if (args['team-id']) body.teamId = args['team-id'];
+  if (args['assigned-to']) body.assignedTo = args['assigned-to'];
+  if (args.tags) body.tags = args.tags.split(',').map(t => t.trim());
   if (args.environment) body.environment = args.environment;
   if (args.context) body.context = parseJsonArg(args.context);
   if (args.metadata) body.metadata = parseJsonArg(args.metadata);

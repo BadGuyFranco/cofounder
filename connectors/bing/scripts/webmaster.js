@@ -113,57 +113,29 @@ async function cmdSites(flags) {
 async function cmdSitemaps(flags) {
   if (!flags.site) outputError('--site is required');
 
-  const data = await apiRequest('GetSitemap', {
-    params: { siteUrl: flags.site }
-  });
-  const sitemaps = Array.isArray(data) ? data : (data?.value || []);
-
-  if (flags.json) return output(sitemaps);
-
-  if (sitemaps.length === 0) {
-    console.log(`No sitemaps found for ${flags.site}`);
-    return;
-  }
-
-  console.log(`\nSitemaps for ${flags.site}\n`);
-  for (const sm of sitemaps) {
-    const url = sm.Url || sm;
-    const status = sm.IsProcessed ? 'Processed' : 'Pending';
-    const submitted = sm.LastSubmitted || '';
-    const pages = sm.PageCount !== undefined ? `${sm.PageCount} pages` : '';
-    const parts = [url, status, pages, submitted].filter(Boolean);
-    console.log(`  ${parts.join('  |  ')}`);
-  }
+  console.log(`\nNote: Bing's sitemap management API is no longer available.`);
+  console.log(`To view or submit sitemaps, use the Bing Webmaster Tools dashboard:`);
+  console.log(`  https://www.bing.com/webmasters/sitemaps?siteUrl=${encodeURIComponent(flags.site)}`);
 }
 
 async function cmdAddSitemap(flags) {
   if (!flags.site) outputError('--site is required');
   if (!flags.sitemap) outputError('--sitemap is required');
 
-  await apiRequest('AddSitemap', {
-    method: 'POST',
-    params: { siteUrl: flags.site },
-    body: { sitemapUrl: flags.sitemap }
-  });
-
-  console.log(`Sitemap submitted successfully.`);
-  console.log(`  Site:    ${flags.site}`);
-  console.log(`  Sitemap: ${flags.sitemap}`);
-  console.log(`\nBing will process the sitemap within 24-48 hours.`);
+  console.log(`\nNote: Bing's sitemap submission API is no longer available.`);
+  console.log(`To submit a sitemap, use the Bing Webmaster Tools dashboard:`);
+  console.log(`  https://www.bing.com/webmasters/sitemaps?siteUrl=${encodeURIComponent(flags.site)}`);
+  console.log(`\nAlternative: submit individual URLs for faster indexing:`);
+  console.log(`  node webmaster.js submit-urls --site ${flags.site} --urls URL1,URL2,...`);
 }
 
 async function cmdRemoveSitemap(flags) {
   if (!flags.site) outputError('--site is required');
   if (!flags.sitemap) outputError('--sitemap is required');
 
-  await apiRequest('RemoveSitemap', {
-    method: 'POST',
-    params: { siteUrl: flags.site, sitemapUrl: flags.sitemap }
-  });
-
-  console.log(`Sitemap removed.`);
-  console.log(`  Site:    ${flags.site}`);
-  console.log(`  Sitemap: ${flags.sitemap}`);
+  console.log(`\nNote: Bing's sitemap management API is no longer available.`);
+  console.log(`To manage sitemaps, use the Bing Webmaster Tools dashboard:`);
+  console.log(`  https://www.bing.com/webmasters/sitemaps?siteUrl=${encodeURIComponent(flags.site)}`);
 }
 
 async function cmdCrawlStats(flags) {
@@ -252,8 +224,7 @@ async function cmdSubmitUrl(flags) {
 
   await apiRequest('SubmitUrl', {
     method: 'POST',
-    params: { siteUrl: flags.site },
-    body: { url: flags.url }
+    body: { siteUrl: flags.site, url: flags.url }
   });
 
   console.log(`URL submitted for Bing indexing.`);
@@ -273,8 +244,7 @@ async function cmdSubmitUrls(flags) {
 
   await apiRequest('SubmitUrlBatch', {
     method: 'POST',
-    params: { siteUrl: flags.site },
-    body: { urlList }
+    body: { siteUrl: flags.site, urlList }
   });
 
   console.log(`${urlList.length} URL(s) submitted for Bing indexing.`);

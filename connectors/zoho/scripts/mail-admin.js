@@ -116,8 +116,8 @@ function printHelp() {
       'create-group --name --email      Create a group',
       'update-group <zgid>              Update group settings',
       'delete-group <zgid>              Delete a group',
-      'add-member <zgid> --zuid <id>    Add member to group',
-      'remove-member <zgid> --zuid <id> Remove member from group',
+      'add-member <zgid> --email <addr>  Add member to group',
+      'remove-member <zgid> --email     Remove member from group',
       'group-alias <zgid> --alias       Add alias to group'
     ],
     'Policy': [
@@ -707,48 +707,44 @@ async function addMember(zgid, args) {
   const { config, token } = await initScript(args);
   const zoid = await getZoid(config, token, config.region);
 
-  const memberZuid = args.zuid || args.email;
-  if (!memberZuid) {
-    console.error('Error: --zuid or --email is required');
+  if (!args.email) {
+    console.error('Error: --email is required');
     process.exit(1);
   }
 
-  const member = args.zuid ? { zuid: args.zuid } : { emailId: args.email };
+  const role = args.role || 'member';
 
   console.log(`Adding member to group ${zgid}...\n`);
   const data = await mailAdminRequest('PUT', `/api/organization/${zoid}/groups/${zgid}`, token, config.region, {
-    mode: 'addMember',
-    members: [member]
+    mode: 'addMailGroupMember',
+    mailGroupMemberList: [{ memberEmailId: args.email, role }]
   });
 
   if (args.verbose) { console.log(JSON.stringify(data, null, 2)); return; }
 
   console.log('Member added to group.');
-  console.log(`Member: ${args.zuid || args.email}`);
+  console.log(`Member: ${args.email}`);
 }
 
 async function removeMember(zgid, args) {
   const { config, token } = await initScript(args);
   const zoid = await getZoid(config, token, config.region);
 
-  const memberZuid = args.zuid || args.email;
-  if (!memberZuid) {
-    console.error('Error: --zuid or --email is required');
+  if (!args.email) {
+    console.error('Error: --email is required');
     process.exit(1);
   }
 
-  const member = args.zuid ? { zuid: args.zuid } : { emailId: args.email };
-
   console.log(`Removing member from group ${zgid}...\n`);
   const data = await mailAdminRequest('PUT', `/api/organization/${zoid}/groups/${zgid}`, token, config.region, {
-    mode: 'removeMember',
-    members: [member]
+    mode: 'deleteMailGroupMember',
+    mailGroupMemberList: [{ memberEmailId: args.email }]
   });
 
   if (args.verbose) { console.log(JSON.stringify(data, null, 2)); return; }
 
   console.log('Member removed from group.');
-  console.log(`Member: ${args.zuid || args.email}`);
+  console.log(`Member: ${args.email}`);
 }
 
 async function addGroupAlias(zgid, args) {
@@ -1203,7 +1199,7 @@ async function main() {
       case 'add-member':
         if (!args._[1]) {
           console.error('Error: ZGID required');
-          console.error('Usage: node mail-admin.js add-member <zgid> --zuid <member_zuid>');
+          console.error('Usage: node mail-admin.js add-member <zgid> --email <member_email>');
           process.exit(1);
         }
         await addMember(args._[1], args);
@@ -1211,7 +1207,7 @@ async function main() {
       case 'remove-member':
         if (!args._[1]) {
           console.error('Error: ZGID required');
-          console.error('Usage: node mail-admin.js remove-member <zgid> --zuid <member_zuid>');
+          console.error('Usage: node mail-admin.js remove-member <zgid> --email <member_email>');
           process.exit(1);
         }
         await removeMember(args._[1], args);

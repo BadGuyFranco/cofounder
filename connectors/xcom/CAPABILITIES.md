@@ -27,7 +27,9 @@ What this connector can do for you.
 
 ## Discovery
 
-- Search tweets
+- Search recent tweets (last 7 days)
+- Search the full tweet archive (back to 2010, via Bearer auth)
+- Tweet volume counts over time (full-archive, day/hour/minute granularity)
 - Get trending topics (requires Basic+ tier)
 - Find live Spaces (audio rooms)
 - Get quote tweets of a tweet
@@ -53,5 +55,6 @@ What this connector can do for you.
 
 - Trends require Basic tier or higher
 - Streaming/firehose requires Enterprise
-- Full archive search requires Pro tier
+- Full-archive search and counts work with API credits, but rate limits on `/tweets/search/all` and `/tweets/counts/all` are very tight (a handful of requests per 15-minute window). Use them deliberately.
+- Engagement operators like `min_faves:` and `min_retweets:` are Enterprise-only and will be rejected even on archive search.
 - 1,500 tweets/month on Free tier (requires $5 credit purchase)

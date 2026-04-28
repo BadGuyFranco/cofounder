@@ -64,9 +64,9 @@ BING_WEBMASTER_API_KEY=your_api_key_here
 | Command | What It Does |
 |---------|-------------|
 | `sites` | List all verified sites in the Bing Webmaster account |
-| `sitemaps --site URL` | List sitemaps submitted for a site |
-| `add-sitemap --site URL --sitemap URL` | Submit a sitemap to Bing |
-| `remove-sitemap --site URL --sitemap URL` | Remove a sitemap from Bing |
+| `sitemaps --site URL` | Note: Bing's sitemap API is deprecated — prints dashboard link instead |
+| `add-sitemap --site URL --sitemap URL` | Note: Bing's sitemap API is deprecated — prints dashboard link instead |
+| `remove-sitemap --site URL --sitemap URL` | Note: Bing's sitemap API is deprecated — prints dashboard link instead |
 | `crawl-stats --site URL` | 30-day crawl volume, error count, blocked pages |
 | `crawl-issues --site URL` | Crawl errors grouped by issue type |
 | `submit-url --site URL --url URL` | Submit a single URL for Bing indexing |
@@ -94,6 +94,8 @@ node connectors/bing/scripts/webmaster.js add-sitemap --site https://example.com
 **Empty crawl-stats or crawl-issues:** Site may be newly added or not yet crawled by Bingbot. Allow 48-72 hours after verification.
 
 **Batch limit:** `submit-urls` accepts a maximum of 10 URLs per call. Split larger lists into multiple calls.
+
+**Sitemap commands print a dashboard link instead of running:** Bing deprecated their sitemap management API (GetSitemap/AddSitemap all return 404). Submit sitemaps manually at https://www.bing.com/webmasters/sitemaps. Use `submit-urls` to notify Bing about specific URLs instead.
 
 ## API Reference
 

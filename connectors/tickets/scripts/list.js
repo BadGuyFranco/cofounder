@@ -4,6 +4,7 @@
  * Usage:
  *   node scripts/list.js                          List all tickets
  *   node scripts/list.js --status open             Filter by status
+ *   node scripts/list.js --type bug                Filter by type
  *   node scripts/list.js search --q "trace"        Search by text
  *   node scripts/list.js get <ticket-id>           Get single ticket with comments
  */
@@ -23,9 +24,14 @@ Commands:
   help                Show this help
 
 Filter Options (list and search):
-  --status            open|in_progress|resolved|closed|wont_fix
+  --status            open|in_progress|waiting|resolved|closed|wont_fix
   --severity          critical|high|medium|low
   --component         Filter by component name
+  --type              bug|feature|support|task
+  --visibility        private|team|internal|customer
+  --team-id           Filter by team UUID
+  --assigned-to       Filter by assigned user UUID (list only)
+  --tags              Comma-separated tags (list only)
   --limit             Max results (default: 50)
   --offset            Skip N results (default: 0)
 
@@ -33,12 +39,15 @@ Search Options:
   --q                 Search text (matches title and description)
 
 Global Options:
+  --org               Org UUID (default: CoBuilder HQ)
   --target            local|staging (default: local)
   --user-id           Override user ID
+  --json              Output raw JSON instead of table
 
 Examples:
   node scripts/list.js
   node scripts/list.js --status open --severity high
+  node scripts/list.js --type bug --visibility internal
   node scripts/list.js --component server
   node scripts/list.js search --q "typecheck"
   node scripts/list.js get 550e8400-e29b-41d4-a716-446655440000
@@ -48,7 +57,14 @@ Examples:
 function formatTicketRow(t) {
   const sev = { critical: 'CRIT', high: 'HIGH', medium: 'MED ', low: 'LOW ' }[t.severity] || t.severity;
   const status = t.status.padEnd(11);
-  return `  ${sev} | ${status} | ${t.component.padEnd(14)} | ${t.title}  [${t.id.slice(0, 8)}]`;
+  const type = (t.type || 'bug').padEnd(7);
+  const vis = (t.visibility || 'internal').padEnd(8);
+  return `  ${sev} | ${status} | ${type} | ${vis} | ${t.component.padEnd(14)} | ${t.title}  [${t.id.slice(0, 8)}]`;
+}
+
+function printTableHeader() {
+  console.log('  SEV  | STATUS      | TYPE    | VIS      | COMPONENT      | TITLE');
+  console.log('  ---- | ----------- | ------- | -------- | -------------- | -----');
 }
 
 async function list(flags, cfg) {
@@ -56,6 +72,11 @@ async function list(flags, cfg) {
   if (flags.status) params.status = flags.status;
   if (flags.severity) params.severity = flags.severity;
   if (flags.component) params.component = flags.component;
+  if (flags.type) params.type = flags.type;
+  if (flags.visibility) params.visibility = flags.visibility;
+  if (flags['team-id']) params.teamId = flags['team-id'];
+  if (flags['assigned-to']) params.assignedTo = flags['assigned-to'];
+  if (flags.tags) params.tags = flags.tags;
   if (flags.limit) params.limit = flags.limit;
   if (flags.offset) params.offset = flags.offset;
 
@@ -70,8 +91,7 @@ async function list(flags, cfg) {
   if (data.tickets.length === 0) {
     console.log('  No tickets found.');
   } else {
-    console.log('  SEV  | STATUS      | COMPONENT      | TITLE');
-    console.log('  ---- | ----------- | -------------- | -----');
+    printTableHeader();
     for (const t of data.tickets) {
       console.log(formatTicketRow(t));
     }
@@ -85,6 +105,9 @@ async function search(flags, cfg) {
   if (flags.status) params.status = flags.status;
   if (flags.severity) params.severity = flags.severity;
   if (flags.component) params.component = flags.component;
+  if (flags.type) params.type = flags.type;
+  if (flags.visibility) params.visibility = flags.visibility;
+  if (flags['team-id']) params.teamId = flags['team-id'];
   if (flags.limit) params.limit = flags.limit;
   if (flags.offset) params.offset = flags.offset;
 
@@ -99,8 +122,7 @@ async function search(flags, cfg) {
   if (data.tickets.length === 0) {
     console.log('  No tickets found.');
   } else {
-    console.log('  SEV  | STATUS      | COMPONENT      | TITLE');
-    console.log('  ---- | ----------- | -------------- | -----');
+    printTableHeader();
     for (const t of data.tickets) {
       console.log(formatTicketRow(t));
     }

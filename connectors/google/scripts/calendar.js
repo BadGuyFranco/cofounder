@@ -240,17 +240,69 @@ async function updateEvent(email, eventId, updates, calendarId = 'primary') {
     };
   }
   
-  if (updates.attendees) {
-    event.attendees = updates.attendees.split(',').map(e => ({ email: e.trim() }));
+  // When notifying attendees, use a two-phase update pattern to reliably trigger
+  // Google's notification pipeline. Background: events.update with sendUpdates:'all'
+  // silently suppresses email notifications for content-only changes (description,
+  // location, summary) on events with foreign iCalUIDs (e.g. cal.com bookings).
+  // The fix: (1) strip attendees to organizer silently, (2) re-add full attendee
+  // list with sendUpdates:'all' — Google treats re-added attendees as new invitations
+  // and reliably dispatches the notification email. Verified 2026-04-07.
+  if (updates.attendees && updates.notify) {
+    const newEmails = updates.attendees.split(',').map(e => e.trim()).filter(Boolean);
+
+    // Phase 1: strip attendees to organizer only, no notifications
+    const organizer = (event.attendees || []).find(a => a.organizer);
+    const phaseOneAttendees = organizer ? [{ email: organizer.email, organizer: true }] : [];
+    const phaseOneEvent = { ...event, attendees: phaseOneAttendees };
+    await calendar.events.update({
+      calendarId,
+      eventId,
+      resource: phaseOneEvent,
+      sendUpdates: 'none'
+    });
+
+    // Phase 2: re-fetch, apply all updates, re-add full attendees, notify
+    const refetched = await calendar.events.get({ calendarId, eventId });
+    const phaseTwo = refetched.data;
+    if (updates.title) phaseTwo.summary = updates.title;
+    if (updates.description !== undefined) phaseTwo.description = updates.description;
+    if (updates.location !== undefined) phaseTwo.location = updates.location;
+    if (updates.start) phaseTwo.start = { dateTime: new Date(updates.start).toISOString(), timeZone: phaseTwo.start.timeZone };
+    if (updates.end) phaseTwo.end = { dateTime: new Date(updates.end).toISOString(), timeZone: phaseTwo.end.timeZone };
+    phaseTwo.attendees = newEmails.map(e => ({ email: e }));
+
+    const response = await calendar.events.update({
+      calendarId,
+      eventId,
+      resource: phaseTwo,
+      sendUpdates: 'all'
+    });
+
+    return {
+      id: response.data.id,
+      summary: response.data.summary,
+      updated: true,
+      notifyMode: 'two-phase'
+    };
   }
-  
+
+  // Standard single-phase update (no attendee re-add needed)
+  if (updates.attendees) {
+    const newEmails = updates.attendees.split(',').map(e => e.trim()).filter(Boolean);
+    const existing = (event.attendees || []).reduce((m, a) => {
+      if (a && a.email) m[a.email.toLowerCase()] = a;
+      return m;
+    }, {});
+    event.attendees = newEmails.map(email => existing[email.toLowerCase()] || { email });
+  }
+
   const response = await calendar.events.update({
     calendarId,
     eventId,
     resource: event,
     sendUpdates: updates.notify ? 'all' : 'none'
   });
-  
+
   return {
     id: response.data.id,
     summary: response.data.summary,
