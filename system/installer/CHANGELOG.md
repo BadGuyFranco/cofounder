@@ -1,5 +1,8 @@
 # What's New in CoFounder
 
+## May 1, 2026
+- **Documentor local-generator** - New `--style resume` profile for ATS-compliant beautiful resumes. Pandoc-based DOCX generation using a programmatically built reference template (Georgia body, Calibri headings, deep teal #0F4C5C accent, custom paragraph styles for tagline and contact line). PDF pipeline mirrors the same design tokens via Playwright. Includes a Pandoc fenced div preprocessor so the same Markdown source produces consistent DOCX and PDF.
+
 ## March 22, 2026
 - **Stripe connector** - Full Stripe API coverage with 26 scripts (up from 4). Now supports multi-account credentials, test/live mode switching per command, and every Stripe API domain: payments, billing, checkout, balance, coupons, disputes, files, quotes, meters, shipping, customer portal, Connect, Issuing, Terminal, Treasury, and Identity.
 - **Zoho connector** - Calendar and mail scripts, updated auth and field utilities.

@@ -63,8 +63,18 @@ node scripts/create.js report.pdf --content data.md --title "Quarterly Report"
 - `--content FILE` - Path to markdown file
 - `--text TEXT` - Markdown text directly (alternative to --content)
 - `--title TITLE` - Document title
+- `--style NAME` - Style profile: `default` (general purpose) or `resume` (ATS + recruiter-friendly, Set B: Georgia body + Calibri headings, charcoal palette, 0.75" margins, hairline section borders)
 
 **Supported outputs:** `.docx` and `.pdf` only
+
+**Style profiles:**
+
+| Style | Body font | Heading font | Margins | DOCX engine | Best for |
+|-------|-----------|--------------|---------|-------------|----------|
+| `default` | Calibri 11pt | Calibri (scaled) | 1 inch | html-docx-js (inline CSS) | Reports, notes, general docs |
+| `resume` | Georgia 10.5pt charcoal | Calibri (16/11pt, charcoal, uppercase sections with hairline border) | 0.75 inch | Pandoc + reference.docx if available, html-docx-js fallback | ATS + recruiter-grade resumes |
+
+The `resume` style produces real Word styles (Heading 1, Heading 2, Heading 3, Normal, Body Text) when Pandoc is installed, which is what recruiters and ATS parsers expect. The reference template lives at `templates/resume-reference.docx` and is rebuilt via `templates/build-resume-reference.py`. Edit the design tokens at the top of that script and rerun to update.
 
 ### Convert Formats
 
