@@ -1,6 +1,6 @@
 # X.com Connector
 
-Post content to X.com (formerly Twitter) via API v2.
+Connect to X.com (formerly Twitter) via API v2.
 
 ## Status
 
@@ -13,6 +13,7 @@ Post content to X.com (formerly Twitter) via API v2.
 - Manage relationships (follows, mutes, blocks)
 - Direct messages
 - Search and discovery
+- Pay-per-use Post consumption checks
 - List management
 - Multi-account support
 
@@ -30,9 +31,4 @@ https://developer.x.com/en/docs/twitter-api
 
 ## Important: API Costs
 
-X.com API has tiered pricing:
-- Free: 1,500 tweets/month (requires $5 credit purchase)
-- Basic: $200/month for 3,000 tweets
-- Pro: $5,000/month for 300,000 tweets
-
-Free tier is very limited. Plan accordingly.
+X.com API uses credit-based pay-per-use pricing. Reads are charged per resource returned; writes/actions are charged per request. Use `node scripts/usage.js posts` to monitor Post consumption against the project cap. Credit balance and exact dollar spend are managed in the X Developer Console.

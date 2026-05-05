@@ -2,13 +2,13 @@
 
 /**
  * X.com API Usage
- * Check rate limits and API usage.
+ * Check pay-per-use Post consumption and legacy rate limits.
  */
 
 import { fileURLToPath } from 'url';
 import path from 'path';
 import {
-  parseArgs, initScript, getCredentials, generateOAuthHeader,
+  parseArgs, initScript, getCredentials, generateOAuthHeader, apiRequest,
   handleError, showHelp
 } from './utils.js';
 
@@ -22,7 +22,8 @@ const RATE_LIMIT_URL = 'https://api.twitter.com/1.1/application/rate_limit_statu
 function printHelp() {
   showHelp('X.com API Usage', {
     'Commands': [
-      'status                    Check current rate limit status',
+      'posts                     Check pay-per-use Post consumption via /2/usage/tweets',
+      'status                    Check legacy 15-minute rate limit status',
       'help                      Show this help'
     ],
     'Options': [
@@ -42,16 +43,62 @@ function printHelp() {
       'mutes          - Mute operations'
     ],
     'Examples': [
+      'node usage.js posts',
       'node usage.js status',
       'node usage.js status --resources users,statuses',
       'node usage.js status --verbose'
     ],
     'Notes': [
-      'Rate limits reset every 15 minutes',
-      'Different endpoints have different limits',
-      'Free tier has 500 tweets/month, 10K reads/month'
+      'X API uses pay-per-use credits. Reads are charged per resource returned; writes/actions are charged per request.',
+      'Use "posts" to monitor monthly Post consumption against the project cap.',
+      'Use "status" only for legacy 15-minute rate-limit diagnostics.'
     ]
   });
+}
+
+// Get pay-per-use Post consumption
+async function getPostUsage(args) {
+  console.log('Fetching pay-per-use Post consumption...\n');
+
+  const data = await apiRequest('GET', '/usage/tweets', { useBearer: true });
+
+  if (args.verbose) {
+    console.log(JSON.stringify(data, null, 2));
+    return;
+  }
+
+  const usage = data.data || {};
+  const projectUsage = Number(usage.project_usage ?? 0);
+  const projectCap = Number(usage.project_cap ?? 0);
+  const remaining = projectCap ? Math.max(projectCap - projectUsage, 0) : null;
+  const percentUsed = projectCap ? ((projectUsage / projectCap) * 100).toFixed(2) : null;
+
+  console.log('Pay-Per-Use Post Consumption');
+  console.log('-'.repeat(50));
+  console.log(`Project ID: ${usage.project_id || 'n/a'}`);
+  console.log(`Posts consumed this cycle: ${projectUsage.toLocaleString()}`);
+  console.log(`Project cap: ${projectCap ? projectCap.toLocaleString() : 'n/a'}`);
+  if (remaining !== null) {
+    console.log(`Remaining before cap: ${remaining.toLocaleString()} (${percentUsed}% used)`);
+  }
+  if (usage.cap_reset_day) {
+    console.log(`Cap reset day: ${usage.cap_reset_day}`);
+  }
+
+  const daily = usage.daily_project_usage || [];
+  if (daily.length > 0) {
+    console.log('\nDaily usage:');
+    for (const day of daily) {
+      const dayTotal = (day.usage || []).reduce((sum, item) => sum + Number(item.tweets_consumed || 0), 0);
+      console.log(`  ${day.date}: ${dayTotal.toLocaleString()} Posts`);
+      for (const item of day.usage || []) {
+        console.log(`    app ${item.app_id}: ${Number(item.tweets_consumed || 0).toLocaleString()}`);
+      }
+    }
+  }
+
+  console.log('\nCost model: reads are charged per resource returned; writes/actions are charged per request.');
+  console.log('Credit balance and exact dollar spend are available in the X Developer Console.');
 }
 
 // Get rate limit status
@@ -116,11 +163,10 @@ async function getRateLimitStatus(args) {
   }
   
   console.log('\n');
-  console.log('API Tier Information:');
+  console.log('Legacy Rate Limit Information:');
   console.log('-'.repeat(50));
-  console.log('Free:  500 tweets/month, 10K reads/month');
-  console.log('Basic: 3K tweets/month, 10K reads/month ($200/mo)');
-  console.log('Pro:   1M tweets/month, full access ($5,000/mo)');
+  console.log('These are 15-minute endpoint limits, not pay-per-use credit balance.');
+  console.log('Run "node usage.js posts" to check monthly Post consumption.');
 }
 
 // Main
@@ -129,6 +175,9 @@ async function main() {
   
   try {
     switch (command) {
+      case 'posts':
+        await getPostUsage(args);
+        break;
       case 'status':
         await getRateLimitStatus(args);
         break;

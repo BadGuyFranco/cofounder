@@ -1,6 +1,6 @@
 # X.com Connector
 
-Post content to X.com (formerly Twitter) via the API v2.
+Connect to X.com (formerly Twitter) via API v2 for posting, account management, search, discovery, and usage monitoring.
 
 ## API Documentation
 
@@ -10,6 +10,7 @@ https://developer.x.com/en/docs/twitter-api
 
 ```bash
 node scripts/user.js me
+node scripts/usage.js posts
 ```
 
 If you get "Cannot find module", run `npm install` first.
@@ -47,6 +48,10 @@ X_BEARER_TOKEN=your_bearer_token
 
 **What can I do?** See `CAPABILITIES.md` for all available scripts and commands.
 
+## Pay-Per-Use Awareness
+
+X API now uses credit-based pay-per-use billing. Reads are charged per resource returned; writes and actions are charged per request. Use `node scripts/usage.js posts` to check Post consumption through `/2/usage/tweets`. Credit balance and exact dollar spend are only visible in the X Developer Console.
+
 ## Multi-Account Behavior
 
 When multiple accounts are configured and no `--account` flag is specified, ask which account to use before executing X.com operations.
@@ -80,8 +85,8 @@ When multiple accounts are configured and no `--account` flag is specified, ask 
 
 **"401 Unauthorized":** Check all OAuth 1.0a credentials are correct.
 
-**"402 No credits":** X API requires purchasing credits ($5 minimum). Add in Developer Portal > Billing.
+**"402 No credits":** X API requires credits. Add credits or enable auto-recharge in the X Developer Console.
 
 **"403 Forbidden":** App permissions may not include write access. Regenerate tokens after changing permissions.
 
-**"429 Too Many Requests":** Rate limit hit. Wait 15 minutes or check tier limits.
+**"429 Too Many Requests":** Endpoint rate limit hit. Wait for reset and check `node scripts/usage.js status`.

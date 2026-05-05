@@ -59,9 +59,10 @@ function printHelp() {
       'node search.js counts "AI agents lang:en" --start 2024-01-01T00:00:00Z --end 2024-02-01T00:00:00Z --granularity day'
     ],
     'Notes': [
+      'X API uses pay-per-use credits. Search reads are charged per Post returned.',
       'archive and counts use /tweets/search/all and require Bearer (OAuth 2.0 app-only) auth.',
       'Engagement operators (min_faves, min_retweets) are Enterprise-only and will be rejected.',
-      'Archive endpoints have strict per-15min rate limits; queries consume API credits.'
+      'Archive endpoints have strict per-15min rate limits. Use targeted queries and low limits.'
     ]
   });
 }

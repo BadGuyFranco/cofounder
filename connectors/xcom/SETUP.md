@@ -28,7 +28,7 @@ node --version
 3. Complete the developer application:
    - Describe your use case (see below for sample text)
    - Agree to developer terms
-4. Wait for approval (usually instant for Free tier)
+4. Wait for approval
 
 **Sample use case description:**
 ```
@@ -155,16 +155,16 @@ You need **5 credentials** for full functionality:
 
 ## API Billing (Required)
 
-**X API now requires purchasing credits before you can post tweets.**
+**X API uses credit-based pay-per-use billing.**
 
 ### Adding Credits
 
 1. Go to https://developer.x.com/en/portal/dashboard
 2. Click **"Billing"** in the left sidebar
 3. Add a payment method
-4. Purchase credits (**$5 minimum per account**)
+4. Purchase credits or enable auto-recharge
 
-Credits are consumed per API call, not a monthly subscription. Each app/account needs its own credits.
+Credits are consumed as you make API requests. Reads are charged per resource returned; writes/actions are charged per request. Each app/account needs its own credits.
 
 **Without credits, you'll see this error:**
 ```
@@ -172,15 +172,15 @@ Error: Your enrolled account does not have any credits to fulfill this request.
 Status: 402
 ```
 
-### API Tiers
+### Usage Monitoring
 
-| Tier | Cost | Tweet Writes | Tweet Reads |
-|------|------|--------------|-------------|
-| Free | $0/month + credits | 1,500/month | 1,500/month |
-| Basic | $200/month | 3,000/month | 10,000/month |
-| Pro | $5,000/month | 300,000/month | 1,000,000/month |
+Run this command after setup:
 
-The Free tier still has monthly limits, but now requires credit purchases for actual API usage.
+```bash
+node scripts/usage.js posts
+```
+
+This checks `/2/usage/tweets` and reports Post consumption against the project cap. Credit balance and exact dollar spend are visible in the X Developer Console.
 
 ## Troubleshooting
 
@@ -207,8 +207,8 @@ You haven't completed User Authentication setup (Step 3). Go to App Settings > U
 - **Fix:** Regenerate tokens in developer portal
 
 ### "You are not permitted to perform this action"
-- Monthly quota exceeded, or feature not available on your tier
-- **Fix:** Check usage in developer portal, wait for reset, or upgrade tier
+- Monthly cap reached, credits unavailable, or feature not available for your access level
+- **Fix:** Check `node scripts/usage.js posts` and the X Developer Console
 
 ### "Rate limit exceeded"
 - Too many requests in 15-minute window

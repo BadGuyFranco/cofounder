@@ -1,5 +1,8 @@
 # What's New in CoFounder
 
+## May 5, 2026
+- **X.com connector** - Updated for X's credit-based pay-per-use API model. Added `node scripts/usage.js posts` to check Post consumption through `/2/usage/tweets`, refreshed setup and capability docs, and added cost-aware search guidance.
+
 ## May 1, 2026
 - **Documentor local-generator** - New `--style resume` profile for ATS-compliant beautiful resumes. Pandoc-based DOCX generation using a programmatically built reference template (Georgia body, Calibri headings, deep teal #0F4C5C accent, custom paragraph styles for tagline and contact line). PDF pipeline mirrors the same design tokens via Playwright. Includes a Pandoc fenced div preprocessor so the same Markdown source produces consistent DOCX and PDF.
 
