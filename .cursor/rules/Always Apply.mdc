@@ -20,6 +20,7 @@ On Windows: Read `.cursor/rules/Windows.mdc` FIRST and follow it exactly.
 | Need | Tool |
 |------|------|
 | Write or review content | `tools/Content Author/` |
+| Collect, normalize, dedupe, rank, or bundle source candidates | `tools/Content Harvester/` |
 | Write or review prompts, WISER Plays, or agents | `tools/Play Author/` |
 | Generate or edit images | `tools/Image Generator/` |
 | Screenshot webpage or convert SVG/HTML to image | `tools/Image Generator/` |

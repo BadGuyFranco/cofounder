@@ -33,6 +33,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | OpenAI | `openai/` |
 | Publer | `publer/` |
 | Replicate | `replicate/` |
+| Reddit | `reddit/` |
 | Stripe | `stripe/` |
 | Tickets (CoBuilder) | `tickets/` |
 | Supabase | `supabase/` |

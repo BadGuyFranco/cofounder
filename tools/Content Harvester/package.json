@@ -1,0 +1,12 @@
+{
+  "name": "content-harvester-tool",
+  "version": "1.0.0",
+  "description": "Topic-agnostic content intake tool for collecting, normalizing, deduplicating, ranking, and exporting source candidate bundles",
+  "type": "module",
+  "scripts": {
+    "harvest": "node scripts/harvest.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.7.3"
+  }
+}

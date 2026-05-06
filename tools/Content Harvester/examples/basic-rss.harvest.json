@@ -1,0 +1,42 @@
+{
+  "name": "basic-rss",
+  "consumer": "Content Harvester smoke test",
+  "timebox": {
+    "from": "2020-01-01T00:00:00Z",
+    "to": "2100-01-01T00:00:00Z"
+  },
+  "topics": [
+    "artificial intelligence",
+    "developer tools"
+  ],
+  "sources": [
+    {
+      "type": "rss",
+      "url": "https://example.com/feed.xml",
+      "source": "Example Feed",
+      "role": "discovery",
+      "enabled": false
+    },
+    {
+      "type": "manual_urls",
+      "source": "Manual Examples",
+      "role": "curated",
+      "urls": [
+        "https://example.com/"
+      ]
+    }
+  ],
+  "filters": {
+    "exclude_terms": [
+      "coupon",
+      "sponsored"
+    ],
+    "max_items_per_source": 20,
+    "min_score": 0
+  },
+  "output": {
+    "directory": "generated_output/basic-rss",
+    "markdown": true,
+    "json": true
+  }
+}
