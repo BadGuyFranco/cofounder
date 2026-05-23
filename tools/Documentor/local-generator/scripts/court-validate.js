@@ -5,7 +5,7 @@
  * Asserts the mechanical requirements of a court filing against the rendered
  * PDF, driven by the same caption.json used to render it. Pass/fail per check.
  *
- *   node court-validate.js --pdf motion.pdf --caption caption.json [--max-pages N]
+ *   node court-validate.js --pdf motion.pdf --caption caption.json [--max-pages N] [--body body.md --max-words N]
  *
  * Checks: PDF parses; page count (and optional limit); the exact case number,
  * document title, each service email, signer name, the COURT USE ONLY caption
@@ -29,10 +29,28 @@ function opt(name) { const i = args.indexOf(name); return i >= 0 ? args[i + 1] :
 const pdfPath = opt('--pdf');
 const captionPath = opt('--caption');
 const maxPages = opt('--max-pages') ? parseInt(opt('--max-pages'), 10) : null;
+const bodyPath = opt('--body');
+const maxWords = opt('--max-words') ? parseInt(opt('--max-words'), 10) : null;
 
 if (!pdfPath || !captionPath) {
-  console.error('Usage: node court-validate.js --pdf motion.pdf --caption caption.json [--max-pages N]');
+  console.error('Usage: node court-validate.js --pdf motion.pdf --caption caption.json [--max-pages N] [--body body.md --max-words N]');
   process.exit(1);
+}
+
+// Count words in the motion body (markdown). The body excludes caption,
+// signature block, and certificate of service by construction, which matches
+// the C.R.C.P. 121 word-count exclusions.
+function wordCountFromMarkdown(md) {
+  const stripped = md
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_~|]/g, ' ')
+    .replace(/^\s*[-+]\s+/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return stripped ? stripped.split(' ').filter(Boolean).length : 0;
 }
 
 const caption = JSON.parse(readFileSync(pathResolve(captionPath), 'utf-8'));
@@ -44,6 +62,14 @@ function check(label, pass, detail = '') { checks.push({ label, pass, detail });
 
 check('PDF parses', !!data.text, `${data.numpages} page(s)`);
 if (maxPages !== null) check(`Within page limit (${maxPages})`, data.numpages <= maxPages, `${data.numpages} pages`);
+if (maxWords !== null) {
+  if (bodyPath) {
+    const words = wordCountFromMarkdown(readFileSync(pathResolve(bodyPath), 'utf-8'));
+    check(`Within word limit (${maxWords})`, words <= maxWords, `${words} words in body`);
+  } else {
+    check('Word limit check', false, 'pass --body body.md to count body words');
+  }
+}
 check('Case number present', text.includes(caption.case_number), caption.case_number);
 check('Document title present', text.includes(caption.title.replace(/\s+/g, ' ')), caption.title);
 check('COURT USE ONLY caption marker', /COURT USE ONLY/i.test(text));

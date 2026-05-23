@@ -2,7 +2,7 @@
 
 ## May 23, 2026
 - **CourtListener connector** - New connector for legal citation verification and case-law research via the Free Law Project REST API. Resolve a citation to its real case (`citations.js lookup "255 P.3d 1083"`), search opinions (`search.js`), and fetch full opinion text (`opinions.js`). Token auth; set `COURTLISTENER_API_TOKEN` in `/memory/connectors/courtlistener/.env`.
-- **Documentor court-filing renderer** - New `court-render.js` and `court-validate.js` in the local generator. Produces a deterministic, court-compliant PDF from a Markdown body plus a `caption.json` (Colorado two-column boxed caption, 1-inch margins, double-spaced, footer page numbers), with a pre-filing validation gate that checks page size, page limit, caption, certificate of service, and required citation/service fields.
+- **Documentor court-filing renderer** - New `court-render.js` and `court-validate.js` in the local generator. Produces a deterministic, court-compliant PDF from a Markdown body plus a `caption.json` (Colorado two-column boxed caption, 1-inch margins, double-spaced, footer page numbers), with a pre-filing validation gate that checks page size, page limit, caption, certificate of service, and required citation/service fields. The validator also enforces C.R.C.P. 121 word limits via `--body body.md --max-words N` (counting the body, which excludes caption, signature, and certificate).
 
 ## May 5, 2026
 - **X.com connector** - Updated for X's credit-based pay-per-use API model. Added `node scripts/usage.js posts` to check Post consumption through `/2/usage/tweets`, refreshed setup and capability docs, and added cost-aware search guidance.
