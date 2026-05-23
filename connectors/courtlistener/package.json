@@ -1,0 +1,10 @@
+{
+  "name": "courtlistener-connector",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "CourtListener (Free Law Project) connector: legal citation verification and case-law research via the REST v4 API.",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

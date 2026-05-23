@@ -19,6 +19,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | DataForSEO | `dataforseo/` |
 | ClickUp | `clickup/` |
 | Cloudflare | `cloudflare/` |
+| CourtListener | `courtlistener/` |
 | Figma | `figma/` |
 | Go High Level | `gohighlevel/` |
 | Google | `google/` |
