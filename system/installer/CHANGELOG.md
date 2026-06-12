@@ -1,5 +1,9 @@
 # What's New in CoFounder
 
+## June 12, 2026
+- **Ahrefs connector** - New connector for Domain Rating and backlink data via the Ahrefs API. Domain Rating lookups are free and need no account or key: check any domain and benchmark competitors with `metrics.js dr --domain D --competitors a.com,b.com`. An optional paid Ahrefs API key unlocks referring domains, anchor text, organic keywords, and full domain snapshots. Browser Control stays as the fallback for data the API does not expose.
+- **SEO Expert** - Now pulls real Domain Rating for the audited site and its competitors automatically and for free in Phases 5 and 7. Previously this required a paid tool or browser scraping.
+
 ## May 23, 2026
 - **CourtListener connector** - New connector for legal citation verification and case-law research via the Free Law Project REST API. Resolve a citation to its real case (`citations.js lookup "255 P.3d 1083"`), search opinions (`search.js`), and fetch full opinion text (`opinions.js`). Token auth; set `COURTLISTENER_API_TOKEN` in `/memory/connectors/courtlistener/.env`.
 - **Documentor court-filing renderer** - New `court-render.js` and `court-validate.js` in the local generator. Produces a deterministic, court-compliant PDF from a Markdown body plus a `caption.json` (Colorado two-column boxed caption, 1-inch margins, double-spaced, footer page numbers), with a pre-filing validation gate that checks page size, page limit, caption, certificate of service, and required citation/service fields. The validator also enforces C.R.C.P. 121 word limits via `--body body.md --max-words N` (counting the body, which excludes caption, signature, and certificate).

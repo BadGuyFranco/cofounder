@@ -13,6 +13,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 
 | Platform | Location |
 |----------|----------|
+| Ahrefs | `ahrefs/` |
 | Airtable | `airtable/` |
 | Anthropic | `anthropic/` |
 | Bing Webmaster Tools | `bing/` |

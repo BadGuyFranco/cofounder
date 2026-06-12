@@ -23,6 +23,14 @@ seo/
     pages/               (net-new SEO landing pages)
     articles/            (long-form blog/article content)
     briefs/              (keyword and content research briefs)
+  competitive/           (operator workflow: competitor gap, monthly tracker, snapshots)
+    monthly/             (YYYY-MM.md tracker reports)
+    snapshots/           (sitemap snapshot JSON per competitor domain)
+  roadmaps/              (6-month content roadmaps from competitor gaps)
+  pr/                    (digital PR swipe files and campaign ideas)
+  dashboard.md           (single operational view; see Operator Workflows)
+  dashboard/
+    snapshots/           (dated dashboard snapshots)
   todos.md               (cross-plan long-term items with priority and source)
   history.md             (one row per audit; fixed schema; never freeform)
   AGENTS.md              (instructions for running subsequent audits on this site)
@@ -83,6 +91,33 @@ This tool operates across four layers depending on what the user needs:
 **Execute** - Submit sitemaps, request indexing, validate schema. Runs when the user confirms.
 **Plan** - Save the full audit output as a self-contained, executable plan file. The plan knows which tool and connectors to call, tracks completion with checkboxes, and can be resumed in any future session without re-auditing.
 
+## Operator Workflows (Competitive, PR, Dashboard, GEO)
+
+Beyond the one-shot audit, SEO Expert runs six repeatable, operator-triggered workflows. These never run on a schedule; the operator invokes each run. Full specification: `AI SEO Operator Playbook.md` in this folder.
+
+Helper scripts in `tools/SEO Expert/scripts/`:
+- `sitemap-fetch.js`: fetch, follow sitemap-index files, parse, normalize, and snapshot a site's sitemap to `seo/competitive/snapshots/[domain]-YYYY-MM-DD.json`. Handles `.gz` and gzip-encoded responses; never blocks on failure (emits a labeled `N/A` snapshot). Usage: `node "tools/SEO Expert/scripts/sitemap-fetch.js" --domain competitor.com --out [snapshot path] --pretty`
+- `sitemap-diff.js`: deterministic diff of two snapshots (added, removed, lastmod-changed URLs, new path segments). Authoritative source for the tracker. Usage: `node "tools/SEO Expert/scripts/sitemap-diff.js" [prev.json] [curr.json] --pretty`
+
+Never diff sitemaps by reading XML in the prompt for sets over 200 URLs; use `sitemap-diff.js`. Any prompt-only fallback must be labeled "Estimated: manual review."
+
+| # | Workflow | Phase | Output |
+|---|---|---|---|
+| 1 | Competitor sitemap gap analysis | 5 | `seo/competitive/sitemap-gap-*.md`, `seo/roadmaps/content-roadmap-*.md` |
+| 2 | Monthly competitor tracker | 5 / 13 | `seo/competitive/monthly/YYYY-MM.md`, snapshot JSON |
+| 3 | SERP-based content brief | 5 / 12 | `seo/content/briefs/[keyword].md` |
+| 4 | Digital PR pattern mining | 7 / 12 | `seo/pr/swipe-file-*.md`, `seo/pr/campaign-ideas-*.md` |
+| 5 | Central SEO dashboard | 9 / 12 | `seo/dashboard.md`, `seo/dashboard/snapshots/YYYY-MM-DD.md` |
+| 6 | GEO entity and citation refresh | 10 | dashboard GEO block, `Type: geo` todos |
+
+**Workflow 1 (sitemap gap):** run `sitemap-fetch.js` for the target and each competitor, cluster competitor URLs by path segment and intent, classify gaps by asset type (service page, comparison, landing, guide, glossary, FAQ, tool, data asset), prioritize by business relevance, intent fit, keyword value, difficulty, and topical authority, then produce a 6-month roadmap. Each roadmap item: month, asset type, topic, likely keyword, intent, competitor example, why it matters, next action, effort, confidence.
+
+**Workflow 2 (tracker):** on an operator-triggered run, re-fetch with `sitemap-fetch.js`, diff with `sitemap-diff.js`, and report new/removed URLs and new clusters. Score findings by competitive Significance (High/Medium/Low) inside `seo/competitive/monthly/YYYY-MM.md`. Do not auto-write to `todos.md` (see the promotion rule in Phase 0.5 and Phase 13).
+
+**Workflow 6 (GEO refresh):** re-run the Phase 10 Perplexity/ChatGPT presence tests, diff against the last GEO snapshot, check entity consistency across About/LinkedIn/Crunchbase/Wikipedia/press, inventory citable assets (a plain "What is X" statement, a comparison table, an original statistic), and verify llms.txt, schema, and robots LLM directives. Label all LLM presence results "Unverified: requires user confirmation."
+
+**Snapshot rule (every dashboard and snapshot):** label unavailable data with `N/A: connector not configured`, `N/A: account limit reached`, `Estimated: manual review`, or `Unverified: requires user confirmation`. Never fabricate metrics.
+
 ## Impact Measurement
 
 SEO Expert outputs should:
@@ -118,7 +153,7 @@ Every connector is optional. The audit never stops or errors because a connector
 | PageSpeed Insights quota exceeded | Note the quota limit, add API key setup as a Low priority todo item, continue with whatever data returned |
 | GSC not configured | Run audit in manual mode; include what to check in each GSC section |
 | DataForSEO not configured | Skip rank tracking, backlink, and keyword gap commands; use Ahrefs via Browser Control if available, otherwise manual instructions |
-| Ahrefs not configured | Fall back to DataForSEO for backlink data; if neither available, use manual instructions |
+| Ahrefs not configured | Domain Rating is still available free via `connectors/ahrefs/` (no key, no account). For the rest of the backlink profile, fall back to DataForSEO; if neither available, use manual instructions |
 | Bing not configured | Skip Bing crawl commands; ask user to check Bing Webmaster Tools dashboard manually |
 | WordPress not configured | Provide CMS instructions for manual implementation of title tags, meta, schema |
 | Cloudflare not configured | Provide manual redirect and robots.txt implementation instructions |
@@ -163,6 +198,12 @@ Check for a `seo/` directory in the current project context (open files, @mentio
 - `seo/plans/` containing one or more `plan-YYYY-MM-DD/plan.md` files
 - `seo/todos.md`
 - `seo/history.md`
+- `seo/competitive/snapshots/*.json` (latest competitor snapshot) and `seo/competitive/monthly/*.md` (latest tracker)
+- `seo/roadmaps/*.md` (latest content roadmap)
+- `seo/pr/*.md` (latest swipe file and campaign ideas)
+- `seo/dashboard.md` and `seo/dashboard/snapshots/*.md` (latest dashboard snapshot)
+
+If competitive or dashboard state exists, report it and its age in the session summary, e.g. "Last competitor snapshot: 2026-04-01 (62 days old). Last dashboard: 2026-05-01." If the latest competitor snapshot is older than 28 days, offer to run the Monthly Competitor Tracker. Do not run it automatically.
 
 ### Step 2: Determine mode
 
@@ -202,6 +243,8 @@ Run this at the start of every session, whether continuing a plan or starting fr
 4. Ask the user to confirm any P2 items before including them.
 5. P3 items: mention them but do not include in the plan unless the user requests it.
 
+**Exception for operator-workflow items:** items tagged `Type: competitive`, `Type: pr`, or `Type: geo` come from operator workflows, not from an audit. Surface them but never auto-carry them into a plan, even at P1. Ask the operator to confirm each before inclusion. This keeps competitive monitoring noise out of the audit plan.
+
 ---
 
 ## Phase 1: Site Analysis
@@ -234,8 +277,9 @@ Before asking anything, silently check which connectors are available for this s
 | Ahrefs (via Browser Control) | `/memory/tools/browser-control/sites/ahrefs.env` exists | Live DR, backlink profile, anchor text, broken backlinks, competitors, content gap, ranked keywords |
 | Bing Webmaster Tools | `/memory/connectors/bing/sites.json` contains the domain | Live Bing crawl stats, issues, sitemaps |
 | PageSpeed Insights | Always available (anonymous quota or API key in `/memory/connectors/google/.env`) | Core Web Vitals and performance score |
+| Ahrefs DR (free, public) | Always available (no key, no account) | Domain Rating for any domain, including competitor DR benchmarking, via `connectors/ahrefs/scripts/metrics.js dr` |
 
-If GSC is detected, tell the user: "I have live Search Console data for this site." If DataForSEO is configured, also tell the user: "I have live rank tracking and backlink data via DataForSEO." If Ahrefs credentials are detected, tell the user: "I have Ahrefs access via browser automation for backlink and keyword data."
+If GSC is detected, tell the user: "I have live Search Console data for this site." If DataForSEO is configured, also tell the user: "I have live rank tracking and backlink data via DataForSEO." If Ahrefs credentials are detected, tell the user: "I have Ahrefs access via browser automation for backlink and keyword data." Domain Rating is always available for free (no key) via `connectors/ahrefs/` for any domain and its competitors; run it for the DR benchmark in Phases 5 and 7 regardless of which other tools are configured.
 
 If a connector is not configured and its data would materially improve the audit, note it once at the end of the todo list as an optional setup item - do not interrupt the audit flow to ask for setup.
 
@@ -476,8 +520,17 @@ Use the Ahrefs site guide's "Extended Data Pull" workflow to collect content gap
 
 **If neither DataForSEO nor Ahrefs Browser Control is configured:**
 - Topics competitors rank for that this site has no content on (manual: search the competitor's top pages in their GSC or Ahrefs/Semrush if available)
-- Prioritize gaps where: (1) the site already has topical authority in a related cluster, (2) the keyword has commercial or informational value aligned with the site's goals, and (3) the competitor ranking for it has a Domain Rating the site could realistically match within 6 months
+- Prioritize gaps where: (1) the site already has topical authority in a related cluster, (2) the keyword has commercial or informational value aligned with the site's goals, and (3) the competitor ranking for it has a Domain Rating the site could realistically match within 6 months (check competitor DR free: `node connectors/ahrefs/scripts/metrics.js dr --domain [domain] --competitors [comp1],[comp2]`)
 - **Ahrefs content gap workflow (manual):** Enter the site's domain and up to 3 competitor domains. Filter to keywords all competitors rank for but the site does not. Sort by keyword difficulty ascending to find quick wins. Filter by search volume to prioritize.
+
+---
+
+### Competitive and SERP Workflows (operator-triggered)
+
+When the goal includes competitive analysis or content planning, run the operator workflows (see the Operator Workflows section):
+- Workflow 1: competitor sitemap gap analysis to a 6-month roadmap, via `scripts/sitemap-fetch.js`.
+- Workflow 2: monthly competitor tracker, via `scripts/sitemap-fetch.js` then `scripts/sitemap-diff.js`.
+- Workflow 3: SERP-based content brief for each selected keyword (top-10 SERP via DataForSEO when available, else manual SERP review), separating table stakes from value adds. Output extends the brief template in Phase 12.6.
 
 ---
 
@@ -506,6 +559,16 @@ Use the Ahrefs site guide's "Extended Data Pull" workflow to collect content gap
 ---
 
 ## Phase 7: Backlinks and Authority
+
+### Domain Rating (free, always run first)
+
+Domain Rating needs no key or account. Pull it for the target and the top 3 competitors in one call:
+
+```
+node connectors/ahrefs/scripts/metrics.js dr --domain [domain] --competitors [comp1],[comp2],[comp3]
+```
+
+Use these values to fill the DR benchmark table below and the Phase 5 content-gap prioritization. This runs on every audit regardless of which paid connectors are configured. Data is subject to Ahrefs' Domain Rating License: attribution if published publicly, no resale.
 
 ### With DataForSEO (auto-runs if configured)
 
@@ -562,7 +625,7 @@ If content gap analysis is needed, also run the site guide's "Extended Data Pull
 ### With Ahrefs, Semrush, or Moz (manual, if no Browser Control credentials)
 
 **Domain authority benchmarks:**
-Pull the site's Domain Rating (Ahrefs) or Domain Authority (Moz) and contextualize it against what's competing:
+Use the Domain Rating values from the free Ahrefs connector (run at the start of this phase) and contextualize them against what's competing:
 
 | DR/DA Range | Typical Profile |
 |---|---|
@@ -690,6 +753,12 @@ Tell the user: "To complete the backlink dimension, either add your Ahrefs crede
 - A sudden drop in referring domains indicates link loss (site went down, content removed, or manual disavow by a referring site); requires investigation
 - Gradual, consistent link growth is the healthiest signal
 - If the user reports a traffic drop, explicitly ask: did a disavow file change, a link campaign end, or a large referring site remove links in the 30 days prior?
+
+---
+
+### Digital PR Pattern Mining (operator-triggered, Workflow 4)
+
+Generate link-worthy campaign ideas from proven link-winning content rather than generic brainstorming. Identify 10 to 20 niche sites that reliably earn editorial links, pull their top-linked pages via Ahrefs Browser Control or DataForSEO where available (inherit the Ahrefs limit and 2FA handling above; cap coverage and label partial pulls), classify link-winning patterns (data study, calculator, benchmark, rankings, survey, controversial analysis, map, template, dataset), build a swipe file, and score each idea by linkability, production effort, brand fit, data availability, and outreach clarity. Outputs: `seo/pr/swipe-file-*.md` and `seo/pr/campaign-ideas-*.md`. Promote into `todos.md` only after operator triage, tagged `Type: pr`.
 
 ---
 
@@ -852,6 +921,12 @@ Check for consistency across: About page, LinkedIn company page, Crunchbase (if 
 - Search brand name and primary service category on Perplexity.ai. Accurately represented?
 - Search the same on ChatGPT. What does it say?
 - Note any inaccuracies - these indicate missing or inconsistent entity signals.
+
+---
+
+### GEO Entity and Citation Refresh (operator-triggered, Workflow 6)
+
+On a triggered run, re-run the Perplexity and ChatGPT presence tests above, diff representation against the last GEO snapshot, check entity consistency across About, LinkedIn, Crunchbase, Wikipedia, and press, inventory citable assets, and verify the llms.txt, schema, and robots LLM surface. Produce refresh tasks, write a GEO status block into `seo/dashboard.md`, and promote tasks into `todos.md` only after operator triage, tagged `Type: geo`. Label all LLM presence results "Unverified: requires user confirmation."
 
 ---
 
@@ -1527,6 +1602,18 @@ Generate structured content briefs for every content gap or cannibalization fix 
 
 ---
 
+### 12.7 Operator Workflow Assets
+
+Offer these only when the relevant operator workflow ran and findings exist. Save under the paths in the Operator Workflows section. Offer only options that match findings; do not list irrelevant asset types.
+
+- Competitor sitemap gap report and 6-month content roadmap (Workflow 1)
+- SERP-based content brief (Workflow 3; extends 12.6 with table-stakes vs value-adds, competitor pages analyzed, and LLM citation opportunities)
+- Monthly competitor tracker report (Workflow 2)
+- Digital PR swipe file and campaign ideas (Workflow 4)
+- SEO dashboard snapshot (Workflow 5)
+
+---
+
 ## Phase 13: Execute (On Confirmation)
 
 After the user reviews the todo list, offer to execute available actions. Always confirm before running.
@@ -1626,6 +1713,14 @@ Note: Cloudflare free plan is limited to 3 Page Rules. Users on free plan should
 - Updating robots.txt on the server (provide updated file content; user uploads it)
 - Creating or uploading llms.txt (provide the file content; user uploads it)
 - Meta descriptions when no SEO plugin is active (provide content; user pastes into plugin)
+
+### Operator Workflow Actions (operator-triggered, never scheduled)
+
+Run only on explicit request; each run is manual. SEO Expert does not schedule these. On each session, Phase 0 reports snapshot age and offers a run when the latest is over 28 days old.
+
+- **Run the competitor tracker:** execute `sitemap-fetch.js` then `sitemap-diff.js` for each tracked competitor, write `seo/competitive/monthly/YYYY-MM.md`, and present High-significance findings for review.
+- **Refresh the dashboard:** regenerate `seo/dashboard.md` and write a dated snapshot to `seo/dashboard/snapshots/YYYY-MM-DD.md`, applying the Snapshot Rule for any unavailable data.
+- **Promote findings into todos.md:** only after the operator selects which findings to act on. Write them on the existing P-axis and tag with `Type: competitive | Source: monthly-YYYY-MM` (or `Type: pr` / `Type: geo`). Never auto-promote.
 
 ### After Every Completed Action
 
