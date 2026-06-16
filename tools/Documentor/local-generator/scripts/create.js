@@ -46,9 +46,16 @@ function isPandocAvailable() {
  * (in inches) used for PDF output and (in EMU twentieths-of-a-point)
  * for DOCX output.
  *
- * - default: general-purpose document style (Calibri 11pt, 1" margins)
- * - resume:  ATS + recruiter-friendly resume style (Calibri 10.5pt,
- *            0.75" margins, tight spacing, plain section headings)
+ * - default:  general-purpose document style (Calibri 11pt, 1" margins)
+ * - resume:   ATS + recruiter-friendly resume style (Calibri 10.5pt,
+ *             0.75" margins, tight spacing, plain section headings)
+ * - playbook: executive deliverable style. Same type system and palette
+ *             as `resume` (Charter body, Avenir Next display, teal/ink/
+ *             muted) but with document-grade vertical rhythm: 1" margins,
+ *             1.45 line-height, real paragraph spacing. The resume profile
+ *             is engineered to compress onto 3 pages; multi-page strategy
+ *             documents (job playbooks, proposals, briefs) should use this
+ *             profile instead so they read as designed deliverables.
  */
 const STYLES = {
   default: {
@@ -78,100 +85,88 @@ const STYLES = {
     `,
   },
   resume: {
-    // Visual style profile mirrors templates/resume-reference.docx.
-    // Edit BOTH together to keep PDF and DOCX visually in sync.
-    // Design tokens (must match build-resume-reference.py):
-    //   BODY        Georgia 10.5pt #1F2937 (charcoal)
-    //   HEADING     Calibri (16/11 pt)
-    //   ACCENT      #0F4C5C deep teal (name + section rules + links)
-    //   SECONDARY   #595959 medium gray
-    //   MARGINS     0.75 in
-    marginIn: 0.75,
+    // Executive resume style (Design Advisor pass, 2026-05-28).
+    // PDF is the canonical design target; DOCX is a degraded on-demand fallback
+    // with no visual-parity obligation (per Anthony, 2026-05-28).
+    // ATS-safe: single-column flow, real selectable text in DOM reading order,
+    // no tables/images-for-text, canonical headings, modest heading tracking
+    // (0.5pt; higher values make text extractors split heading letters).
+    // Type roles: serif body (Charter), sans display (Avenir Next / Helvetica Neue).
+    // Color (60-30-10): ink #1F2937 body; teal #0F4C5C accent used sparingly
+    // (name, section rules, links only); muted #5B6770 tagline/contact/secondary.
+    marginIn: 0.8,
     css: `
-      body {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 10.5pt;
-        line-height: 1.2;
-        color: #1F2937;
-        margin: 0;
-        padding: 0;
-      }
-      h1 {
-        font-family: 'Calibri', 'Arial', sans-serif;
-        font-size: 22pt;
-        font-weight: bold;
-        color: #0F4C5C;
-        margin: 0 0 2pt 0;
-        text-align: left;
-        letter-spacing: 1pt;
-        line-height: 1.0;
-      }
-      h2 {
-        font-family: 'Calibri', 'Arial', sans-serif;
-        font-size: 11pt;
-        font-weight: bold;
-        color: #1F2937;
-        text-transform: uppercase;
-        letter-spacing: 0.6pt;
-        border-bottom: 1.5pt solid #0F4C5C;
-        margin: 14pt 0 4pt 0;
-        padding-bottom: 2pt;
-      }
-      h3 {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 11pt;
-        font-weight: bold;
-        color: #1F2937;
-        margin: 8pt 0 2pt 0;
-      }
-      h4 {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 10.5pt;
-        font-weight: bold;
-        font-style: italic;
-        color: #1F2937;
-        margin: 4pt 0 1pt 0;
-      }
-      p { margin: 0 0 4pt 0; }
-      ul, ol { margin: 2pt 0 4pt 0; padding-left: 18pt; }
-      li { margin-bottom: 2pt; }
-      strong, b { font-weight: bold; color: #1F2937; }
+      body { font-family: 'Charter','Georgia','Times New Roman',serif; font-size: 10.5pt; line-height: 1.3; color: #1F2937; margin: 0; padding: 0; }
+      h1 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 22pt; font-weight: 700; color: #0F4C5C; letter-spacing: 0.2pt; line-height: 1.0; margin: 0 0 1pt 0; }
+      h2 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 10.5pt; font-weight: 700; color: #1F2937; text-transform: uppercase; letter-spacing: 0.5pt; border-bottom: 0.75pt solid #0F4C5C; padding-bottom: 2.5pt; margin: 15pt 0 5pt 0; }
+      h3 { font-family: 'Charter','Georgia',serif; font-size: 10.5pt; font-weight: 700; color: #1F2937; margin: 8pt 0 1pt 0; page-break-after: avoid; }
+      h4 { font-family: 'Charter','Georgia',serif; font-size: 10.5pt; font-weight: 700; font-style: italic; color: #1F2937; margin: 4pt 0 1pt 0; }
+      p { margin: 0 0 3pt 0; }
+      ul, ol { margin: 2pt 0 4pt 0; padding-left: 15pt; }
+      li { margin-bottom: 2pt; line-height: 1.3; page-break-inside: avoid; }
+      strong, b { font-weight: 700; color: #1F2937; }
       em, i { font-style: italic; }
       hr { display: none; }
-      a { color: #0F4C5C; text-decoration: underline; }
-
-      /*
-       * Custom paragraph styles. PDF mirrors the Pandoc reference.docx
-       * custom-style classes by matching a class attribute on the
-       * generated HTML element. Marked passes div fences as <div>
-       * with the class set, so we can target them.
-       */
-      .Tagline, [data-custom-style="Tagline"], div.tagline {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 10.5pt;
-        font-style: italic;
-        color: #595959;
-        margin: 0 0 2pt 0;
-      }
-      .Contact, [data-custom-style="Contact"], div.contact {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 9.5pt;
-        color: #595959;
-        margin: 0 0 8pt 0;
-      }
-      .RoleHeadline, [data-custom-style="Role\\ Headline"], div.role-headline {
-        font-family: 'Calibri', 'Arial', sans-serif;
-        font-size: 11pt;
-        font-weight: bold;
-        color: #1F2937;
-        margin: 0 0 2pt 0;
-      }
-      code { font-family: 'Georgia', 'Times New Roman', serif; background: none; padding: 0; }
+      a { color: #0F4C5C; text-decoration: none; }
+      .Tagline, [data-custom-style="Tagline"], div.tagline { font-family: 'Charter','Georgia',serif; font-size: 9.5pt; color: #5B6770; line-height: 1.3; text-wrap: balance; margin: 0 0 3pt 0; }
+      .Contact, [data-custom-style="Contact"], div.contact { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 9pt; color: #5B6770; letter-spacing: 0.2pt; margin: 0 0 11pt 0; }
+      .RoleHeadline, [data-custom-style="Role\\ Headline"], div.role-headline { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 12pt; font-weight: 600; color: #1F2937; margin: 0 0 3pt 0; }
+      code { font-family: 'Charter','Georgia',serif; background: none; padding: 0; }
       pre { background: none; padding: 0; }
-      blockquote { margin: 0 0 4pt 0; padding-left: 12pt; border-left: 2pt solid #595959; color: #1F2937; }
+      blockquote { margin: 0 0 4pt 0; padding-left: 12pt; border-left: 2pt solid #5B6770; color: #1F2937; }
       table { border-collapse: collapse; margin: 2pt 0 4pt 0; width: 100%; }
       th, td { border: none; padding: 0 6pt 0 0; vertical-align: top; }
       th { font-weight: bold; text-align: left; }
+    `,
+  },
+  playbook: {
+    // Executive deliverable style (Design Advisor pass, 2026-06-05).
+    // Shares the resume profile's type roles and 60-30-10 palette so a
+    // playbook PDF sits next to a resume PDF as one design family, but
+    // restores the vertical rhythm a multi-page document needs: the resume
+    // profile's 3pt paragraph / 2pt list spacing is a 3-page compression
+    // tactic, not a reading experience. Here paragraphs breathe (8pt),
+    // lists articulate (5pt), section heads carry real air above (24pt),
+    // and the leading is book-weight (1.45).
+    // PDF output carries "Page N of M" folios on every page except page 1.
+    marginIn: 1,
+    pageNumbers: true,
+    css: `
+      body { font-family: 'Charter','Georgia','Times New Roman',serif; font-size: 10.5pt; line-height: 1.45; color: #1F2937; margin: 0; padding: 0; }
+      h1 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 22pt; font-weight: 700; color: #0F4C5C; letter-spacing: 0.2pt; line-height: 1.0; margin: 0 0 2pt 0; }
+      h2 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 11pt; font-weight: 700; color: #1F2937; text-transform: uppercase; letter-spacing: 0.5pt; border-bottom: 0.75pt solid #0F4C5C; padding-bottom: 3pt; margin: 24pt 0 9pt 0; page-break-after: avoid; }
+      h3 { font-family: 'Charter','Georgia',serif; font-size: 10.5pt; font-weight: 700; color: #1F2937; margin: 14pt 0 4pt 0; page-break-after: avoid; }
+      h4 { font-family: 'Charter','Georgia',serif; font-size: 10.5pt; font-weight: 700; font-style: italic; color: #1F2937; margin: 10pt 0 3pt 0; page-break-after: avoid; }
+      p { margin: 0 0 8pt 0; }
+      ul, ol { margin: 4pt 0 10pt 0; padding-left: 18pt; }
+      li { margin-bottom: 5pt; line-height: 1.45; page-break-inside: avoid; }
+      strong, b { font-weight: 700; color: #1F2937; }
+      em, i { font-style: italic; }
+      hr { display: none; }
+      a { color: #0F4C5C; text-decoration: none; }
+      .Tagline, [data-custom-style="Tagline"], div.tagline { font-family: 'Charter','Georgia',serif; font-size: 9.5pt; color: #5B6770; line-height: 1.3; text-wrap: balance; margin: 0 0 3pt 0; }
+      .Contact, [data-custom-style="Contact"], div.contact { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 9pt; color: #5B6770; letter-spacing: 0.2pt; margin: 0 0 18pt 0; }
+      .RoleHeadline, [data-custom-style="Role\\ Headline"], div.role-headline { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 12pt; font-weight: 600; color: #1F2937; margin: 0 0 3pt 0; }
+      code { font-family: 'Charter','Georgia',serif; background: none; padding: 0; }
+      pre { background: none; padding: 0; }
+      blockquote { margin: 0 0 10pt 0; padding-left: 12pt; border-left: 2pt solid #5B6770; color: #1F2937; }
+      table { border-collapse: collapse; margin: 4pt 0 10pt 0; width: 100%; }
+      th, td { border: none; padding: 1pt 8pt 1pt 0; vertical-align: top; }
+      th { font-weight: bold; text-align: left; }
+    `,
+  },
+  letter: {
+    // Business-letter style for cover letters. Roomier 1.25" margins and a
+    // tighter line-height than `default`, with no extra body top margin, so a
+    // short letter reads as composed rather than sparse.
+    marginIn: 1.25,
+    css: `
+      body { font-family: 'Calibri','Arial',sans-serif; font-size: 11pt; line-height: 1.4; color: #1F2937; margin: 0 auto; max-width: 100%; }
+      p { margin: 0 0 11pt 0; }
+      a { color: #1F2937; text-decoration: none; }
+      strong, b { font-weight: 700; }
+      em, i { font-style: italic; }
+      h1, h2, h3 { font-family: 'Calibri','Arial',sans-serif; font-weight: 700; }
     `,
   },
 };
@@ -298,23 +293,67 @@ function createWordViaPandoc(markdownPath, outputPath, referenceDocxPath) {
 }
 
 /**
- * Create PDF from HTML using Playwright (chromium)
+ * Create PDF from HTML using Playwright (chromium).
+ *
+ * When pageNumbers is true, the footer shows "Page N of M" on every page
+ * EXCEPT page 1 (title pages should not carry a folio). Chromium's print
+ * pipeline cannot conditionally hide the footer on one page, so this is a
+ * two-pass render: one PDF without footers, one with, both with identical
+ * margins (the footer draws inside the margin box, so content layout is
+ * byte-identical between passes). Page 1 of the plain render is then
+ * stitched to pages 2..N of the numbered render via pdf-lib.
  */
-async function createPdf(html, outputPath, marginIn = 1) {
+async function createPdf(html, outputPath, marginIn = 1, pageNumbers = false) {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
   await page.setContent(html, { waitUntil: 'networkidle' });
 
   const m = `${marginIn}in`;
-  await page.pdf({
-    path: outputPath,
+  const baseOpts = {
     format: 'Letter',
     margin: { top: m, right: m, bottom: m, left: m },
     printBackground: true,
-  });
+  };
 
+  if (!pageNumbers) {
+    await page.pdf({ path: outputPath, ...baseOpts });
+    await browser.close();
+    return;
+  }
+
+  // Footer typography mirrors the resume/playbook secondary text role:
+  // small sans, muted #5B6770.
+  const footerTemplate = `
+    <div style="width:100%; text-align:center; font-family:'Avenir Next','Helvetica Neue',Arial,sans-serif; font-size:8pt; color:#5B6770;">
+      Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+    </div>`;
+
+  const plainBuf = await page.pdf({ ...baseOpts });
+  const numberedBuf = await page.pdf({
+    ...baseOpts,
+    displayHeaderFooter: true,
+    headerTemplate: '<span></span>',
+    footerTemplate,
+  });
   await browser.close();
+
+  const { PDFDocument } = await import('pdf-lib');
+  const plain = await PDFDocument.load(plainBuf);
+  const numbered = await PDFDocument.load(numberedBuf);
+  const out = await PDFDocument.create();
+
+  const [firstPage] = await out.copyPages(plain, [0]);
+  out.addPage(firstPage);
+
+  const total = numbered.getPageCount();
+  if (total > 1) {
+    const restIdx = Array.from({ length: total - 1 }, (_, i) => i + 1);
+    const rest = await out.copyPages(numbered, restIdx);
+    rest.forEach((p) => out.addPage(p));
+  }
+
+  writeFileSync(outputPath, Buffer.from(await out.save()));
 }
 
 /**
@@ -326,6 +365,11 @@ async function createDocument(outputPath, options = {}) {
   if (!STYLES[style]) {
     throw new Error(`Unknown style: ${style}. Available: ${Object.keys(STYLES).join(', ')}`);
   }
+
+  // Page numbers: CLI flag wins; otherwise the style profile decides.
+  // PDF-only; the DOCX path ignores it (Word folios belong to the
+  // reference template, not inline HTML).
+  const pageNumbers = options.pageNumbers ?? STYLES[style].pageNumbers ?? false;
 
   let markdown;
   let markdownSourcePath = null;
@@ -371,7 +415,7 @@ async function createDocument(outputPath, options = {}) {
     }
   } else if (ext === '.pdf') {
     const html = markdownToHtml(markdown, title, style);
-    await createPdf(html, outputPath, marginIn);
+    await createPdf(html, outputPath, marginIn, pageNumbers);
   } else {
     throw new Error(`Unsupported output format: ${ext}. Use .docx or .pdf`);
   }
@@ -394,7 +438,10 @@ Options:
   --content FILE      Path to markdown file
   --text TEXT         Markdown text directly (alternative to --content)
   --title TITLE       Document title
-  --style NAME        Style profile: default | resume (default: default)
+  --style NAME        Style profile: default | resume | playbook | letter (default: default)
+  --page-numbers      PDF only: add "Page N of M" footer on every page except
+                      page 1. On by default for the playbook style; use
+                      --no-page-numbers to suppress it there.
   --help, -h          Show this help message
 
 Style profiles:
@@ -403,6 +450,11 @@ Style profiles:
                       uppercase rule-underlined section headings.
                       ATS + recruiter-friendly. Single column. No
                       tables/borders/colors.
+  playbook            Resume type system and palette with document-grade
+                      spacing: 1" margins, 1.45 leading, 8pt paragraph
+                      rhythm. For multi-page deliverables (job playbooks,
+                      proposals, briefs).
+  letter              Calibri 11pt, 1.25" margins, business-letter rhythm.
 
 Examples:
   node create.js report.docx --content README.md
@@ -425,6 +477,7 @@ let content = null;
 let text = null;
 let title = null;
 let style = 'default';
+let pageNumbers; // undefined = defer to the style profile
 
 for (let i = 1; i < args.length; i++) {
   if (args[i] === '--content' && args[i + 1]) {
@@ -435,6 +488,10 @@ for (let i = 1; i < args.length; i++) {
     title = args[++i];
   } else if (args[i] === '--style' && args[i + 1]) {
     style = args[++i];
+  } else if (args[i] === '--page-numbers') {
+    pageNumbers = true;
+  } else if (args[i] === '--no-page-numbers') {
+    pageNumbers = false;
   }
 }
 
@@ -446,7 +503,7 @@ if (ext !== '.docx' && ext !== '.pdf') {
 }
 
 try {
-  await createDocument(outputPath, { content, text, title, style });
+  await createDocument(outputPath, { content, text, title, style, pageNumbers });
   console.log(`\nSuccess! Document created: ${outputPath}`);
 } catch (e) {
   console.error(`Error: ${e.message}`);

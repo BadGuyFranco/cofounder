@@ -1,9 +1,17 @@
 const ROLE_WEIGHTS = {
   primary: 25,
+  primary_interpreter: 25,
+  launch_detector: 24,
+  founder_translator: 22,
+  practitioner_signal: 20,
   independent_reporting: 20,
+  technical_validator: 19,
   expert_analysis: 18,
+  market_signal: 18,
+  policy_signal: 18,
   curated: 16,
   community: 12,
+  community_validation: 12,
   social_signal: 10,
   discovery: 6
 };
@@ -53,6 +61,18 @@ export function rankCandidates(candidates, request) {
     if (candidate.author) {
       score += 4;
       reasons.push('author_present');
+    }
+
+    if (candidate.engagement_score > 0) {
+      const engagementBoost = Math.min(18, Math.floor(Math.log10(candidate.engagement_score + 1) * 6));
+      score += engagementBoost;
+      reasons.push(`engagement:${engagementBoost}`);
+    }
+
+    if (candidate.is_reply) {
+      const replyPenalty = candidate.engagement_score >= 100 ? 4 : 12;
+      score -= replyPenalty;
+      reasons.push(`reply_penalty:${replyPenalty}`);
     }
 
     return {

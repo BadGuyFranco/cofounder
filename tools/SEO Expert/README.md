@@ -14,14 +14,29 @@ Comprehensive SEO tool that audits any website, generates ready-to-use assets, a
 - **PageSpeed Insights automation** - Runs Core Web Vitals analysis automatically on any URL, no authentication required
 - **Prioritized todo list** - Every finding sorted by impact tier with specific fixes and effort estimates
 
+## Operator Workflows
+
+Beyond the one-shot audit, SEO Expert runs six repeatable, operator-triggered workflows (see `AI SEO Operator Playbook.md`):
+
+- Competitor sitemap gap analysis and 6-month content roadmap
+- Monthly competitor publishing tracker
+- SERP-based content brief generation
+- Digital PR pattern mining
+- Central SEO dashboard
+- GEO entity and citation refresh
+
+These are triggered by the operator, never scheduled. Cadence is tracked by reading the dates on saved snapshot files.
+
 ## Scripts
 
-PageSpeed Insights and Google Search Console live in the Google connector:
+PageSpeed Insights and Google Search Console live in the Google connector. Sitemap helpers for the operator workflows live in this tool:
 
 | Script | Location |
 |---|---|
 | PageSpeed Insights | `connectors/google/scripts/pagespeed.js` |
 | Search Console | `connectors/google/scripts/search-console.js` |
+| Sitemap fetch and snapshot | `tools/SEO Expert/scripts/sitemap-fetch.js` |
+| Sitemap snapshot diff | `tools/SEO Expert/scripts/sitemap-diff.js` |
 
 ## Configuration
 

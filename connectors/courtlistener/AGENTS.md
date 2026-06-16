@@ -40,7 +40,7 @@ See `CAPABILITIES.md`.
 
 - `Status: 401` or invalid token: token missing or wrong. Check `/memory/connectors/courtlistener/.env`.
 - `Status: 403`: account not verified or token lacks access. Confirm email verification on courtlistener.com.
-- `Status: 429`: rate limited (citation-lookup is throttled). Wait and retry; batch multiple cites into one `lookup` call (it accepts a block of text).
+- `Status: 429`: rate limited (free tier ~50/hour). Batch multiple cites into one `lookup` call (it accepts a block of text). To read an opinion body while throttled, use the Browser Control fallback (Google Scholar / case.law) documented in Pro Se Lawyer's Citation Verify procedure, which has no API cap.
 - `Cannot find module`: first run auto-installs deps; re-run the command.
 - Empty `clusters` with `status: 200`: the string parsed but no case matched. Recheck volume/reporter/page; prefer the regional reporter cite (P.2d / P.3d) over a state reporter.
 

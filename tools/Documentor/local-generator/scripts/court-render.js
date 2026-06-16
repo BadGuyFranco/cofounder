@@ -35,31 +35,61 @@ function lines(arr) {
   return (arr || []).map(l => `<div>${escapeHtml(l)}</div>`).join('');
 }
 
+function formatPartyName(name, role) {
+  const upper = String(name || '').toUpperCase();
+  const suffix = role === 'Plaintiff' ? ';' : '.';
+  return `${upper}${suffix}`;
+}
+
+function counselInCaption(c) {
+  const s = c.signer;
+  if (!s || c.caption_counsel === false) return '';
+  const label = c.counsel_label || (String(s.role || '').toLowerCase().includes('pro se') ? 'Pro Se Plaintiff:' : 'Counsel:');
+  return `
+    <div class="counsel-block">
+      <div class="counsel-label">${escapeHtml(label)}</div>
+      <div class="counsel-name">${escapeHtml(s.name)}</div>
+      ${lines(s.lines)}
+    </div>`;
+}
+
 /**
- * Build the Colorado two-column caption table from structured data.
- * Left column: court + parties. Right column: COURT USE ONLY box, then
- * case number and division.
+ * Colorado district court caption (C.R.C.P. 10 style), modeled on filed Larimer
+ * County motions: two-column header, counsel block under parties on the left,
+ * COURT USE ONLY in the upper right, case metadata below, document title in a
+ * full-width row at the bottom of the caption box.
  */
 function captionTable(c) {
-  const parties = (c.parties || []).map((p, i, all) => {
-    const sep = (p.role === 'Defendant' && i > 0) ? '<div class="vs">v.</div>' : '';
-    return `${sep}<div class="party"><span class="role">${escapeHtml(p.role)}:</span> ${escapeHtml(p.name)}</div>`;
-  }).join('');
+  const partyBlocks = [];
+  for (let i = 0; i < (c.parties || []).length; i++) {
+    const p = c.parties[i];
+    if (p.role === 'Defendant' && i > 0) partyBlocks.push('<div class="vs">v.</div>');
+    partyBlocks.push(
+      `<div class="party"><span class="role">${escapeHtml(p.role)}:</span> ${escapeHtml(formatPartyName(p.name, p.role))}</div>`
+    );
+  }
+  const parties = partyBlocks.join('');
   return `
   <table class="caption">
-    <tr>
+    <tr class="caption-main">
       <td class="cap-left">
         <div class="court-name">${escapeHtml(c.court)}</div>
         <div class="court-addr">${escapeHtml(c.court_address || '')}</div>
         <div class="parties">${parties}</div>
+        ${counselInCaption(c)}
       </td>
       <td class="cap-right">
-        <div class="court-use">&#9650; COURT USE ONLY &#9650;</div>
-        <div class="case-meta">
-          <div><strong>Case Number:</strong> ${escapeHtml(c.case_number)}</div>
+        <div class="cap-right-top">
+          <div class="court-use">&#9650; COURT USE ONLY &#9650;</div>
+        </div>
+        <div class="cap-right-bottom">
+          <div><strong>Case No:</strong> ${escapeHtml(c.case_number)}</div>
           <div><strong>Division:</strong> ${escapeHtml(c.division)}</div>
         </div>
       </td>
+    </tr>
+    <tr class="caption-title-row">
+      <td colspan="2" class="doc-title">${escapeHtml(c.title)}</td>
     </tr>
   </table>`;
 }
@@ -99,23 +129,27 @@ function certificateOfService(svc, title) {
 }
 
 const COURT_CSS = `
-  @page { size: Letter; margin: 0; }
+  @page { size: letter; }
   html, body { margin: 0; padding: 0; }
   body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; }
 
-  table.caption { width: 100%; border-collapse: collapse; border: 1.5pt solid #000; margin-bottom: 18pt; }
-  table.caption td { vertical-align: top; padding: 8pt 10pt; }
-  td.cap-left { width: 62%; border-right: 1.5pt solid #000; }
-  td.cap-right { width: 38%; }
+  table.caption { width: 100%; border-collapse: collapse; border: 1.5pt solid #000; margin-bottom: 18pt; table-layout: fixed; }
+  table.caption td { vertical-align: top; }
+  td.cap-left { width: 62%; border-right: 1.5pt solid #000; padding: 8pt 10pt; }
+  td.cap-right { width: 38%; padding: 0; }
+  .cap-right-top { min-height: 96pt; display: flex; align-items: flex-end; justify-content: center; padding: 8pt 10pt; border-bottom: 1.5pt solid #000; }
+  .cap-right-bottom { padding: 8pt 10pt; }
+  .cap-right-bottom div { margin: 2pt 0; }
   .court-name { font-weight: bold; text-transform: uppercase; }
-  .court-addr { margin-bottom: 12pt; }
+  .court-addr { margin-bottom: 10pt; }
   .party { margin: 2pt 0; }
   .party .role { font-weight: bold; }
   .vs { margin: 6pt 0; }
-  .court-use { border: 1.25pt solid #000; text-align: center; font-weight: bold; padding: 10pt 4pt; margin-bottom: 10pt; }
-  .case-meta div { margin: 2pt 0; }
-
-  .doc-title { text-align: center; font-weight: bold; text-transform: uppercase; line-height: 1.3; margin: 6pt 0 18pt 0; }
+  .court-use { text-align: center; font-weight: bold; width: 100%; }
+  .counsel-block { margin-top: 10pt; padding-top: 8pt; border-top: 1pt solid #000; }
+  .counsel-label { font-weight: bold; margin-bottom: 2pt; }
+  .counsel-name { margin-bottom: 2pt; }
+  tr.caption-title-row td.doc-title { border-top: 1.5pt solid #000; text-align: center; font-weight: bold; text-transform: uppercase; line-height: 1.3; padding: 8pt 12pt; }
 
   .body p { line-height: 2; margin: 0 0 6pt 0; text-align: left; }
   .body h2 { font-size: 12pt; font-weight: bold; line-height: 1.4; margin: 14pt 0 6pt 0; }
@@ -124,12 +158,12 @@ const COURT_CSS = `
   .body em { font-style: italic; }
   .body strong { font-weight: bold; }
 
-  .closing { margin-top: 18pt; line-height: 1.4; }
+  .closing { margin-top: 18pt; line-height: 1.4; break-inside: avoid; }
   .closing p { margin: 12pt 0; }
   .sig-line { margin-top: 18pt; }
   .sig-name { font-weight: bold; }
 
-  .cert { margin-top: 24pt; line-height: 1.4; }
+  .cert { margin-top: 24pt; line-height: 1.4; break-inside: avoid; }
   .cert-title { text-align: center; font-weight: bold; font-size: 12pt; margin: 12pt 0; }
   .cert p { line-height: 1.5; }
   .service-list { margin: 8pt 0 18pt 24pt; }
@@ -143,7 +177,6 @@ function buildHtml(caption, bodyMd) {
 <html><head><meta charset="UTF-8"><style>${COURT_CSS}</style></head>
 <body>
   ${captionTable(caption)}
-  <div class="doc-title">${escapeHtml(caption.title)}</div>
   <div class="body">${bodyHtml}</div>
   ${signatureBlock(caption.signer)}
   ${certificateOfService(caption.service, caption.title)}
@@ -159,11 +192,11 @@ async function renderPdf(html, outputPath) {
       path: outputPath,
       format: 'Letter',
       printBackground: true,
+      preferCSSPageSize: true,
       displayHeaderFooter: true,
-      // 1-inch margins all around; bottom leaves room for the page-number footer.
       margin: { top: '1in', right: '1in', bottom: '1in', left: '1in' },
       headerTemplate: '<div></div>',
-      footerTemplate: `<div style="width:100%; font-size:10pt; font-family:'Times New Roman',serif; text-align:center; margin: 0 1in;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>`,
+      footerTemplate: `<div style="width:100%; font-size:10pt; font-family:'Times New Roman',serif; text-align:center;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>`,
     });
   } finally {
     await browser.close();

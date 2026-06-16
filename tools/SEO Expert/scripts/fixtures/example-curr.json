@@ -1,0 +1,14 @@
+{
+  "domain": "competitor.com",
+  "fetchedAt": "2026-05-01",
+  "sitemaps": ["https://competitor.com/sitemap.xml"],
+  "urls": [
+    { "loc": "https://competitor.com/", "path": "/", "slug": "", "segment": "", "lastmod": "2026-01-10" },
+    { "loc": "https://competitor.com/pricing", "path": "/pricing", "slug": "pricing", "segment": "pricing", "lastmod": "2026-04-20" },
+    { "loc": "https://competitor.com/guide/seo-basics", "path": "/guide/seo-basics", "slug": "seo-basics", "segment": "guide", "lastmod": "2026-03-01" },
+    { "loc": "https://competitor.com/compare/competitor-vs-us", "path": "/compare/competitor-vs-us", "slug": "competitor-vs-us", "segment": "compare", "lastmod": "2026-04-25" },
+    { "loc": "https://competitor.com/tools/roi-calculator", "path": "/tools/roi-calculator", "slug": "roi-calculator", "segment": "tools", "lastmod": "2026-04-28" }
+  ],
+  "count": 5,
+  "truncated": false
+}

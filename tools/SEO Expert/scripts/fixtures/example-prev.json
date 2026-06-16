@@ -1,0 +1,13 @@
+{
+  "domain": "competitor.com",
+  "fetchedAt": "2026-04-01",
+  "sitemaps": ["https://competitor.com/sitemap.xml"],
+  "urls": [
+    { "loc": "https://competitor.com/", "path": "/", "slug": "", "segment": "", "lastmod": "2026-01-10" },
+    { "loc": "https://competitor.com/pricing", "path": "/pricing", "slug": "pricing", "segment": "pricing", "lastmod": "2026-02-01" },
+    { "loc": "https://competitor.com/guide/seo-basics", "path": "/guide/seo-basics", "slug": "seo-basics", "segment": "guide", "lastmod": "2026-03-01" },
+    { "loc": "https://competitor.com/guide/link-building", "path": "/guide/link-building", "slug": "link-building", "segment": "guide", "lastmod": "2026-03-15" }
+  ],
+  "count": 4,
+  "truncated": false
+}

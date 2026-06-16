@@ -15,3 +15,4 @@ The web-frontend domain of Design Advisor draws from the following sources:
 - **Source:** https://github.com/anthropics/skills/tree/main/skills/frontend-design
 - **License:** Apache 2.0
 - **Relationship:** Impeccable builds on Anthropic's original frontend-design skill. The Anthropic original is the foundation; Impeccable extended it with deeper reference material and anti-patterns.
+- **2026 refresh:** Anthropic later revised the original skill. Ideas adapted from that revision into Design Advisor and Designer (not verbatim): the three current whole-layout AI-slop clusters (cream/terracotta, near-black/acid-green, broadsheet), "ground design in the subject's own world," the single signature element / "spend boldness in one place," hero-as-thesis, the two-pass plan→self-critique→build loop, and the CSS selector-specificity caution. UX-writing guidance was already covered by `domains/web-frontend.md` and was not re-added.

@@ -78,11 +78,16 @@ Establish the visual direction before generating code. This is the moodboard ste
 
 **For projects with DESIGN.md:** Skip. The design system is the direction.
 
+**Ground it in the subject first.** Distinctive choices come from the subject's own world — its materials, instruments, artifacts, and vernacular — not from a library of looks. Before reaching for any aesthetic, name the one concrete subject, its audience, and the page's single job, and state them. If the brief doesn't pin these down, pin them yourself and say so. Other products are reference points for *quality bars*, not a source of identity: lead with what the subject itself supplies, then borrow execution polish from references.
+
 **For new work, establish:**
+- **Subject anchor:** What is this actually about, and what in its own world can the design draw from? (A legal tool's typographic restraint; a music product's rhythm and density.)
 - **Personality:** Where on the spectrum? (Playful...Professional, Bold...Restrained, Warm...Cool, Dense...Spacious)
-- **Aesthetic references:** Name 2-3 real products or sites with similar visual character. Be specific: "Linear's information density with Stripe's typography confidence" not "modern and clean."
+- **Aesthetic references:** Name 2-3 real products or sites for *execution quality*, not identity. Be specific: "Linear's information density with Stripe's typography confidence" not "modern and clean."
 - **Color mood:** Warm/cool, saturated/muted, light/dark
 - **Typography voice:** Geometric/humanist, sharp/rounded, condensed/wide
+
+**Signature element.** Decide the single element this design will be remembered by — the one place boldness is spent. Everything around it stays quiet and disciplined. Take one real aesthetic risk you can justify against the brief; not taking a risk is itself a risk, and a design with no memorable anchor reads as templated. Name the signature before composing.
 
 State the direction before proceeding. Get user confirmation if the request was ambiguous.
 
@@ -121,7 +126,11 @@ Create the actual design artifact using the foundations from Phase 3.
 | Documented style guide | `workflows/style-guide.md` |
 | Logo design | `workflows/logo.md` |
 
+**The hero is a thesis.** Open with the most characteristic thing in the subject's world, in whatever form fits: a headline, an image, an animation, a live demo, an interactive moment. A big number with a small label, supporting stats, and a gradient accent is the *template* answer — use it only when it is genuinely the strongest opening for this subject, not by reflex.
+
 **Default output format:** HTML with Tailwind CSS classes. If the project doesn't use Tailwind, output plain CSS with custom properties.
+
+**Watch CSS selector specificity.** When writing plain CSS, it's easy to generate selectors that cancel each other out — a type-based selector like `.section` and an element-level one like `.cta` fighting over padding/margin, especially the spacing between sections. Keep specificity flat and predictable so spacing tokens actually apply.
 
 **If the user asks for "just the tokens" or "just the colors":** Phase 4 is the token output itself. No HTML composition needed.
 
@@ -149,6 +158,8 @@ For every design decision, state WHY. Point at any element and explain its purpo
 
 **Distinctiveness Check**
 Scan output against Design Advisor's Prohibited Defaults. If any item matches, redesign that element with an intentional alternative.
+
+Then run the same-prompt test on the *whole direction*: would you have arrived at this palette, type pairing, and layout for almost any similar brief? Mentally work through a generic version of the request — if you land in roughly the same place, the choice is a default, not a decision. Revise the parts that fail, and state what you changed and why.
 - Typography: No Inter, Roboto, Arial, Open Sans, Montserrat as primary
 - Color: No pure black (#000), no pure gray, no cyan-on-dark, no purple-to-blue gradients
 - Layout: No card-in-card nesting, no identical card grids, no uniform spacing everywhere

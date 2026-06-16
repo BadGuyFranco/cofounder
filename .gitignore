@@ -23,6 +23,9 @@
 # Claude Code (local tooling state, not tracked)
 .claude/
 
+# Playwright MCP runtime artifacts (console logs, screenshots — transient)
+.playwright-mcp/
+
 # Maintainer development workbench (local only, not tracked)
 /zDeveloper/
 

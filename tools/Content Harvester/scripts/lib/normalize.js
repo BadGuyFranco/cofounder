@@ -10,6 +10,9 @@ export function normalizeCandidate(input, context) {
   const publishedAt = normalizeDate(input.published_at || input.published || input.pubDate || input.isoDate || input.date);
   const topics = uniqueValues([...(context.requestTopics || []), ...(context.sourceTopics || []), ...(input.topics || [])]);
   const matchedTopics = matchTopics({ title, summary, content, url: canonicalUrl }, topics);
+  const externalUrls = uniqueValues(input.external_urls || input.externalUrls || []);
+  const metrics = normalizeMetrics(input.metrics || input.public_metrics || input.raw?.public_metrics || {});
+  const engagementScore = calculateEngagementScore(metrics);
 
   return {
     id: hashId(`${canonicalUrl || title}|${publishedAt || ''}`),
@@ -26,6 +29,10 @@ export function normalizeCandidate(input, context) {
     content,
     topics,
     matched_topics: matchedTopics,
+    external_urls: externalUrls,
+    metrics,
+    engagement_score: engagementScore,
+    is_reply: Boolean(input.is_reply || input.raw?.in_reply_to_user_id || title.trim().startsWith('@')),
     score: 0,
     score_reasons: [],
     discovered_by: {
@@ -103,12 +110,61 @@ function normalizeDate(value) {
 
 function matchTopics(fields, topics) {
   const haystack = `${fields.title} ${fields.summary} ${fields.content} ${fields.url}`.toLowerCase();
-  return topics.filter((topic) => haystack.includes(String(topic).toLowerCase()));
+  return topics.filter((topic) => {
+    const normalized = String(topic).toLowerCase();
+    const terms = TOPIC_TERMS[normalized] || [normalized, normalized.replace(/_/g, ' ')];
+    return terms.some((term) => matchesTerm(haystack, term));
+  });
 }
 
 function uniqueValues(values) {
   return Array.from(new Set(values.filter(Boolean).map((value) => String(value))));
 }
+
+function normalizeMetrics(metrics) {
+  return {
+    like_count: Number(metrics.like_count || 0),
+    retweet_count: Number(metrics.retweet_count || 0),
+    reply_count: Number(metrics.reply_count || 0),
+    quote_count: Number(metrics.quote_count || 0),
+    bookmark_count: Number(metrics.bookmark_count || 0),
+    impression_count: Number(metrics.impression_count || 0)
+  };
+}
+
+function calculateEngagementScore(metrics) {
+  return (
+    metrics.like_count +
+    (metrics.bookmark_count * 2) +
+    (metrics.retweet_count * 3) +
+    (metrics.quote_count * 4) +
+    metrics.reply_count
+  );
+}
+
+function matchesTerm(haystack, term) {
+  const normalized = String(term).toLowerCase().trim();
+  if (!normalized) return false;
+  if (!/^[a-z0-9]+$/.test(normalized)) return haystack.includes(normalized);
+
+  return new RegExp(`\\b${escapeRegExp(normalized)}\\b`, 'i').test(haystack);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const TOPIC_TERMS = {
+  model_release: ['model', 'models', 'weights', 'release', 'released', 'launch', 'launched', 'huggingface', 'hugging face'],
+  github_repo: ['github', 'repo', 'repository', 'open source', 'open-source', 'opensource'],
+  agent_framework: ['agent', 'agents', 'framework', 'orchestration', 'langgraph', 'crewai', 'openhands', 'openclaw'],
+  inference_breakthrough: ['inference', 'serving', 'latency', 'throughput', 'speed', 'faster', 'lora', 'gpu'],
+  long_context_architecture: ['long context', 'long-context', 'context window', 'attention', 'architecture', 'sub-quadratic', 'subquadratic'],
+  coding_tool: ['coding', 'code', 'developer', 'github bot', 'claude code', 'codex'],
+  private_beta: ['private beta', 'beta', 'preview', 'waitlist'],
+  technical_explainer: ['explainer', 'paper', 'arxiv', 'analysis', 'deep dive', 'technical report'],
+  market_implication: ['market', 'founder', 'startup', 'enterprise', 'cost', 'pricing', 'vendor', 'adoption']
+};
 
 function hashId(value) {
   return createHash('sha256').update(value).digest('hex').slice(0, 16);

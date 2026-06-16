@@ -67,7 +67,7 @@ function printHelp() {
   });
 }
 
-const TWEET_FIELDS = 'created_at,public_metrics,author_id,conversation_id,in_reply_to_user_id';
+const TWEET_FIELDS = 'created_at,public_metrics,author_id,conversation_id,in_reply_to_user_id,entities,referenced_tweets';
 const USER_FIELDS = 'name,username';
 const EXPANSIONS = 'author_id';
 

@@ -53,6 +53,15 @@ export function renderMarkdown(bundle, status) {
       lines.push(`- URL: ${item.url || item.canonical_url}`);
       lines.push(`- Published: ${item.published_at || 'unknown'}`);
       lines.push(`- Score: ${item.score} (${item.score_reasons.join(', ')})`);
+      if (hasMetrics(item.metrics)) {
+        lines.push(`- Engagement: ${formatMetrics(item.metrics)}; weighted ${item.engagement_score || 0}`);
+      }
+      if (item.is_reply) {
+        lines.push('- Conversation shape: reply');
+      }
+      if (item.external_urls?.length > 0) {
+        lines.push(`- External URLs: ${item.external_urls.join(', ')}`);
+      }
       if (item.matched_topics.length > 0) {
         lines.push(`- Matched topics: ${item.matched_topics.join(', ')}`);
       }
@@ -110,4 +119,24 @@ function countBy(items, key) {
     acc[value] = (acc[value] || 0) + 1;
     return acc;
   }, {});
+}
+
+function hasMetrics(metrics) {
+  return Boolean(metrics) && Object.values(metrics).some((value) => Number(value) > 0);
+}
+
+function formatMetrics(metrics) {
+  const parts = [
+    ['likes', metrics.like_count],
+    ['reposts', metrics.retweet_count],
+    ['quotes', metrics.quote_count],
+    ['replies', metrics.reply_count],
+    ['bookmarks', metrics.bookmark_count],
+    ['impressions', metrics.impression_count]
+  ];
+
+  return parts
+    .filter(([, value]) => Number(value) > 0)
+    .map(([label, value]) => `${label} ${Number(value).toLocaleString()}`)
+    .join(' | ');
 }

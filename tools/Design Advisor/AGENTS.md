@@ -148,9 +148,22 @@ Every visual element should serve a purpose: communicate information, create hie
 
 Test: Point at any element and explain its job. "It looks nice" is not a job.
 
+### Signature Element
+
+Spend boldness in one place. A strong design has a single element it's remembered by — a typographic move, a hero treatment, one distinctive interaction — and keeps everything around it quiet and disciplined. Restraint everywhere reads as timid; boldness everywhere reads as noise. Identify the signature; cut decoration that competes with it.
+
+Test: Name the one thing a viewer would describe afterward. If nothing stands out, the design has no anchor. If three things compete, none of them land.
+
 ## Prohibited Defaults (The AI Slop Test)
 
 These patterns are the fingerprints of AI-generated design. Their presence signals lazy defaults, not intentional choices. Avoid all of them.
+
+**Whole-layout clusters (the current AI-generated "looks"):** beyond the element-level defaults below, AI design right now clusters around three full-page looks that appear regardless of subject. Each is legitimate *only* when the brief actually calls for it — never as a free default:
+- Warm cream background (near `#F4F1EA`) with a high-contrast serif display and a terracotta accent
+- Near-black background with a single bright acid-green or vermilion accent
+- Broadsheet layout: hairline rules, zero border-radius, dense newspaper-like columns
+
+If the brief pins a direction, follow it exactly — the brief's own words win, including when it asks for one of these. Where an axis is left free, don't spend that freedom on one of these three.
 
 **Typography:**
 - Inter, Roboto, Arial, Open Sans, Lato, Montserrat as primary fonts (choose something distinctive)
@@ -235,8 +248,9 @@ Before delivery, run all enforcement mechanisms one final time on the complete o
 2. **Purpose Check** - Every visual element has a stated job. No decorative waste.
 3. **Hierarchy Scan** - Visual weight matches information priority throughout.
 4. **Rhythm Check** - No more than three consecutive identical spacing values.
-5. **Preferences alignment** - If project has design-preferences.md, verify output matches stated choices.
-6. **Practice what you preach** - If the design claims to value simplicity, is it simple? If it claims bold aesthetic, is it bold?
+5. **Signature Check** - One element clearly carries the design; it isn't a wash of equally-weighted parts or three things competing. No whole-layout AI cluster used as a free default.
+6. **Preferences alignment** - If project has design-preferences.md, verify output matches stated choices.
+7. **Practice what you preach** - If the design claims to value simplicity, is it simple? If it claims bold aesthetic, is it bold?
 
 If any check fails, fix before delivering.
 

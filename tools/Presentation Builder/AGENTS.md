@@ -72,10 +72,10 @@ Load `methodology/slide-design.md` for design principles.
 If using a brand template, read its CSS (`brand.css`) to understand available layout classes.
 
 **Content rules:**
-- One idea per slide
+- One major takeaway per slide. Heavy content is fine; the slide still conveys exactly one thing. If naming the takeaway takes two sentences, split the slide.
 - Headlines state conclusions, not topics
 - Body text uses fragments, not sentences
-- Speaker notes for non-trivial slides
+- Speaker notes on every non-trivial slide: a numbered list of concise reminders in delivery order, never a read script. Note 1 always names the takeaway, the one thing this slide is trying to convey.
 
 **Pacing rules:**
 - Alternate dense and sparse
@@ -198,11 +198,11 @@ Scripts are in `/cofounder/tools/Presentation Builder/scripts/`.
 
 ## Quality Checks
 
-- [ ] One idea per slide
+- [ ] One major takeaway per slide
 - [ ] Headlines are conclusions
 - [ ] Pacing varies dense/sparse
 - [ ] Section dividers between beats
-- [ ] Speaker notes on key slides
+- [ ] Speaker notes on key slides: numbered reminders, takeaway first, never a script
 - [ ] HTML opens by double-clicking
 
 If unclear on any requirement, ask before proceeding.
