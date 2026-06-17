@@ -16,8 +16,8 @@ AI toolkit with tools, connectors, and standards for building businesses with AI
 
 | Folder | Purpose |
 |--------|---------|
-| `tools/` | 19 active AI-assisted tools (content, images, video, diagrams, research, SEO, etc.) |
-| `connectors/` | 28 active API integrations (Google, Notion, Stripe, LinkedIn, etc.) |
+| `tools/` | 20 active AI-assisted tools (content, images, video, diagrams, research, SEO, conversion, etc.) |
+| `connectors/` | 29 active API integrations (Google, Notion, Stripe, LinkedIn, Clarity, etc.) |
 | `standards/` | Reusable project standards (Web Apps) |
 | `system/` | Installer, migrations, templates, quality checks |
 | `infrastructure/` | Build process, architecture decisions, session management for CoFounder development |

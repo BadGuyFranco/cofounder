@@ -114,16 +114,16 @@ function extractFieldData(data) {
   return {
     overall: getRating(exp.overall_category),
     lcp: metrics.LARGEST_CONTENTFUL_PAINT_MS
-      ? { p75: `${(metrics.LARGEST_CONTENTFUL_PAINT_MS.percentiles.p75 / 1000).toFixed(2)}s`, rating: getRating(metrics.LARGEST_CONTENTFUL_PAINT_MS.category) }
+      ? { p75: `${(metrics.LARGEST_CONTENTFUL_PAINT_MS.percentile / 1000).toFixed(2)}s`, rating: getRating(metrics.LARGEST_CONTENTFUL_PAINT_MS.category) }
       : null,
     inp: metrics.INTERACTION_TO_NEXT_PAINT
-      ? { p75: `${metrics.INTERACTION_TO_NEXT_PAINT.percentiles.p75}ms`, rating: getRating(metrics.INTERACTION_TO_NEXT_PAINT.category) }
+      ? { p75: `${metrics.INTERACTION_TO_NEXT_PAINT.percentile}ms`, rating: getRating(metrics.INTERACTION_TO_NEXT_PAINT.category) }
       : null,
     cls: metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE
-      ? { p75: (metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentiles.p75 / 100).toFixed(3), rating: getRating(metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.category) }
+      ? { p75: (metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100).toFixed(3), rating: getRating(metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.category) }
       : null,
     fcp: metrics.FIRST_CONTENTFUL_PAINT_MS
-      ? { p75: `${(metrics.FIRST_CONTENTFUL_PAINT_MS.percentiles.p75 / 1000).toFixed(2)}s`, rating: getRating(metrics.FIRST_CONTENTFUL_PAINT_MS.category) }
+      ? { p75: `${(metrics.FIRST_CONTENTFUL_PAINT_MS.percentile / 1000).toFixed(2)}s`, rating: getRating(metrics.FIRST_CONTENTFUL_PAINT_MS.category) }
       : null
   };
 }

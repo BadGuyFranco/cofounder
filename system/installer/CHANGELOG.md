@@ -1,5 +1,10 @@
 # What's New in CoFounder
 
+## June 16, 2026
+- **Conversion Expert** - New tool, the on-site counterpart to SEO Expert: SEO gets visitors to the page, Conversion Expert turns them into customers. Audits a site across goal/funnel, quantitative drop-off (GA4), speed (Core Web Vitals), behavior friction (Clarity), on-page heuristics, and message match, then outputs an ICE-scored, evidence-backed todo list. Runs the What (where they drop) to Why (why they drop) to Fix to Measure loop, degrades gracefully with zero connectors, and keeps a persistent `cro/` directory per site.
+- **Microsoft Clarity connector** - New connector for behavior and friction signals (dead clicks, rage clicks, quick backs, excessive scroll, script errors, scroll depth) via the free Clarity Data Export API. `insights.js signals --days 3 --by URL` returns a per-page friction digest; `insights` returns raw Live Insights by up to 3 dimensions. Token auth; set `CLARITY_API_TOKEN` in `/memory/connectors/clarity/.env`. Aggregated data only (no replay or heatmap export via API), 10 requests/project/day, last 1-3 days.
+- **PageSpeed fix** - `connectors/google/scripts/pagespeed.js` now reads the PageSpeed Insights field-data metric as `percentile` instead of the non-existent `percentiles.p75`. Core Web Vitals (LCP, INP, CLS, FCP from real users) previously errored on every site that had field data; they now render. This also restores SEO Expert's Core Web Vitals reporting.
+
 ## June 12, 2026
 - **Ahrefs connector** - New connector for Domain Rating and backlink data via the Ahrefs API. Domain Rating lookups are free and need no account or key: check any domain and benchmark competitors with `metrics.js dr --domain D --competitors a.com,b.com`. An optional paid Ahrefs API key unlocks referring domains, anchor text, organic keywords, and full domain snapshots. Browser Control stays as the fallback for data the API does not expose.
 - **SEO Expert** - Now pulls real Domain Rating for the audited site and its competitors automatically and for free in Phases 5 and 7. Previously this required a paid tool or browser scraping.

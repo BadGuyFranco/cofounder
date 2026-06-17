@@ -17,6 +17,7 @@ If `/memory/my connectors/` doesn't exist and user needs a custom connector, cre
 | Airtable | `airtable/` |
 | Anthropic | `anthropic/` |
 | Bing Webmaster Tools | `bing/` |
+| Clarity (Microsoft) | `clarity/` |
 | DataForSEO | `dataforseo/` |
 | ClickUp | `clickup/` |
 | Cloudflare | `cloudflare/` |
