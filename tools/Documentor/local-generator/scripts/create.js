@@ -156,17 +156,37 @@ const STYLES = {
     `,
   },
   letter: {
-    // Business-letter style for cover letters. Roomier 1.25" margins and a
-    // tighter line-height than `default`, with no extra body top margin, so a
-    // short letter reads as composed rather than sparse.
-    marginIn: 1.25,
+    // Executive cover-letter style (Design pass, 2026-06-21). Same design
+    // family as the resume and playbook profiles (Charter serif body,
+    // Avenir Next display, teal #0F4C5C accent, muted #5B6770 secondary) so
+    // a cover letter and resume arriving together read as one designed
+    // system. This matters most in the LinkedIn Easy Apply combined PDF,
+    // where the resume pages and the cover letter are literally one upload.
+    //
+    // Structure the markdown carries (see Process/03 - Cover Note.md Output):
+    //   # Anthony Franco                       -> letterhead name (h1)
+    //   ::: {custom-style="Contact"} ... :::   -> contact line + teal hairline
+    //   [body paragraphs]                      -> Charter serif, 1.45 leading
+    //   ::: {custom-style="Signature"} ... ::: -> sign-off name (+ muted title)
+    //
+    // Letter-weight leading (1.45) and 1" margins; one page, ~75% density.
+    // The previous profile was generic Calibri with no letterhead, which made
+    // a designed resume and its cover letter look like two different authors.
+    marginIn: 1,
     css: `
-      body { font-family: 'Calibri','Arial',sans-serif; font-size: 11pt; line-height: 1.4; color: #1F2937; margin: 0 auto; max-width: 100%; }
+      body { font-family: 'Charter','Georgia','Times New Roman',serif; font-size: 11pt; line-height: 1.45; color: #1F2937; margin: 0; padding: 0; }
+      h1 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 22pt; font-weight: 700; color: #0F4C5C; letter-spacing: 0.2pt; line-height: 1.0; margin: 0 0 3pt 0; }
+      h2, h3 { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-weight: 700; color: #1F2937; }
       p { margin: 0 0 11pt 0; }
-      a { color: #1F2937; text-decoration: none; }
-      strong, b { font-weight: 700; }
+      strong, b { font-weight: 700; color: #1F2937; }
       em, i { font-style: italic; }
-      h1, h2, h3 { font-family: 'Calibri','Arial',sans-serif; font-weight: 700; }
+      hr { display: none; }
+      a { color: #0F4C5C; text-decoration: none; }
+      .Contact, [data-custom-style="Contact"], div.contact { font-family: 'Avenir Next','Helvetica Neue','Arial',sans-serif; font-size: 9pt; color: #5B6770; letter-spacing: 0.2pt; margin: 0 0 16pt 0; padding: 0 0 11pt 0; border-bottom: 0.75pt solid #0F4C5C; }
+      .Contact p { margin: 0; }
+      .Signature, [data-custom-style="Signature"], div.signature { margin: 16pt 0 0 0; }
+      .Signature p { margin: 0; color: #1F2937; }
+      .Signature p + p { font-size: 9.5pt; color: #5B6770; font-style: italic; }
     `,
   },
 };
