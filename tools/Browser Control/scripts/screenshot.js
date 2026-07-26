@@ -32,7 +32,9 @@ function printHelp() {
       'node scripts/screenshot.js --output ~/Desktop/page.png'
     ],
     'Notes': [
-      'Output path can be relative or absolute.',
+      'Absolute and ~ paths are saved as given. Relative paths (including bare',
+      'filenames) are saved under cofounder/.playwright-mcp/ (gitignored), never',
+      'the current directory. The result JSON reports the resolved path.',
       'Supported formats: PNG (default), JPEG (if path ends in .jpg/.jpeg)',
       'Full page captures the entire scrollable content.'
     ]

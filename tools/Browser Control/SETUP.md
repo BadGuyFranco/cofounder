@@ -73,6 +73,24 @@ You should see structured page content in the terminal.
 
 **CLI setup complete.**
 
+### Profiles: autonomous vs. default
+
+Browser Control hardens the profile at launch to stop native Chrome prompts (password-save, autofill, translate, notification/permission, download, restore-session) from blocking automation. Two profiles:
+
+- **`autonomous`** — for unattended runs. Permission prompts (notifications, geolocation, camera, mic) are blocked by default so nothing stalls:
+  ```bash
+  node scripts/session.js start --profile autonomous
+  ```
+- **`default`** — for login-heavy/interactive work where a human is present to log in or approve prompts. Used when `--profile` is omitted.
+
+This handles **native Chrome prompts** only. **JavaScript** dialogs (`alert`/`confirm`/`prompt`) are separate — control them with `node scripts/dialog.js auto-accept` (or `auto-dismiss`). Hardening cannot suppress OS security dialogs, CAPTCHAs, or 2FA; those still need you.
+
+Verify the hardening logic without a browser:
+
+```bash
+node scripts/test-profile-hardening.js
+```
+
 ## Step 4: Enable MCP (IDE Integration)
 
 MCP gives the AI native `browser_*` tools inside Cursor and Claude Code. This step is optional but recommended.
@@ -97,6 +115,22 @@ Both files ship with the project. If they are missing, create them with:
 ```
 
 Restart your IDE to load the MCP server. After restart, the AI will have `browser_*` tools available alongside the CLI scripts.
+
+**Autonomous profile for MCP:** to run the MCP server against the hardened autonomous profile, set `BROWSER_CONTROL_PROFILE` in the server's `env`:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": ["tools/Browser Control/start-mcp.js"],
+      "env": { "BROWSER_CONTROL_PROFILE": "autonomous" }
+    }
+  }
+}
+```
+
+Omit it (or set `default`) for login-heavy interactive sessions.
 
 ## Troubleshooting
 

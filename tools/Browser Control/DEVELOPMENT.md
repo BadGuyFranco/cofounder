@@ -65,4 +65,49 @@ Scripts can be extended or new ones added following the existing pattern. See `s
 
 ## Profile Management
 
-Both MCP and CLI share the same profile directory: `~/.browser-control/profiles/default/`. Login data persists across sessions regardless of which interface is used.
+Both MCP and CLI share the same profile resolution (`scripts/profile-hardening.js` → `resolveProfileDir`): `~/.browser-control/profiles/<profile>/`. Login data persists across sessions regardless of which interface is used.
+
+- **CLI:** `node scripts/session.js start --profile <name>`
+- **MCP:** `BROWSER_CONTROL_PROFILE=<name> node "tools/Browser Control/start-mcp.js"`
+
+`default` is used when neither is set.
+
+## Profile Hardening (native prompt suppression)
+
+`scripts/profile-hardening.js` prepares a profile so **native Chrome prompts** stop blocking automation — password-save bubbles, autofill, translate bars, notification/permission prompts, download bubbles, restore-session nags, first-run screens. It is distinct from `scripts/dialog.js`, which only handles **JavaScript** dialogs (`alert`/`confirm`/`prompt`).
+
+Both launch paths call `hardenProfile()` before the browser starts:
+
+- `scripts/server.js` (`initBrowser`) — before `chromium.launchPersistentContext()`.
+- `start-mcp.js` — before spawning `@playwright/mcp`.
+
+What it does:
+
+- Deep-merges a small set of preference keys into each sub-profile's `Preferences` (always `Default`; `Profile 1` only if it already exists) and into `Local State`.
+- Backs up `Preferences`/`Local State` (timestamped `*.bak-<ts>`) before writing.
+- Never deletes a profile; preserves cookies/localStorage/logins (those are separate files we don't touch).
+- Idempotent — re-running writes identical values and keeps JSON valid.
+- Skips writing if the profile is **locked** (`SingletonLock`/`SingletonSocket` present → Chrome running), to avoid corrupting a live profile.
+
+Presets:
+
+| Profile | Notifications | Geo / Cam / Mic | Password / Autofill / Translate / Download prompts | Extra launch flag |
+|---------|---------------|-----------------|----------------------------------------------------|-------------------|
+| any (`standard`) | blocked | site default | suppressed | — |
+| `autonomous` | blocked | blocked by default | suppressed | `--disable-notifications` |
+
+### Launch flags
+
+Playwright already injects many automation flags (`--no-first-run`, `--no-default-browser-check`, `--password-store=basic`, `--use-mock-keychain`, `--disable-search-engine-choice-screen`, `--disable-popup-blocking`, `--disable-features=…,Translate,…`, etc. — see `playwright-core/.../chromiumSwitches.js`). **Do not duplicate these.** In particular, do not add a second `--disable-features`: Chromium keeps only the last occurrence of a repeated switch, so it would clobber Playwright's curated list. Notification/permission suppression therefore rides on `Preferences`, not flags. `launchArgsForProfile()` adds only `--disable-notifications`, and only for `autonomous`.
+
+### Limits
+
+Hardening cannot suppress OS-level dialogs (macOS keychain/screen-recording/file picker), CAPTCHAs, or 2FA. Those still require a human.
+
+### Self-test
+
+```bash
+node scripts/test-profile-hardening.js
+```
+
+Creates temp fake profiles, runs hardening twice, and asserts: expected keys written, idempotent + valid JSON, pre-existing login markers preserved, `Profile 1` handled only when present, locked/corrupt profiles left untouched.

@@ -14,7 +14,7 @@ Browser Control has two interfaces. Use whichever is available.
 
 **CLI scripts (fallback):** If MCP tools are not available, use the scripts in `scripts/`. These work from any terminal, any context. Support interactive element indexing for reliable element targeting.
 
-Both share the same Playwright install and the same profile directory (`~/.browser-control/profiles/default/`).
+Both share the same Playwright install and the same profile resolution logic. The active profile lives at `~/.browser-control/profiles/<profile>/` (`default` unless overridden). See **Profiles & Native Prompts** below.
 
 ## MCP Workflow
 
@@ -69,7 +69,7 @@ node scripts/click.js --selector "button.submit"
 node scripts/session.js stop
 ```
 
-Session options: `--port <n>`, `--profile <name>`, `--headless`
+Session options: `--port <n>`, `--profile <name>` (e.g. `autonomous`), `--headless`
 
 ### CLI Scripts
 
@@ -118,6 +118,9 @@ npx playwright show-trace ~/debug-trace.zip
 | Issue | Action |
 |-------|--------|
 | Login required | Tell user to log in manually in the browser window |
+| Native Chrome prompt stalls run | Use `--profile autonomous` (CLI) / `BROWSER_CONTROL_PROFILE=autonomous` (MCP) |
+| JS alert/confirm/prompt blocks | `node scripts/dialog.js auto-accept` (or `auto-dismiss`); MCP `browser_handle_dialog` |
+| OS/macOS security dialog, CAPTCHA, 2FA | Hardening can't suppress these — ask the user |
 | CAPTCHA | Tell user to solve it |
 | Cookie consent | Click accept button |
 | Multiple matches (CLI) | Use `--interactive` snapshot, then `--index` |
@@ -136,9 +139,49 @@ npx playwright show-trace ~/debug-trace.zip
 </analysis>
 ```
 
+## Artifact Files — Never Litter the Repo Root
+
+Session artifacts (screenshots, saved snapshots, scraped data, checkpoint notes) must **never** be written with bare filenames from the repo root — they land in `cofounder/` as untracked clutter.
+
+- **Screenshots (MCP or CLI):** relative output paths are automatically redirected to `cofounder/.playwright-mcp/` (gitignored). Pass an absolute or `~` path only when the file genuinely belongs somewhere specific.
+- **Files you write yourself** (redirecting `snapshot.js` output, saving scraped JSON, progress notes): write them to `cofounder/.playwright-mcp/` or your session scratchpad — never `bmc-snapshot-1.yml`-style bare paths.
+- Anything under `.playwright-mcp/` is transient and safe to delete; treat it as disposable.
+
+## Profiles & Native Prompts
+
+There are **two kinds** of pop-up, handled by different mechanisms:
+
+| Kind | Examples | Handled by |
+|------|----------|------------|
+| **JavaScript page dialogs** | `alert()`, `confirm()`, `prompt()` | `scripts/dialog.js` (runtime) and MCP `browser_handle_dialog` |
+| **Native Chrome prompts** | password-save bubble, autofill, translate bar, notification/permission prompts, download bubble, "restore session" nag, first-run/welcome | **Profile hardening** (`scripts/profile-hardening.js`, applied at launch) |
+
+`scripts/dialog.js` ONLY controls JS dialogs (`auto-accept` / `auto-dismiss` / `auto-prompt`). It cannot touch native Chrome chrome — that is suppressed by hardening the profile's preferences before the browser starts.
+
+**Profiles:**
+
+- `default` — general use, including login-heavy interactive workflows. Gets a *standard* hardening pass (password/autofill/translate/download/notification prompts suppressed) but keeps geolocation/camera/mic at site default so interactive use isn't crippled.
+- `autonomous` — for **unattended runs**. Standard hardening **plus** geolocation/camera/mic blocked by default and `--disable-notifications`, so permission prompts never stall the run.
+
+```bash
+# CLI — autonomous (unattended)
+node scripts/session.js start --profile autonomous
+
+# MCP — autonomous via env var on the launcher
+BROWSER_CONTROL_PROFILE=autonomous node "tools/Browser Control/start-mcp.js"
+```
+
+Use `autonomous` for hands-off automation. Use `default` (or a named profile) when a human will be present to log in / solve CAPTCHA / approve prompts.
+
+**Hardening is safe:** it never deletes a profile, preserves cookies/logins, backs up `Preferences`/`Local State` before editing, is idempotent, and skips a profile that is currently locked (Chrome running).
+
+**Residual prompts hardening cannot remove:** macOS/OS security dialogs (keychain, screen-recording, file picker), CAPTCHAs, and 2FA. These still need a human — pause and ask.
+
+Self-test the hardening logic anytime with `node scripts/test-profile-hardening.js`.
+
 ## Persistence
 
-Profile data: `~/.browser-control/profiles/default/`. Login once, stay logged in across sessions.
+Profile data: `~/.browser-control/profiles/<profile>/` (`default` by default). Login once, stay logged in across sessions. Hardening preserves these logins.
 
 ## Site Guides
 

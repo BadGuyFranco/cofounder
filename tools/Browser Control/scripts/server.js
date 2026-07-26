@@ -11,9 +11,13 @@
  */
 
 import http from 'http';
-import { getProfileDir, DEFAULT_PORT } from './utils.js';
+import { DEFAULT_PORT } from './utils.js';
+import { resolveProfileDir, hardenProfile, launchArgsForProfile } from './profile-hardening.js';
 import { ensureDeps } from '../../../system/shared/ensure-deps.js';
 import { homedir } from 'os';
+import { dirname, isAbsolute, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { mkdirSync } from 'fs';
 
 ensureDeps(import.meta.url, { layer: 'tools' });
 
@@ -202,17 +206,42 @@ function expandUserPath(filePath) {
   return filePath;
 }
 
+// scripts -> Browser Control -> tools -> cofounder root
+const artifactsDir = process.env.BROWSER_CONTROL_ARTIFACTS_DIR ||
+  resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '.playwright-mcp');
+
+/**
+ * Resolve a caller-supplied output path for generated artifacts.
+ * Absolute and ~ paths are honored; relative paths (including bare filenames)
+ * land in the gitignored artifacts dir (.playwright-mcp/), never the server's
+ * cwd — resolving against cwd littered the repo root with session artifacts.
+ */
+function resolveArtifactPath(outputPath) {
+  const expanded = expandUserPath(outputPath);
+  if (isAbsolute(expanded)) {
+    return expanded;
+  }
+  const resolved = resolve(artifactsDir, expanded);
+  mkdirSync(dirname(resolved), { recursive: true });
+  return resolved;
+}
+
 /**
  * Initialize browser with persistent context
  */
 async function initBrowser(options = {}) {
-  const profileDir = getProfileDir(options.profile || 'default');
+  const profileName = options.profile || 'default';
+  const profileDir = resolveProfileDir(profileName);
   const headless = options.headless === true;
+
+  // Suppress native Chrome prompts (password/autofill/translate/notification/
+  // restore) before launch. Safe + idempotent; skips if the profile is locked.
+  hardenProfile(profileDir, { profileName });
 
   context = await chromium.launchPersistentContext(profileDir, {
     headless: headless,
     viewport: { width: 1280, height: 800 },
-    args: ['--disable-blink-features=AutomationControlled']
+    args: ['--disable-blink-features=AutomationControlled', ...launchArgsForProfile(profileName)]
   });
 
   // Get existing page or create new one
@@ -423,7 +452,8 @@ async function handleScreenshot(params) {
     throw new Error('Output path required');
   }
 
-  const options = { path: outputPath, fullPage };
+  const resolvedPath = resolveArtifactPath(outputPath);
+  const options = { path: resolvedPath, fullPage };
 
   if (selector) {
     await page.locator(selector).screenshot(options);
@@ -432,7 +462,7 @@ async function handleScreenshot(params) {
   }
 
   const info = await getPageInfo();
-  return { ...info, screenshot: outputPath };
+  return { ...info, screenshot: resolvedPath };
 }
 
 /**

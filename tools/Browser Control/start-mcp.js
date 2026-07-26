@@ -6,8 +6,11 @@
  * Starts the Playwright MCP server with persistent profile support.
  * Called by IDE MCP configurations (Cursor, Claude Code).
  *
- * Profile data is stored at ~/.browser-control/profiles/default/
- * so logins persist between sessions.
+ * Profile data is stored at ~/.browser-control/profiles/<profile>/ so logins
+ * persist between sessions. Profile defaults to `default`; set
+ * BROWSER_CONTROL_PROFILE=autonomous to launch the hardened, prompt-suppressed
+ * profile for unattended runs. The profile is hardened in place before launch
+ * (see scripts/profile-hardening.js).
  *
  * File-access root (uploads / file:// guard):
  *   @playwright/mcp restricts file access (e.g. the file-upload tool) to its
@@ -29,10 +32,10 @@
  */
 
 import { spawn } from 'child_process';
-import { homedir } from 'os';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { mkdirSync } from 'fs';
+import { resolveProfileDir, hardenProfile } from './scripts/profile-hardening.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // tools/Browser Control -> tools -> cofounder
@@ -40,8 +43,18 @@ const cofounderRoot = resolve(__dirname, '..', '..');
 // cofounder -> Shared -> NAS root (/Volumes/NAS LOCAL); contains all loaded repos
 const fileRoot = process.env.BROWSER_CONTROL_FILE_ROOT || resolve(cofounderRoot, '..', '..');
 
-const profileDir = join(homedir(), '.browser-control', 'profiles', 'default');
+// Profile selection: BROWSER_CONTROL_PROFILE=autonomous picks the hardened,
+// prompt-suppressed profile for unattended runs. Defaults to `default` so
+// existing login-heavy workflows keep their saved sessions.
+const profileName = process.env.BROWSER_CONTROL_PROFILE || 'default';
+const profileDir = resolveProfileDir(profileName);
 mkdirSync(profileDir, { recursive: true });
+
+// Suppress native Chrome prompts before @playwright/mcp launches the browser.
+// Same hardening + resolution the CLI server path uses. Notification/permission
+// suppression rides on the profile Preferences, so it applies even though we do
+// not pass extra Chromium flags through the MCP launcher here.
+hardenProfile(profileDir, { profileName });
 
 const outputDir = join(cofounderRoot, '.playwright-mcp');
 mkdirSync(outputDir, { recursive: true });
@@ -52,6 +65,14 @@ const args = [
   '--user-data-dir', profileDir,
   '--output-dir', outputDir,
   '--caps', 'vision,pdf',
+  // @playwright/mcp's file-upload guard allows only (a) --output-dir and (b) the MCP
+  // CLIENT's first advertised root (Claude Code sends the cofounder project root), and it
+  // IGNORES the child process cwd — so setting cwd to the NAS root above does NOT widen the
+  // upload root for the server path (verified against @playwright/mcp 0.0.76, 2026-06-23).
+  // This flag disables that guard so the upload tool can read packet PDFs directly from the
+  // Anthony job-hunt tree. Playwright docs state the file-access root is a convenience
+  // guardrail, not a security boundary; this runs in Anthony's own session on his own files.
+  '--allow-unrestricted-file-access',
   ...process.argv.slice(2)
 ];
 
